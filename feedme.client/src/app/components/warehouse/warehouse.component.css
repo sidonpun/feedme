@@ -1,0 +1,64 @@
+.warehouse-container {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+}
+
+.warehouse-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.warehouse-tab {
+  position: relative;
+  padding: 8px 12px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+  .warehouse-tab.active {
+    background-color: #e0e0e0;
+    font-weight: bold;
+  }
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #888;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  cursor: pointer;
+}
+
+.add-warehouse {
+  display: flex;
+  gap: 10px;
+}
+
+  .add-warehouse input {
+    flex-grow: 1;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+
+  .add-warehouse button {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+    .add-warehouse button:hover {
+      background-color: #0056b3;
+    }

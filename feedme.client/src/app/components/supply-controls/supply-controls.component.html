@@ -1,0 +1,23 @@
+<div class="container supply-controls">
+
+  <div class="item" [class.selected]="selectedSupply === 'supplies'" (click)="setSupplyType('supplies')">
+    <img src="assets/truck.svg" alt="Поставки товара" class="item-icon">
+    <span>Поставки товара</span>
+  </div>
+
+  <div class="item" [class.selected]="selectedSupply === 'stock'" (click)="setSupplyType('stock')">
+    <img src="assets/box.svg" alt="Остаток товара" class="item-icon">
+    <span>Остаток товара</span>
+  </div>
+
+  <button class="primary-action-btn" (click)="handleOpenPopup()">
+    <img src="assets/plus.svg" alt="Добавить товар" class="button-icon">
+    <span>Добавить товар</span>
+  </button>
+
+  <div class="item catalog-button" (click)="handleGoToCatalog()">
+    <img src="assets/catalog.svg" alt="Каталог" class="item-icon">
+    <span>Каталог</span>
+  </div>
+
+</div>
