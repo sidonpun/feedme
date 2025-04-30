@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { ContentComponent } from './components/content/content.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HeaderComponent } from './components/header/header.component';
+import { ContentComponent } from './components/content/content.component';
 import { CatalogComponent } from './components/catalog/catalog.component';
 import { PopupComponent } from './components/popup/popup.component';
 import { InfoCardsComponent } from './components/info-cards/info-cards.component';
@@ -26,9 +26,9 @@ import { WarehouseComponent } from './components/warehouse/warehouse.component';
     FormsModule,
     RouterModule.forRoot([]),
     AppComponent,
-    ContentComponent,
     SidebarComponent,
     HeaderComponent,
+    ContentComponent,
     CatalogComponent,
     PopupComponent,
     InfoCardsComponent,
