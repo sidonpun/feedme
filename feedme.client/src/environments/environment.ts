@@ -1,1 +1,4 @@
-console.log("Hello World!")
+// src/environments/environment.ts
+export const environment = {
+  production: false
+};

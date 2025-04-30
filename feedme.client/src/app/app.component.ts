@@ -1,15 +1,26 @@
-import { Component } from '@angular/core';
-import { HeaderComponent } from './header.component';
-import { ContentComponent } from './content.component';
-
+// src/app/app.component.ts
+import { Component, OnInit } from '@angular/core';
+import { HeaderComponent } from './components/header/header.component';
+import { ContentComponent } from './components/content/content.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HeaderComponent, ContentComponent],
+  imports: [
+    HeaderComponent,
+    SidebarComponent,
+    ContentComponent,  // если он вам нужен
+    RouterOutlet       // подключает <router-outlet>
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Feedme Angular';
+
+  ngOnInit(): void {
+    // сюда логику OnInit, если нужна
+  }
 }
