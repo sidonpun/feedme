@@ -1,16 +1,13 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./out-tsc/app",
-    "types": []
-  },
-  "include": [
-    "src/main.ts",
-    "src/polyfills.ts",
-    "src/app/**/*.ts"
-  ],
-  "exclude": [
-    "src/test.ts",
-    "src/**/*.spec.ts"
-  ]
+    "target": "es2020",
+    "module": "es2020",
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      // если вы захотите делать алиасы, например:
+      "@app/*": [ "src/app/*" ]
+    }
+    // остальные настройки…
+  }
 }
