@@ -49,9 +49,13 @@ export class ContentComponent implements OnInit {
 
   handleAddItem(newItem: any) {
     this.tableData.push(newItem);
-    localStorage.setItem(`warehouseData_${this.selectedTab}`, JSON.stringify(this.tableData));
+    localStorage.setItem(
+      `warehouseData_${this.selectedTab}`,
+      JSON.stringify(this.tableData)
+    );
+    // Закрываем попап после добавления
+    this.showPopup = false;
   }
-
   handleSettingsClick(item: any) {
     this.selectedItem = item;
   }
