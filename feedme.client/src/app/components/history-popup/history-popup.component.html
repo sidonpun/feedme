@@ -1,0 +1,13 @@
+<div class="history-popup-backdrop">
+  <div class="history-popup-content">
+    <h2>История товара</h2>
+    <div>
+      <p><strong>Название:</strong> {{ item.name }}</p>
+      <p><strong>Цена:</strong> {{ item.price }}</p>
+      <p><strong>Себестоимость:</strong> {{ item.cost }}</p>
+      <p><strong>Количество:</strong> {{ item.remaining }}</p>
+      <p><strong>Дата:</strong> {{ item.date }}</p>
+    </div>
+    <button class="close-btn" (click)="closePopup()">Закрыть</button>
+  </div>
+</div>

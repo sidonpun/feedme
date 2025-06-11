@@ -1,0 +1,30 @@
+<div class="container warehouse-tabs">
+  <div *ngFor="let warehouse of warehouses"
+       class="item"
+       [class.selected]="selectedTab === warehouse"
+       (click)="selectTab(warehouse)">
+    <img src="assets/sklad.svg" alt="{{ warehouse }}">
+    <span>{{ warehouse }}</span>
+    <button *ngIf="warehouse !== 'Главный склад'"
+            class="remove-warehouse-btn"
+            (click)="handleRemoveWarehouse(warehouse, $event)">
+      ✕
+    </button>
+  </div>
+
+  <div class="item add-warehouse-btn" (click)="showNewWarehousePopup = true">
+    <img src="assets/plus.svg" alt="Добавить склад">
+    <span>Добавить склад</span>
+  </div>
+</div>
+
+<div *ngIf="showNewWarehousePopup" class="popup-backdrop">
+  <div class="popup-create-storage">
+    <h2>Новый склад</h2>
+    <input type="text" [(ngModel)]="newWarehouseName" placeholder="Название склада">
+    <div class="popup-buttons">
+      <button class="cancel-btn" (click)="showNewWarehousePopup = false">Отмена</button>
+      <button class="save-btn" (click)="handleAddWarehouse()">Создать</button>
+    </div>
+  </div>
+</div>

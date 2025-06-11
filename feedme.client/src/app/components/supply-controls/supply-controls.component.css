@@ -1,0 +1,80 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 59px;
+  background-color: #f5f5f5;
+  width: 100%;
+  box-shadow: none;
+}
+
+.item,
+.catalog-button {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  color: #000000;
+  cursor: pointer;
+  margin-right: 20px;
+  margin-left: 10px;
+  position: relative;
+  padding: 5px 0;
+  transition: color 0.3s ease;
+}
+
+  .item img {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+  }
+
+  .item.selected,
+  .catalog-button.selected {
+    font-weight: bold;
+    color: #4F6BD1;
+  }
+
+    .item.selected::after,
+    .catalog-button.selected::after {
+      content: "";
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: #4F6BD1;
+    }
+
+  .item:hover,
+  .catalog-button:hover {
+    color: #4F6BD1;
+  }
+
+.catalog-button {
+  margin-left: 20px;
+}
+
+.primary-action-btn {
+  width: 180px;
+  height: 40px;
+  background-color: #fa502d;
+  color: #ffffff;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+  .primary-action-btn:hover {
+    background-color: #e64827;
+  }
+
+  .primary-action-btn img {
+    width: 20px;
+    height: 20px;
+    margin-right: 6px;
+  }

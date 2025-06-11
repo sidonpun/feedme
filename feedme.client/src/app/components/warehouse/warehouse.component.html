@@ -1,0 +1,20 @@
+<div class="warehouse-container">
+  <div class="warehouse-tabs">
+    <div *ngFor="let warehouse of warehouses"
+         class="warehouse-tab"
+         [class.active]="warehouse === selectedWarehouse"
+         (click)="selectWarehouse(warehouse)">
+      {{ warehouse }}
+      <button *ngIf="warehouse !== 'Главный склад'"
+              (click)="removeWarehouse(warehouse); $event.stopPropagation();"
+              class="remove-btn">
+        ✕
+      </button>
+    </div>
+  </div>
+
+  <div class="add-warehouse">
+    <input [(ngModel)]="newWarehouseName" placeholder="Название склада" />
+    <button (click)="addWarehouse()">Добавить склад</button>
+  </div>
+</div>

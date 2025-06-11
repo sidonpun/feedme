@@ -1,0 +1,113 @@
+.info-cards-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  max-width: 800px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Общая карточка */
+.info-card {
+  width: 180px;
+  min-height: 140px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.movement-card {
+  flex-basis: 100%;
+  background-color: #f3f6fd;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.movement-icon {
+  width: 40px;
+  height: 40px;
+  margin-left: auto;
+}
+
+.movement-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.movement-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+/* Иконки для остальных карточек */
+.category-icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 8px;
+}
+
+/* Статичные и динамичные надписи */
+.static-label {
+  font-weight: 500;
+  color: #555;
+}
+
+.dynamic-value {
+  font-weight: 600;
+  color: #000;
+}
+
+/* Последняя карточка с кнопкой */
+.last-card {
+  position: relative;
+}
+
+.close-card-btn {
+  margin-top: 10px;
+  padding: 6px 12px;
+  background-color: #fa502d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+  .close-card-btn:hover {
+    background-color: #e64827;
+  }
+
+/* Кнопка закрытия (крестик) */
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: #777;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+  .close-btn:hover {
+    color: #000;
+  }

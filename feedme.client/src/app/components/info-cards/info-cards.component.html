@@ -1,0 +1,49 @@
+<div class="info-cards-container" *ngIf="data">
+  <div class="info-card movement-card">
+    <img [src]="getCategoryIcon(data.category)" [alt]="data.category" class="movement-icon" />
+    <div class="movement-text">
+      <h3 class="movement-title">Движение товара</h3>
+      <p><span class="static-label">Категория: </span><span class="dynamic-value">{{ data.category }}</span></p>
+      <p><span class="static-label">Продукт: </span><span class="dynamic-value">{{ data.name }}</span></p>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <img src="assets/box.svg" alt="Расход" class="category-icon" />
+    <div>
+      <h3 class="static-label">Расход</h3>
+      <p>{{ data.expense }}р</p>
+      <p style="color: red;">-{{ data.expenseKg }}кг</p>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <img src="assets/box.svg" alt="Приход" class="category-icon" />
+    <div>
+      <h3 class="static-label">Приход</h3>
+      <p>{{ data.income }}р</p>
+      <p style="color: green;">+{{ data.incomeKg }}кг</p>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <img src="assets/box.svg" alt="Остаток" class="category-icon" />
+    <div>
+      <h3 class="static-label">Остаток</h3>
+      <p>{{ data.stock }}р</p>
+      <p>{{ data.stockKg }}кг</p>
+    </div>
+  </div>
+
+  <div class="info-card last-card">
+    <img src="assets/box.svg" alt="Рекомендуем заказать" class="category-icon" />
+    <div>
+      <h3 class="static-label">Рек. Заказать</h3>
+      <p>{{ data.recommendedOrder }}р</p>
+      <p style="color: blue;">+{{ data.recommendedOrderKg }}кг</p>
+    </div>
+    <button class="close-card-btn" (click)="onClose.emit()">Закрыть</button>
+  </div>
+
+  <button class="close-btn" (click)="onClose.emit()">×</button>
+</div>

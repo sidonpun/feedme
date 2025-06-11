@@ -1,0 +1,22 @@
+<div class="content">
+  <app-warehouse-tabs [selectedTab]="selectedTab"
+                      (selectedTabChange)="setSelectedTab($event)">
+  </app-warehouse-tabs>
+
+  <app-supply-controls [(selectedSupply)]="selectedSupply"
+                       (openPopup)="openPopup()"
+                       (goToCatalog)="goToCatalog()">
+  </app-supply-controls>
+
+  <app-info-cards-wrapper [item]="selectedItem"
+                          (onClose)="closeInfoCards()">
+  </app-info-cards-wrapper>
+
+  <app-catalog></app-catalog>
+
+  <app-warehouse-table [data]="tableData"
+                       (onSettingsClick)="handleSettingsClick($event)">
+  </app-warehouse-table>
+
+  <app-popup (onAddItem)="handleAddItem($event)"></app-popup>
+</div>

@@ -1,0 +1,60 @@
+.custom-table {
+  width: 100%;
+  background-color: #ffffff;
+  box-shadow: none;
+  border-collapse: collapse;
+}
+
+.table-header,
+.table-row {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  align-items: center;
+  height: 60px;
+}
+
+  .table-header div {
+    font-size: 18px;
+    font-weight: 700;
+    color: #000;
+  }
+
+  .table-header div,
+  .table-row div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 12px;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .table-row:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+.action-icon,
+.category-icon,
+.name-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.name-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.name-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.icons-container {
+  display: flex;
+  gap: 5px;
+}

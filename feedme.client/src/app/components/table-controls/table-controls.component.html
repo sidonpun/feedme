@@ -1,0 +1,18 @@
+<div class="table-controls">
+  <div class="rows-selector-container">
+    <span class="rows-label">Строк:</span>
+    <select [value]="rowsPerPage"
+            (change)="onRowsPerPageChange($event)"
+            class="rows-selector">
+      <option *ngFor="let rows of rowsOptions" [value]="rows">
+        {{ rows }}
+      </option>
+    </select>
+  </div>
+
+  <input type="text"
+         placeholder="Поиск..."
+         [value]="searchQuery"
+         (input)="onSearchChange($event)"
+         class="search-input" />
+</div>
