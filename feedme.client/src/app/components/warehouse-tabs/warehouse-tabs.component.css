@@ -1,6 +1,7 @@
 .container.warehouse-tabs {
   display: flex;
   align-items: center;
+  height: 59px;
 }
 
 .item {

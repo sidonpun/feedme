@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { WarehouseTabsComponent } from '../warehouse-tabs/warehouse-tabs.component';
-import { SupplyControlsComponent } from '../supply-controls/supply-controls.component';
+import { WarehouseTabsComponent } from '../warehouse-tabs/warehouse-tabs.component';      // путь исправлен :contentReference[oaicite:1]{index=1}
+import { SupplyControlsComponent } from '../supply-controls/supply-controls.component'; // путь исправлен :contentReference[oaicite:2]{index=2}
 import { InfoCardsWrapperComponent } from '../info-cards-wrapper/info-cards-wrapper.component';
 import { CatalogComponent } from '../catalog/catalog.component';
 import { WarehouseTableComponent } from '../warehouse-table/warehouse-table.component';
@@ -32,48 +32,54 @@ export class ContentComponent implements OnInit {
   selectedItem: any = null;
   showPopup: boolean = false;
 
-  ngOnInit() {
-    const initialData = localStorage.getItem(`warehouseData_${this.selectedTab}`);
-    this.tableData = initialData ? JSON.parse(initialData) : [];
+  ngOnInit(): void {
+    this.loadTableData();
   }
 
-  setSelectedTab(tab: string) {
+  /** Переключение вкладки и перезагрузка данных */
+  setSelectedTab(tab: string): void {
     this.selectedTab = tab;
     this.loadTableData();
   }
 
-  loadTableData() {
+  /** Загрузка из localStorage для текущей вкладки */
+  private loadTableData(): void {
     const data = localStorage.getItem(`warehouseData_${this.selectedTab}`);
     this.tableData = data ? JSON.parse(data) : [];
   }
 
-  handleAddItem(newItem: any) {
+  /** Добавление нового товара из попапа и закрытие попапа */
+  handleAddItem(newItem: any): void {
     this.tableData.push(newItem);
     localStorage.setItem(
       `warehouseData_${this.selectedTab}`,
       JSON.stringify(this.tableData)
     );
-    // Закрываем попап после добавления
-    this.showPopup = false;
-  }
-  handleSettingsClick(item: any) {
-    this.selectedItem = item;
+    this.closePopup(); // закрываем сразу после добавления
   }
 
-  openPopup() {
+  /** Открытие попапа */
+  openPopup(): void {
     this.showPopup = true;
   }
 
-  goToCatalog() {
-    this.selectedTab = 'Каталог';
+  /** Закрытие попапа */
+  closePopup(): void {
+    this.showPopup = false;
   }
 
-  closeInfoCards() {
+  /** Открыть карточки информации */
+  handleSettingsClick(item: any): void {
+    this.selectedItem = item;
+  }
+
+  /** Закрыть карточки информации */
+  closeInfoCards(): void {
     this.selectedItem = null;
   }
 
-  onAddItem(item: any) {
-    this.handleAddItem(item);
-    this.showPopup = false;
+  /** Переход в каталог */
+  goToCatalog(): void {
+    this.selectedTab = 'Каталог';
   }
 }

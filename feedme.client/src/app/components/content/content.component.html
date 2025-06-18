@@ -14,9 +14,11 @@
 
   <app-catalog></app-catalog>
 
-  <app-warehouse-table [data]="tableData"
-                       (onSettingsClick)="handleSettingsClick($event)">
-  </app-warehouse-table>
 
-  <app-popup (onAddItem)="handleAddItem($event)"></app-popup>
+
+  <!-- content.component.html -->
+  <app-popup *ngIf="showPopup"
+             (onClose)="showPopup = false"
+             (onAddItem)="handleAddItem($event)"></app-popup>
+
 </div>

@@ -10,12 +10,9 @@
     <span>Остаток товара</span>
   </div>
 
-  <button class="primary-action-btn" (click)="handleOpenPopup()">
-    <img src="assets/plus.svg" alt="Добавить товар" class="button-icon">
-    <span>Добавить товар</span>
-  </button>
 
-  <div class="item catalog-button" (click)="handleGoToCatalog()">
+
+  <div class="item catalog-button" [class.selected] =" selectedSupply === 'catalog'" (click)="handleGoToCatalog()">
     <img src="assets/catalog.svg" alt="Каталог" class="item-icon">
     <span>Каталог</span>
   </div>

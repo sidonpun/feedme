@@ -10,8 +10,10 @@
                    (onSubmit)="handleSubmitNewProduct($event)">
   </app-new-product>
 
-  <div class="custom-table" *ngIf="!showNewProductForm">
+  <div class="custom-table">
+  
     <div class="table-header">
+      <!--  #  ngIf="showNewProductForm"… -->
       <div>Номер</div>
       <div>Категория</div>
       <div>Название</div>

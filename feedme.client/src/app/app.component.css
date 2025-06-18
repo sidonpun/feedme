@@ -5,22 +5,19 @@
   margin: 0;
 }
 
-.app-layout {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-}
 
 .sidebar {
   flex: 0 0 60px;
   background: #fff;
   border-right: 1px solid #e5e5e5;
+  font-weight: 150px;
 }
 
 .main-area {
   flex: 1;
   display: flex;
   flex-direction: column;
+  flex-grow: 1
 }
 
 .header-wrapper {
@@ -32,4 +29,19 @@
   overflow-y: auto;
   background: #f9f9f9;
   padding: 16px;
+}
+/* app.component.css */
+.layout {
+  display: flex; /* включаем флекс-контейнер */
+  flex-direction: row; /* по умолчанию, но явно указать полезно */
+  height: 100vh; /* чтобы растянуть на всю высоту экрана */
+}
+
+
+
+.main {
+  flex: 1; /* занять всё оставшееся пространство */
+  display: flex;
+  flex-direction: column; /* чтобы header был над content */
+  overflow: auto; /* если контента больше области */
 }
