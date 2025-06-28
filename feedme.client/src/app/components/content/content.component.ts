@@ -7,10 +7,10 @@ import { SupplyControlsComponent } from '../supply-controls/supply-controls.comp
 import { InfoCardsWrapperComponent } from '../info-cards-wrapper/info-cards-wrapper.component';
 import { PopupComponent } from '../popup/popup.component';
 
-import { SupplyTableComponent } from '../supply-table/supply-table.component';
-import { StockTableComponent } from '../stock-table/stock-table.component';
-import { CatalogTableComponent } from '../catalog-table/catalog-table.component';
 
+import { SupplyTableComponent } from '../SupplyTableComponent/supply-table.component';
+import { StockTableComponent } from '../StockTableComponent/stock-table.component';
+import { CatalogTableComponent } from '../CatalogTableComponent/catalog-table.component';
 @Component({
   selector: 'app-content',
   standalone: true,
