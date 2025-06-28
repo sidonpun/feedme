@@ -1,24 +1,40 @@
 <div class="content">
+
   <app-warehouse-tabs [selectedTab]="selectedTab"
                       (selectedTabChange)="setSelectedTab($event)">
   </app-warehouse-tabs>
 
-  <app-supply-controls [(selectedSupply)]="selectedSupply"
+  <app-supply-controls *ngIf="selectedTab !== 'Каталог'"
+                       [(selectedSupply)]="selectedSupply"
                        (openPopup)="openPopup()"
                        (goToCatalog)="goToCatalog()">
   </app-supply-controls>
 
-  <app-info-cards-wrapper [item]="selectedItem"
+  <app-info-cards-wrapper *ngIf="selectedTab !== 'Каталог' && selectedItem"
+                          [item]="selectedItem"
                           (onClose)="closeInfoCards()">
   </app-info-cards-wrapper>
 
-  <app-catalog></app-catalog>
+  <!-- Новый CatalogTableComponent -->
+  <app-catalog-table *ngIf="selectedTab === 'Каталог'"
+                     [data]="catalogData">
+  </app-catalog-table>
 
+  <!-- SupplyTableComponent -->
+  <app-supply-table *ngIf="selectedTab !== 'Каталог' && selectedSupply === 'supplies'"
+                    [data]="supplyData"
+                    (onSettingsClick)="handleSettingsClick($event)">
+  </app-supply-table>
 
+  <!-- StockTableComponent -->
+  <app-stock-table *ngIf="selectedTab !== 'Каталог' && selectedSupply === 'stock'"
+                   [data]="stockData"
+                   (onSettingsClick)="handleSettingsClick($event)">
+  </app-stock-table>
 
-  <!-- content.component.html -->
   <app-popup *ngIf="showPopup"
              (onClose)="showPopup = false"
-             (onAddItem)="handleAddItem($event)"></app-popup>
+             (onAddItem)="handleAddItem($event)">
+  </app-popup>
 
 </div>
