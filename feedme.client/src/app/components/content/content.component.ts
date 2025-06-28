@@ -2,12 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { WarehouseTabsComponent } from '../warehouse-tabs/warehouse-tabs.component';      // путь исправлен :contentReference[oaicite:1]{index=1}
-import { SupplyControlsComponent } from '../supply-controls/supply-controls.component'; // путь исправлен :contentReference[oaicite:2]{index=2}
+import { WarehouseTabsComponent } from '../warehouse-tabs/warehouse-tabs.component';
+import { SupplyControlsComponent } from '../supply-controls/supply-controls.component';
 import { InfoCardsWrapperComponent } from '../info-cards-wrapper/info-cards-wrapper.component';
-import { CatalogComponent } from '../catalog/catalog.component';
-import { WarehouseTableComponent } from '../warehouse-table/warehouse-table.component';
 import { PopupComponent } from '../popup/popup.component';
+
+import { SupplyTableComponent } from '../supply-table/supply-table.component';
+import { StockTableComponent } from '../stock-table/stock-table.component';
+import { CatalogTableComponent } from '../catalog-table/catalog-table.component';
 
 @Component({
   selector: 'app-content',
@@ -18,8 +20,9 @@ import { PopupComponent } from '../popup/popup.component';
     WarehouseTabsComponent,
     SupplyControlsComponent,
     InfoCardsWrapperComponent,
-    CatalogComponent,
-    WarehouseTableComponent,
+    SupplyTableComponent,
+    StockTableComponent,
+    CatalogTableComponent,
     PopupComponent
   ],
   templateUrl: './content.component.html',
@@ -27,59 +30,72 @@ import { PopupComponent } from '../popup/popup.component';
 })
 export class ContentComponent implements OnInit {
   selectedTab: string = 'Главный склад';
-  selectedSupply: string = 'supplies';
-  tableData: any[] = [];
+  selectedSupply: 'supplies' | 'stock' = 'supplies';
+
+  supplyData: any[] = [];
+  stockData: any[] = [];
+  catalogData: any[] = [];
+
   selectedItem: any = null;
-  showPopup: boolean = false;
+  showPopup = false;
 
-  ngOnInit(): void {
-    this.loadTableData();
+  ngOnInit() {
+    this.loadWarehouseData();
+    this.loadCatalogData();
   }
 
-  /** Переключение вкладки и перезагрузка данных */
-  setSelectedTab(tab: string): void {
+  setSelectedTab(tab: string) {
     this.selectedTab = tab;
-    this.loadTableData();
+    if (tab === 'Каталог') {
+      this.loadCatalogData();
+    } else {
+      this.loadWarehouseData();
+    }
   }
 
-  /** Загрузка из localStorage для текущей вкладки */
-  private loadTableData(): void {
-    const data = localStorage.getItem(`warehouseData_${this.selectedTab}`);
-    this.tableData = data ? JSON.parse(data) : [];
+  private loadWarehouseData() {
+    const supKey = `warehouseSupplies_${this.selectedTab}`;
+    const stkKey = `warehouseStock_${this.selectedTab}`;
+    this.supplyData = JSON.parse(localStorage.getItem(supKey) || '[]');
+    this.stockData = JSON.parse(localStorage.getItem(stkKey) || '[]');
   }
 
-  /** Добавление нового товара из попапа и закрытие попапа */
-  handleAddItem(newItem: any): void {
-    this.tableData.push(newItem);
-    localStorage.setItem(
-      `warehouseData_${this.selectedTab}`,
-      JSON.stringify(this.tableData)
-    );
-    this.closePopup(); // закрываем сразу после добавления
+  private loadCatalogData() {
+    this.catalogData = JSON.parse(localStorage.getItem('catalogData') || '[]');
   }
 
-  /** Открытие попапа */
-  openPopup(): void {
-    this.showPopup = true;
+  handleAddItem(newItem: any) {
+    if (this.selectedTab === 'Каталог') {
+      this.catalogData.push(newItem);
+      localStorage.setItem('catalogData', JSON.stringify(this.catalogData));
+    } else if (this.selectedSupply === 'supplies') {
+      this.supplyData.push(newItem);
+      localStorage.setItem(
+        `warehouseSupplies_${this.selectedTab}`,
+        JSON.stringify(this.supplyData)
+      );
+    } else {
+      this.stockData.push(newItem);
+      localStorage.setItem(
+        `warehouseStock_${this.selectedTab}`,
+        JSON.stringify(this.stockData)
+      );
+    }
   }
 
-  /** Закрытие попапа */
-  closePopup(): void {
-    this.showPopup = false;
-  }
-
-  /** Открыть карточки информации */
-  handleSettingsClick(item: any): void {
+  handleSettingsClick(item: any) {
     this.selectedItem = item;
   }
 
-  /** Закрыть карточки информации */
-  closeInfoCards(): void {
-    this.selectedItem = null;
+  openPopup() {
+    this.showPopup = true;
   }
 
-  /** Переход в каталог */
-  goToCatalog(): void {
+  goToCatalog() {
     this.selectedTab = 'Каталог';
+  }
+
+  closeInfoCards() {
+    this.selectedItem = null;
   }
 }

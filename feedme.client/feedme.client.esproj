@@ -9,5 +9,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\app\components\NavigationComponent\" />
+    <Folder Include="src\app\components\CatalogTableComponent\" />
   </ItemGroup>
 </Project>
