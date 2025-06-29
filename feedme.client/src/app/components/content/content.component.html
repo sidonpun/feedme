@@ -1,40 +1,48 @@
 <div class="content">
 
+  <!-- Табы склада / каталога -->
   <app-warehouse-tabs [selectedTab]="selectedTab"
                       (selectedTabChange)="setSelectedTab($event)">
   </app-warehouse-tabs>
 
+  <!-- Переключатель запас/остаток -->
   <app-supply-controls *ngIf="selectedTab !== 'Каталог'"
                        [(selectedSupply)]="selectedSupply"
-                       (openPopup)="openPopup()"
                        (goToCatalog)="goToCatalog()">
   </app-supply-controls>
 
+  <!-- Кнопка «Добавить товар» -->
+  <div class="add-button-container" *ngIf="selectedTab !== 'Каталог'">
+    <button (click)="openNewProductPopup()">Добавить товар</button>
+  </div>
+
+  <!-- Попап добавления нового товара -->
+  <app-new-product *ngIf="showNewProductPopup"
+                   (onSubmit)="onNewProductSubmit($event)"
+                   (onCancel)="closeNewProductPopup()">
+  </app-new-product>
+
+  <!-- Карточка с деталями -->
   <app-info-cards-wrapper *ngIf="selectedTab !== 'Каталог' && selectedItem"
                           [item]="selectedItem"
                           (onClose)="closeInfoCards()">
   </app-info-cards-wrapper>
 
-  <!-- Новый CatalogTableComponent -->
-  <app-catalog-table *ngIf="selectedTab === 'Каталог'"
-                     [data]="catalogData">
-  </app-catalog-table>
-
-  <!-- SupplyTableComponent -->
+  <!-- Таблица поставок -->
   <app-supply-table *ngIf="selectedTab !== 'Каталог' && selectedSupply === 'supplies'"
                     [data]="supplyData"
                     (onSettingsClick)="handleSettingsClick($event)">
   </app-supply-table>
 
-  <!-- StockTableComponent -->
+  <!-- Таблица остатков -->
   <app-stock-table *ngIf="selectedTab !== 'Каталог' && selectedSupply === 'stock'"
                    [data]="stockData"
                    (onSettingsClick)="handleSettingsClick($event)">
   </app-stock-table>
 
-  <app-popup *ngIf="showPopup"
-             (onClose)="showPopup = false"
-             (onAddItem)="handleAddItem($event)">
-  </app-popup>
+  <!-- Таблица каталога -->
+  <app-catalog-table *ngIf="selectedTab === 'Каталог'"
+                     [data]="catalogData">
+  </app-catalog-table>
 
 </div>
