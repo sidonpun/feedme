@@ -12,6 +12,7 @@ import { TableControlsComponent } from '../table-controls/table-controls.compone
 export class SupplyTableComponent {
   @Input() data: any[] = [];
   @Output() onSettingsClick = new EventEmitter<any>();
+  @Output() onAddSupplyClick = new EventEmitter<void>();  // ← эмиттер
 
   searchQuery: string = '';
   rowsPerPage: number = 10;
@@ -39,5 +40,10 @@ export class SupplyTableComponent {
     if (this.currentPage > 1) {
       this.currentPage--;
     }
+  }
+
+  // ← вот этот метод должен быть, чтобы шаблон работал
+  addSupply() {
+    this.onAddSupplyClick.emit();
   }
 }

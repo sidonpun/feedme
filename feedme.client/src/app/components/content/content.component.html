@@ -10,7 +10,7 @@
   <app-supply-controls *ngIf="selectedTab !== 'Каталог'"
                        [(selectedSupply)]="selectedSupply"
                        (goToCatalog)="goToCatalog()"
-    (openNewProduct)="openNewProductPopup()">
+   (addSupply)="openNewProductPopup()">
   </app-supply-controls>
 
   <!-- Кнопка «Добавить товар» -->

@@ -12,7 +12,7 @@ export class SupplyControlsComponent {
   @Input() selectedSupply: string = 'supplies';
   @Output() selectedSupplyChange = new EventEmitter<string>();
   @Output() openNewProduct = new EventEmitter<void>();  // ← новое
-  @Output() openPopup = new EventEmitter<void>();
+  @Output() addSupply = new EventEmitter<void>();
   @Output() goToCatalog = new EventEmitter<void>();
 
   setSupplyType(type: 'supplies' | 'stock' | 'catalog'): void {
@@ -33,15 +33,13 @@ export class SupplyControlsComponent {
   }
   
 
-  handleOpenPopup() {
-    this.openPopup.emit();
-  }
+
 
   handleGoToCatalog(): void {
     this.setSupplyType('catalog');
     this.goToCatalog.emit();
   }
   onAddClick() {
-    this.openNewProduct.emit();
+    this.addSupply.emit();
   }
 }
