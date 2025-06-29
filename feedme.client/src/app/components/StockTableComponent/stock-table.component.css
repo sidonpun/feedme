@@ -1,0 +1,32 @@
+/* тот же стиль, что и в SupplyTableComponent */
+.table-container {
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.warehouse-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+  .warehouse-table th,
+  .warehouse-table td {
+    border: 1px solid #e6e6e6;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .warehouse-table th {
+    background-color: #f9f9f9;
+  }
+
+  .warehouse-table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+
+.pagination {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}

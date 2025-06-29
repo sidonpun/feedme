@@ -29,4 +29,10 @@
       </tr>
     </tbody>
   </table>
+
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="currentPage===1">◀️</button>
+    <span>{{currentPage}}</span>
+    <button (click)="nextPage()" [disabled]="currentPage*rowsPerPage>=filteredData.length">▶️</button>
+  </div>
 </div>
