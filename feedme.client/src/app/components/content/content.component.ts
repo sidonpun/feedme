@@ -5,12 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { WarehouseTabsComponent } from '../warehouse-tabs/warehouse-tabs.component';
 import { SupplyControlsComponent } from '../supply-controls/supply-controls.component';
 import { InfoCardsWrapperComponent } from '../info-cards-wrapper/info-cards-wrapper.component';
+import { NewProductComponent } from '../new-product/new-product.component';
 
 import { SupplyTableComponent } from '../SupplyTableComponent/supply-table.component';
 import { StockTableComponent } from '../StockTableComponent/stock-table.component';
 import { CatalogTableComponent } from '../CatalogTableComponent/catalog-table.component';
 
-import { NewProductComponent } from '../new-product/new-product.component';
+import { WarehouseService } from '../../services/warehouse.service';
 
 @Component({
   selector: 'app-content',
@@ -21,29 +22,26 @@ import { NewProductComponent } from '../new-product/new-product.component';
     WarehouseTabsComponent,
     SupplyControlsComponent,
     InfoCardsWrapperComponent,
+    NewProductComponent,
     SupplyTableComponent,
     StockTableComponent,
-    CatalogTableComponent,
-    NewProductComponent
+    CatalogTableComponent
   ],
   templateUrl: './content.component.html',
   styleUrls: ['./content.component.css']
 })
 export class ContentComponent implements OnInit {
-  // табы склада/каталога
   selectedTab: string = 'Главный склад';
   selectedSupply: 'supplies' | 'stock' = 'supplies';
 
-  // данные для трёх таблиц
   supplyData: any[] = [];
   stockData: any[] = [];
   catalogData: any[] = [];
 
-  // для InfoCards
   selectedItem: any = null;
-
-  // показывать форму добавления товара?
   showNewProductPopup = false;
+
+  constructor(private ws: WarehouseService) { }
 
   ngOnInit() {
     this.loadWarehouseData();
@@ -60,47 +58,33 @@ export class ContentComponent implements OnInit {
   }
 
   private loadWarehouseData() {
-    const supKey = `warehouseSupplies_${this.selectedTab}`;
-    const stkKey = `warehouseStock_${this.selectedTab}`;
-    this.supplyData = JSON.parse(localStorage.getItem(supKey) || '[]');
-    this.stockData = JSON.parse(localStorage.getItem(stkKey) || '[]');
+    this.supplyData = this.ws.getSupplies(this.selectedTab);
+    this.stockData = this.ws.getStock(this.selectedTab);
   }
 
   private loadCatalogData() {
-    this.catalogData = JSON.parse(localStorage.getItem('catalogData') || '[]');
+    this.catalogData = this.ws.getCatalog();
   }
 
-  // открыть/закрыть попап добавления
   openNewProductPopup() {
     this.showNewProductPopup = true;
   }
+
   closeNewProductPopup() {
     this.showNewProductPopup = false;
   }
 
-  // общий метод добавления — используется и для NewProductComponent
-  handleAddItem(newItem: any) {
+  onNewProductSubmit(item: any) {
     if (this.selectedTab === 'Каталог') {
-      this.catalogData.push(newItem);
-      localStorage.setItem('catalogData', JSON.stringify(this.catalogData));
+      this.ws.addCatalog(item);
+      this.catalogData = this.ws.getCatalog();
     } else if (this.selectedSupply === 'supplies') {
-      this.supplyData.push(newItem);
-      localStorage.setItem(
-        `warehouseSupplies_${this.selectedTab}`,
-        JSON.stringify(this.supplyData)
-      );
+      this.ws.addSupply(this.selectedTab, item);
+      this.supplyData = this.ws.getSupplies(this.selectedTab);
     } else {
-      this.stockData.push(newItem);
-      localStorage.setItem(
-        `warehouseStock_${this.selectedTab}`,
-        JSON.stringify(this.stockData)
-      );
+      this.ws.addStock(this.selectedTab, item);
+      this.stockData = this.ws.getStock(this.selectedTab);
     }
-  }
-
-  // при сабмите формы NewProductComponent
-  onNewProductSubmit(formData: any) {
-    this.handleAddItem(formData);
     this.closeNewProductPopup();
   }
 
