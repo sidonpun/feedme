@@ -12,9 +12,12 @@
 
 
 
-  <div class="item catalog-button" [class.selected] =" selectedSupply === 'catalog'" (click)="handleGoToCatalog()">
+  <div class="item catalog-button" [class.selected]=" selectedSupply === 'catalog'" (click)="handleGoToCatalog()">
     <img src="assets/catalog.svg" alt="Каталог" class="item-icon">
     <span>Каталог</span>
   </div>
 
+</div>
+<div class="add-button-wrapper">
+  <button class="add-btn" (click)="onAddClick()">+ Новая поставка</button>
 </div>

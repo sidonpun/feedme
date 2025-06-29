@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 export class SupplyControlsComponent {
   @Input() selectedSupply: string = 'supplies';
   @Output() selectedSupplyChange = new EventEmitter<string>();
-
+  @Output() openNewProduct = new EventEmitter<void>();  // ← новое
   @Output() openPopup = new EventEmitter<void>();
   @Output() goToCatalog = new EventEmitter<void>();
 
@@ -41,5 +41,7 @@ export class SupplyControlsComponent {
     this.setSupplyType('catalog');
     this.goToCatalog.emit();
   }
-
+  onAddClick() {
+    this.openNewProduct.emit();
+  }
 }

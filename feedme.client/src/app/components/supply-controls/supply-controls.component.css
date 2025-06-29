@@ -78,3 +78,29 @@
     height: 20px;
     margin-right: 6px;
   }
+.container {
+  display: flex;
+  align-items: center;
+  /* ...существующие стили... */
+}
+
+/* обёртка, чтобы прижать кнопку вправо */
+.add-button-wrapper {
+  margin-left: auto;
+  padding-right: 16px;
+}
+
+.add-btn {
+  background-color: #fa4b00; /* оранжевый */
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color .2s;
+}
+
+  .add-btn:hover {
+    background-color: #d94300;
+  }
