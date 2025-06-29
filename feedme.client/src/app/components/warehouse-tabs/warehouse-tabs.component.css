@@ -87,3 +87,43 @@
   background-color: #007bff;
   color: white;
 }
+.warehouse-tabs-container {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.warehouse-tabs {
+  display: flex;
+  gap: 24px;
+}
+
+.warehouse-tab {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 12px 0;
+  position: relative;
+}
+
+  .warehouse-tab.active {
+    font-weight: 500;
+    color: #0056b3;
+  }
+
+.new-supply-btn {
+  margin-left: auto; /* прижмёт вправо */
+  background-color: #fa4b00; /* оранжевый */
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+  .new-supply-btn:hover {
+    background-color: #d94300;
+  }

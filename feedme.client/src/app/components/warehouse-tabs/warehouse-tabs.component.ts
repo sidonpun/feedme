@@ -16,7 +16,7 @@ export class WarehouseTabsComponent implements OnInit {
 
   @Input() selectedTab: string = 'Главный склад';
   @Output() selectedTabChange = new EventEmitter<string>();
-
+  @Output() openNewProduct = new EventEmitter<void>();
   ngOnInit() {
     const savedWarehouses = localStorage.getItem('warehouses');
     this.warehouses = savedWarehouses ? JSON.parse(savedWarehouses) : ['Главный склад'];

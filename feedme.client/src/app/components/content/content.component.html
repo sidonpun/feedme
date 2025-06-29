@@ -2,13 +2,14 @@
 
   <!-- Табы склада / каталога -->
   <app-warehouse-tabs [selectedTab]="selectedTab"
-                      (selectedTabChange)="setSelectedTab($event)">
+                      (selectedTabChange)="setSelectedTab($event)"
+    (openNewProduct)="openNewProductPopup()">
   </app-warehouse-tabs>
 
   <!-- Переключатель запас/остаток -->
   <app-supply-controls *ngIf="selectedTab !== 'Каталог'"
                        [(selectedSupply)]="selectedSupply"
-                       (goToCatalog)="goToCatalog()">
+                       (goToCatalog)="goToCatalog()"
     (openNewProduct)="openNewProductPopup()">
   </app-supply-controls>
 
