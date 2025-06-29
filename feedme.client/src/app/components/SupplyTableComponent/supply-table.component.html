@@ -1,40 +1,46 @@
-<div class="table-container">
+<div class="table-header">
+  <!-- старая table-controls -->
   <app-table-controls [(searchQuery)]="searchQuery"
                       [(rowsPerPage)]="rowsPerPage">
   </app-table-controls>
 
-  <table class="warehouse-table">
-    <thead>
-      <tr>
-        <th>Рекомендуем заказывать</th>
-        <th>Название</th>
-        <th>Категория</th>
-        <th>Срок годности</th>
-        <th>Цена за единицу</th>
-        <th>Стоимость</th>
-        <th>Остаток</th>
-        <th>Действие</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of paginatedData">
-        <td>{{ item.recommendedOrder }}</td>
-        <td>{{ item.name }}</td>
-        <td>{{ item.category }}</td>
-        <td>{{ item.expiryDate }}</td>
-        <td>{{ item.unitPrice }}</td>
-        <td>{{ item.totalCost }}</td>
-        <td>{{ item.stock }}</td>
-        <td>
-          <button (click)="onSettingsClick.emit(item)">⚙️</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <!-- НОВАЯ КНОПКА -->
+  <button class="new-supply-btn" (click)="addSupply()">
+    + Новая поставка
+  </button>
+</div>
 
-  <div class="pagination">
-    <button (click)="prevPage()" [disabled]="currentPage===1">◀️</button>
-    <span>{{currentPage}}</span>
-    <button (click)="nextPage()" [disabled]="currentPage*rowsPerPage>=filteredData.length">▶️</button>
-  </div>
+<table class="warehouse-table">
+  <thead>
+    <tr>
+      <th>Рекомендуем заказывать</th>
+      <th>Название</th>
+      <th>Категория</th>
+      <th>Срок годности</th>
+      <th>Цена за единицу</th>
+      <th>Стоимость</th>
+      <th>Остаток</th>
+      <th>Действие</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of paginatedData">
+      <td>{{ item.recommendedOrder }}</td>
+      <td>{{ item.name }}</td>
+      <td>{{ item.category }}</td>
+      <td>{{ item.expiryDate }}</td>
+      <td>{{ item.unitPrice }}</td>
+      <td>{{ item.totalCost }}</td>
+      <td>{{ item.stock }}</td>
+      <td>
+        <button (click)="onSettingsClick.emit(item)">⚙️</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="pagination">
+  <button (click)="prevPage()" [disabled]="currentPage===1">◀️</button>
+  <span>{{currentPage}}</span>
+  <button (click)="nextPage()" [disabled]="currentPage*rowsPerPage>=filteredData.length">▶️</button>
 </div>

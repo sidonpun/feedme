@@ -96,3 +96,26 @@
   .add-btn:hover {
     background-color: #d94300;
   }
+.table-header {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.new-supply-btn {
+  margin-left: auto; /* прижать вправо */
+  background-color: #fa4b00; /* оранжевый */
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+  .new-supply-btn:hover {
+    background-color: #d94300;
+  }
+
+/* остальной CSS оставляем без изменений */

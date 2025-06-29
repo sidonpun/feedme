@@ -31,7 +31,8 @@
   <!-- Таблица поставок -->
   <app-supply-table *ngIf="selectedTab !== 'Каталог' && selectedSupply === 'supplies'"
                     [data]="supplyData"
-                    (onSettingsClick)="handleSettingsClick($event)">
+                    (onSettingsClick)="handleSettingsClick($event)"
+ >  
   </app-supply-table>
 
   <!-- Таблица остатков -->
