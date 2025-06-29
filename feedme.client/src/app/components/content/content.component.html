@@ -13,9 +13,7 @@
   </app-supply-controls>
 
   <!-- Кнопка «Добавить товар» -->
-  <div class="add-button-container" *ngIf="selectedTab !== 'Каталог'">
-    <button (click)="openNewProductPopup()">Добавить товар</button>
-  </div>
+
 
   <!-- Попап добавления нового товара -->
   <app-new-product *ngIf="showNewProductPopup"
