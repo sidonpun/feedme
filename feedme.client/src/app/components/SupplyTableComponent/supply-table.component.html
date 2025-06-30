@@ -1,3 +1,4 @@
+<!-- Заголовок таблицы: поиск + кнопка -->
 <div class="table-header">
   <app-table-controls [searchQuery]="searchQuery"
                       [rowsPerPage]="rowsPerPage"
@@ -7,6 +8,7 @@
   <button class="add-button" (click)="addSupply()">Новая поставка</button>
 </div>
 
+<!-- Контейнер с горизонтальным скроллом -->
 <div class="table-container">
   <table class="supply-table">
     <thead>
@@ -41,6 +43,7 @@
   </table>
 </div>
 
+<!-- Пагинация -->
 <div class="pagination-controls">
   <button (click)="prevPage()" [disabled]="currentPage === 1">Назад</button>
   <span>Страница {{ currentPage }} из {{ totalPages }}</span>
