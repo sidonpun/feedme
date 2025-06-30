@@ -1,44 +1,41 @@
-<div class="table-header">
-  <!-- старая table-controls -->
-  <app-table-controls [(searchQuery)]="searchQuery"
-                      [(rowsPerPage)]="rowsPerPage">
+<div class="supply-table-header">
+  <app-table-controls [searchQuery]="searchQuery" [rowsPerPage]="rowsPerPage"
+                      (searchQueryChange)="onSearchQueryChange($event)"
+                      (rowsPerPageChange)="onRowsPerPageChange($event)">
   </app-table-controls>
-
-  <!-- НОВАЯ КНОПКА -->
-
+  <button class="add-button" (click)="onAddSupply.emit()">Новая поставка</button>
 </div>
 
-<table class="warehouse-table">
+<table class="supply-table">
   <thead>
     <tr>
-      <th>Рекомендуем заказывать</th>
       <th>Название</th>
       <th>Категория</th>
+      <th>Количество</th>
+      <th>Цена</th>
       <th>Срок годности</th>
-      <th>Цена за единицу</th>
-      <th>Стоимость</th>
-      <th>Остаток</th>
-      <th>Действие</th>
+      <th>Ответственный склад</th>
+      <th>Поставщик</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let item of paginatedData">
-      <td>{{ item.recommendedOrder }}</td>
-      <td>{{ item.name }}</td>
+      <td>{{ item.productName || item.name }}</td>
       <td>{{ item.category }}</td>
-      <td>{{ item.expiryDate }}</td>
-      <td>{{ item.unitPrice }}</td>
-      <td>{{ item.totalCost }}</td>
       <td>{{ item.stock }}</td>
-      <td>
-        <button (click)="onSettingsClick.emit(item)">⚙️</button>
-      </td>
+      <td>{{ item.unitPrice }}</td>
+      <td>{{ item.expiryDate }}</td>
+      <td>{{ item.responsible }}</td>
+      <td>{{ item.supplier }}</td>
+    </tr>
+    <tr *ngIf="paginatedData.length === 0">
+      <td colspan="7" class="no-data">Нет данных</td>
     </tr>
   </tbody>
 </table>
 
-<div class="pagination">
-  <button (click)="prevPage()" [disabled]="currentPage===1">◀️</button>
-  <span>{{currentPage}}</span>
-  <button (click)="nextPage()" [disabled]="currentPage*rowsPerPage>=filteredData.length">▶️</button>
+<div class="pagination-controls">
+  <button (click)="prevPage()" [disabled]="currentPage === 1">Назад</button>
+  <span>Страница {{ currentPage }} из {{ totalPages }}</span>
+  <button (click)="nextPage()" [disabled]="currentPage === totalPages">Далее</button>
 </div>

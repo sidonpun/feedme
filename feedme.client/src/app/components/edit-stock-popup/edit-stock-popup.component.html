@@ -2,12 +2,10 @@
   <div class="popup-content" (click)="$event.stopPropagation()">
     <button class="close-btn" (click)="handleClose()">×</button>
     <h2>Изменить остаток</h2>
-
     <div class="input-container">
       <label>Новый остаток товара</label>
       <input type="number" [(ngModel)]="stock" required />
     </div>
-
     <div class="popup-buttons">
       <button class="cancel-btn" (click)="handleClose()">Отмена</button>
       <button class="save-btn" (click)="handleSave()">Сохранить</button>

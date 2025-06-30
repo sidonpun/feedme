@@ -7,7 +7,7 @@ import { InfoCardsComponent } from '../info-cards/info-cards.component';
   standalone: true,
   imports: [CommonModule, InfoCardsComponent],
   templateUrl: './info-cards-wrapper.component.html',
-
+  styleUrls: ['./info-cards-wrapper.component.css']
 })
 export class InfoCardsWrapperComponent {
   @Input() item: any;
@@ -26,9 +26,5 @@ export class InfoCardsWrapperComponent {
       recommendedOrder: this.item?.recommendedOrder || '0',
       recommendedOrderKg: this.item?.recommendedOrderKg || '0',
     };
-  }
-
-  handleClose() {
-    this.onClose.emit();
   }
 }

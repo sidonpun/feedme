@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -9,17 +9,15 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './edit-stock-popup.component.html',
   styleUrls: ['./edit-stock-popup.component.css']
 })
-export class EditStockPopupComponent implements OnChanges {
+export class EditStockPopupComponent {
   @Input() initialStock: number | string = '';
   @Output() onSave = new EventEmitter<number>();
   @Output() onClose = new EventEmitter<void>();
 
   stock: number | string = '';
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['initialStock']) {
-      this.stock = changes['initialStock'].currentValue;
-    }
+  ngOnChanges() {
+    this.stock = this.initialStock;
   }
 
   handleSave() {

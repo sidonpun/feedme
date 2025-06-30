@@ -12,35 +12,37 @@
 }
 
 .popup-content {
+  width: 390px;
   background-color: #fff;
-  padding: 20px;
-  width: 400px;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  padding: 20px;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
   .popup-content h2 {
-    margin-top: 0;
     text-align: center;
+    margin-bottom: 16px;
   }
 
 .input-container {
   display: flex;
   flex-direction: column;
-  margin-top: 15px;
+  margin-bottom: 12px;
 }
 
   .input-container label {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .input-container input {
     height: 40px;
-    padding: 6px;
-    font-size: 16px;
+    padding: 8px;
     border: 1px solid #ccc;
-    border-radius: 6px;
+    border-radius: 5px;
   }
 
 .popup-buttons {
@@ -49,14 +51,13 @@
   margin-top: 20px;
 }
 
-.cancel-btn,
-.save-btn {
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 14px;
-  border: none;
-  cursor: pointer;
-}
+  .popup-buttons button {
+    width: 48%;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+  }
 
 .cancel-btn {
   background-color: #ccc;

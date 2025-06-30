@@ -1,34 +1,34 @@
-<app-warehouse-tabs [selectedTab]="selectedTab"
-                    (selectedTabChange)="setSelectedTab($event)">
-</app-warehouse-tabs>
+<div class="content">
 
-<app-supply-controls *ngIf="selectedTab !== 'Каталог'"
-                     [(selectedSupply)]="selectedSupply"
-                     (goToCatalog)="goToCatalog()"
-                     (addSupply)="openNewProductPopup()">
-</app-supply-controls>
+  <app-warehouse-tabs [selectedTab]="selectedTab"
+                      (selectedTabChange)="setSelectedTab($event)">
+  </app-warehouse-tabs>
 
-<app-new-product *ngIf="showNewProductPopup"
-                 (onSubmit)="onNewProductSubmit($event)"
-                 (onCancel)="closeNewProductPopup()">
-</app-new-product>
+  <app-supply-controls *ngIf="selectedTab !== 'Каталог'"
+                       [(selectedSupply)]="selectedSupply"
+                       (goToCatalog)="goToCatalog()">
+  </app-supply-controls>
 
-<app-info-cards-wrapper *ngIf="selectedTab !== 'Каталог' && selectedItem"
-                        [item]="selectedItem"
-                        (onClose)="closeInfoCards()">
-</app-info-cards-wrapper>
+  <app-info-cards-wrapper *ngIf="selectedTab !== 'Каталог' && selectedItem"
+                          [item]="selectedItem"
+                          (onClose)="closeInfoCards()">
+  </app-info-cards-wrapper>
 
-<app-supply-table *ngIf="selectedTab !== 'Каталог' && selectedSupply==='supplies'"
-                  [data]="supplyData"
-                  (onSettingsClick)="handleSettingsClick($event)"
-                  (onAddSupplyClick)="openNewProductPopup()">
-</app-supply-table>
+  <app-catalog *ngIf="selectedTab === 'Каталог'"></app-catalog>
 
-<app-stock-table *ngIf="selectedTab !== 'Каталог' && selectedSupply==='stock'"
-                 [data]="stockData"
-                 (onSettingsClick)="handleSettingsClick($event)">
-</app-stock-table>
+  <app-supply-table *ngIf="selectedTab !== 'Каталог' && selectedSupply === 'supplies'"
+                    [data]="tableData"
+                    (onAddSupply)="openPopup()">
+  </app-supply-table>
 
-<app-catalog-table *ngIf="selectedTab==='Каталог'"
-                   [data]="catalogData">
-</app-catalog-table>
+  <app-stock-table *ngIf="selectedTab !== 'Каталог' && selectedSupply === 'stock'"
+                   [data]="tableData"
+                   (onSettingsClick)="handleSettingsClick($event)">
+  </app-stock-table>
+
+  <app-new-product *ngIf="showPopup"
+                   (onCancel)="showPopup = false"
+                   (onSubmit)="handleAddItem($event); showPopup = false">
+  </app-new-product>
+
+</div>

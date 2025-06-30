@@ -11,18 +11,16 @@ import { CommonModule } from '@angular/common';
 export class HeaderComponent {
   restaurantName: string = 'Rest. Name';
   status: string = 'Ресторан активен';
+  formattedDate: string = this.formatDate(new Date());
   userName: string = 'Sandy Prossako';
   avatarUrl: string = 'assets/default.svg';
   arrowDownUrl: string = 'assets/default.svg';
 
-  // Исправляем ошибку: добавляем отсутствующий getter formattedDate
-  get formattedDate(): string {
-    const date = new Date();
-    const options: Intl.DateTimeFormatOptions = {
+  private formatDate(date: Date): string {
+    return date.toLocaleDateString('ru-RU', {
       day: 'numeric',
       month: 'short',
       year: 'numeric'
-    };
-    return date.toLocaleDateString('ru-RU', options);
+    });
   }
 }

@@ -13,17 +13,16 @@ export class NewProductComponent {
   @Output() onCancel = new EventEmitter<void>();
   @Output() onSubmit = new EventEmitter<any>();
 
-  productName = '';
-  category = '';
-  stock = '';
-  unitPrice = '';
-  expiryDate = '';
-  responsible = '';
-  supplier = '';
+  productName: string = '';
+  category: string = '';
+  stock: string = '';
+  unitPrice: string = '';
+  expiryDate: string = '';
+  responsible: string = '';
+  supplier: string = '';
 
-  categories = ['Заготовка', 'Готовое блюдо', 'Добавка', 'Товар'];
+  categories: string[] = ['Заготовка', 'Готовое блюдо', 'Добавка', 'Товар'];
 
-  // Логика отправки формы — не удаляем
   handleSubmit() {
     const formData = {
       productName: this.productName,
@@ -38,7 +37,6 @@ export class NewProductComponent {
     this.resetForm();
   }
 
-  // Сброс полей формы
   resetForm() {
     this.productName = '';
     this.category = '';
@@ -49,7 +47,6 @@ export class NewProductComponent {
     this.supplier = '';
   }
 
-  // Метод отмены (закрытие формы)
   cancel() {
     this.onCancel.emit();
   }

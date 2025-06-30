@@ -39,10 +39,6 @@ export class WarehouseComponent implements OnInit {
   }
 
   removeWarehouse(name: string) {
-    if (name === 'Главный склад') {
-      alert('Главный склад нельзя удалить!');
-      return;
-    }
     if (confirm(`Вы точно хотите удалить склад "${name}"?`)) {
       this.warehouses = this.warehouses.filter(w => w !== name);
       localStorage.setItem('warehouses', JSON.stringify(this.warehouses));

@@ -2,17 +2,15 @@
   <div class="rows-selector-container">
     <span class="rows-label">Строк:</span>
     <select [value]="rowsPerPage"
-            (change)="onRowsPerPageChange($event)"
+            (change)="onRowsPerPageChange($event.target.value)"
             class="rows-selector">
-      <option *ngFor="let rows of rowsOptions" [value]="rows">
-        {{ rows }}
-      </option>
+      <option *ngFor="let rows of rowsOptions" [value]="rows">{{ rows }}</option>
     </select>
   </div>
 
   <input type="text"
          placeholder="Поиск..."
          [value]="searchQuery"
-         (input)="onSearchChange($event)"
+         (input)="onSearchChange($event.target.value)"
          class="search-input" />
 </div>
