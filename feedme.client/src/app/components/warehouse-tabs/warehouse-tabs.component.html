@@ -3,7 +3,7 @@
        class="item"
        [class.selected]="selectedTab === warehouse"
        (click)="selectTab(warehouse)">
-    <img src="assets/sklad.svg" alt="{{ warehouse }}">
+    <img src="./assets/truck.svg" alt="{{ warehouse }}">
     <span>{{ warehouse }}</span>
     <button *ngIf="warehouse !== 'Главный склад'"
             class="remove-warehouse-btn"
@@ -13,7 +13,7 @@
   </div>
 
   <div class="item add-warehouse-btn" (click)="showNewWarehousePopup = true">
-    <img src="assets/plus.svg" alt="Добавить склад">
+    <img src="assets/truck" alt="Добавить склад">
     <span>Добавить склад</span>
   </div>
 </div>

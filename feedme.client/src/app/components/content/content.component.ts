@@ -28,50 +28,58 @@ import { NewProductComponent } from '../new-product/new-product.component';
   styleUrls: ['./content.component.css']
 })
 export class ContentComponent implements OnInit {
-  // теперь три режима вместо двух
+  /** Вкладка склада (для табов вверху) */
+  selectedTab: string = 'Главный склад';
+
+  /** Режим контента: supplies | stock | catalog */
   selectedSupply: 'supplies' | 'stock' | 'catalog' = 'supplies';
 
-  // данные для каждой таблицы
   supplyData: any[] = [];
   stockData: any[] = [];
   catalogData: any[] = [];
 
-  // для InfoCards
   selectedItem: any = null;
-
-  // флаг показа формы добавления
   showPopup = false;
 
   ngOnInit(): void {
     this.loadAllData();
   }
 
-  /** Загрузить все массивы из localStorage */
+  /** Загружаем данные из localStorage */
   private loadAllData(): void {
-    const tabKey = 'Главный склад'; // или любой ваш текущий склад
-    this.supplyData = JSON.parse(localStorage.getItem(`warehouseSupplies_${tabKey}`) || '[]');
-    this.stockData = JSON.parse(localStorage.getItem(`warehouseStock_${tabKey}`) || '[]');
+    this.supplyData = JSON.parse(localStorage.getItem(`warehouseSupplies_${this.selectedTab}`) || '[]');
+    this.stockData = JSON.parse(localStorage.getItem(`warehouseStock_${this.selectedTab}`) || '[]');
     this.catalogData = JSON.parse(localStorage.getItem('catalogData') || '[]');
   }
 
-  /** Обработчик события в таблице «Поставки» */
+  /** Смена вкладки склада */
+  setSelectedTab(tab: string): void {
+    this.selectedTab = tab;
+    this.loadAllData();
+  }
+
+  /** Переключение modesupply из SupplyControlsComponent */
+  onSupplyModeChange(mode: 'supplies' | 'stock' | 'catalog'): void {
+    this.selectedSupply = mode;
+  }
+
+  /** Открыть попап добавления */
   openNewProductPopup(): void {
     this.showPopup = true;
   }
-
   closeNewProductPopup(): void {
     this.showPopup = false;
   }
 
-  /** Сабмит из NewProductComponent */
+  /** Получить новые данные из формы */
   onNewProductSubmit(item: any): void {
     if (this.selectedSupply === 'supplies') {
       this.supplyData.push(item);
-      localStorage.setItem(`warehouseSupplies_Главный склад`, JSON.stringify(this.supplyData));
+      localStorage.setItem(`warehouseSupplies_${this.selectedTab}`, JSON.stringify(this.supplyData));
     } else if (this.selectedSupply === 'stock') {
       this.stockData.push(item);
-      localStorage.setItem(`warehouseStock_Главный склад`, JSON.stringify(this.stockData));
-    } else { // catalog
+      localStorage.setItem(`warehouseStock_${this.selectedTab}`, JSON.stringify(this.stockData));
+    } else {
       this.catalogData.push(item);
       localStorage.setItem('catalogData', JSON.stringify(this.catalogData));
     }
@@ -81,17 +89,11 @@ export class ContentComponent implements OnInit {
   handleSettingsClick(item: any): void {
     this.selectedItem = item;
   }
-
   closeInfoCards(): void {
     this.selectedItem = null;
   }
 
-  /** Переключение режима из SupplyControlsComponent */
-  onSupplyModeChange(mode: 'supplies' | 'stock' | 'catalog'): void {
-    this.selectedSupply = mode;
-  }
-
-  /** Метод «перейти в каталог» (если используется) */
+  /** Переход в каталог через кнопку из SupplyControlsComponent */
   goToCatalog(): void {
     this.selectedSupply = 'catalog';
   }
