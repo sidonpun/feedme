@@ -1,52 +1,94 @@
-.supply-table-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
+/* обёртка для скролла */
+.table-container {
+  overflow-x: auto;
+  width: 100%;
 }
 
-.add-button {
-  padding: 8px 12px;
-  background-color: #007bff;
+/* header (поиск + кнопка) */
+.supply-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 8px;
+}
+
+/* сама таблица */
+table.supply-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+}
+
+  /* шапка */
+  table.supply-table thead th {
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+    border-bottom: 2px solid #e6e6e6;
+    white-space: nowrap;
+    text-align: left;
+    background-color: #fafafa;
+  }
+
+  /* строки */
+  table.supply-table tbody td {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #555;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  /* полосатость (опционально) */
+  table.supply-table tbody tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+
+  /* hover */
+  table.supply-table tbody tr:hover {
+    background-color: #f5f5f5;
+  }
+
+  /* колонка Action */
+  table.supply-table tbody td:last-child {
+    text-align: center;
+    width: 110px;
+  }
+
+/* кнопка «Новая поставка» */
+.supply-table-header .add-button {
+  background-color: #fa4b00;
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
   cursor: pointer;
 }
 
-  .add-button:hover {
-    background-color: #0056b3;
+  .supply-table-header .add-button:hover {
+    background-color: #d94300;
   }
 
-.supply-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-  .supply-table th, .supply-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-
-  .supply-table th {
-    background-color: #f2f2f2;
-    text-align: left;
-  }
-
-.no-data {
-  text-align: center;
-  font-style: italic;
-  color: #888;
-}
-
+/* пагинация */
 .pagination-controls {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  margin-top: 8px;
+  gap: 8px;
+  padding: 8px 0;
 }
 
   .pagination-controls button {
-    padding: 4px 8px;
+    background: none;
+    border: none;
+    color: #0056b3;
+    cursor: pointer;
+  }
+
+  .pagination-controls span {
+    font-size: 13px;
+    color: #888;
   }

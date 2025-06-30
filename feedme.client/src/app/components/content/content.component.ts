@@ -6,8 +6,8 @@ import { WarehouseTabsComponent } from '../warehouse-tabs/warehouse-tabs.compone
 import { SupplyControlsComponent } from '../supply-controls/supply-controls.component';
 import { InfoCardsWrapperComponent } from '../info-cards-wrapper/info-cards-wrapper.component';
 import { CatalogComponent } from '../catalog/catalog.component';
-import { SupplyTableComponent } from '../supply-table/supply-table.component';
-import { StockTableComponent } from '../stock-table/stock-table.component';
+import { SupplyTableComponent } from '../SupplyTableComponent/supply-table.component';
+import { StockTableComponent } from '../StockTableComponent/stock-table.component';
 import { NewProductComponent } from '../new-product/new-product.component';
 
 @Component({
