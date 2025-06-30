@@ -11,37 +11,39 @@ import { TableControlsComponent } from '../table-controls/table-controls.compone
   styleUrls: ['./supply-table.component.css']
 })
 export class SupplyTableComponent implements OnChanges {
-  /** Входящий массив данных */
+  /** Входной массив поставок */
   @Input() data: any[] = [];
-  /** Событие открытия попапа */
+  /** Эмитируем запрос на создание новой поставки */
   @Output() onAddSupply = new EventEmitter<void>();
 
-  searchQuery: string = '';
-  rowsPerPage: number = 10;
-  currentPage: number = 1;
-  /** Отфильтрованные и очищенные от пустых записи */
+  // фильтр и пагинация
+  searchQuery = '';
+  rowsPerPage = 10;
+  currentPage = 1;
   filteredData: any[] = [];
+
+  /** Храним прошлую длину, чтобы понять, добавили ли новый элемент */
+  private prevLength = 0;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data']) {
-      this.applyFilters();
+      const newLength = this.data.length;
+      const added = newLength > this.prevLength;
+      this.prevLength = newLength;
+      this.applyFilters(added);
     }
   }
 
-  /** Убирает полностью пустые объекты и применяет поиск */
-  private applyFilters(): void {
-    // 1) Убираем полностью пустые записи
-    const nonEmpty = this.data.filter(item => {
-      return !!(item.productName?.toString().trim()) ||
-        !!(item.category?.toString().trim()) ||
-        !!(item.stock?.toString().trim()) ||
-        !!(item.unitPrice?.toString().trim()) ||
-        !!(item.expiryDate?.toString().trim()) ||
-        !!(item.responsible?.toString().trim()) ||
-        !!(item.supplier?.toString().trim());
-    });
+  /** Фильтрует, убирает пустые записи и переключает страницу */
+  private applyFilters(justAdded: boolean): void {
+    // 1) убираем полностью пустые
+    const nonEmpty = this.data.filter(item =>
+      !!(item.productName?.toString().trim()) ||
+      !!(item.category?.toString().trim()) ||
+      !!(item.supplier?.toString().trim())
+    );
 
-    // 2) Применяем поиск по ключевым полям
+    // 2) поиск
     const q = this.searchQuery.toLowerCase();
     this.filteredData = nonEmpty.filter(item =>
       (item.productName || '').toLowerCase().includes(q) ||
@@ -49,34 +51,33 @@ export class SupplyTableComponent implements OnChanges {
       (item.supplier || '').toLowerCase().includes(q)
     );
 
-    // Сбрасываем страницу на первую
-    this.currentPage = 1;
+    // 3) если добавили новую запись и поиск не используется — ставим последнюю страницу
+    if (justAdded && !q) {
+      this.currentPage = this.totalPages;
+    } else {
+      this.currentPage = 1;
+    }
   }
 
-  /** Обработчик изменения строки поиска */
-  onSearchQueryChange(query: string): void {
+  onSearchChange(query: string): void {
     this.searchQuery = query;
-    this.applyFilters();
+    this.applyFilters(false);
   }
 
-  /** Обработчик изменения количества строк */
-  onRowsPerPageChange(rows: number): void {
+  onRowsChange(rows: number): void {
     this.rowsPerPage = rows;
-    this.currentPage = 1;
+    this.applyFilters(false);
   }
 
-  /** Общее число страниц */
   get totalPages(): number {
-    return Math.ceil(this.filteredData.length / this.rowsPerPage) || 1;
+    return Math.max(1, Math.ceil(this.filteredData.length / this.rowsPerPage));
   }
 
-  /** Текущий срез данных для отображения */
   get paginatedData(): any[] {
     const start = (this.currentPage - 1) * this.rowsPerPage;
     return this.filteredData.slice(start, start + this.rowsPerPage);
   }
 
-  /** Навигация по страницам */
   prevPage(): void {
     if (this.currentPage > 1) this.currentPage--;
   }
@@ -85,7 +86,6 @@ export class SupplyTableComponent implements OnChanges {
     if (this.currentPage < this.totalPages) this.currentPage++;
   }
 
-  /** Вызов события добавления новой поставки */
   addSupply(): void {
     this.onAddSupply.emit();
   }

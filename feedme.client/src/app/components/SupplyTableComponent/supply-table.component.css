@@ -93,3 +93,19 @@ table.supply-table {
     font-size: 18px;
     color: #888;
   }
+.add-button {
+    display: inline-block;
+    background-color:#fa4b00;
+    color: #ffffff;
+    border:none;
+    border-radius:0,375rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    cursor: pointer;
+
+}
+.add-button:hover,.add-button:focus
+{
+    background-color:#d94300;
+    outline-color:aliceblue;
+}
