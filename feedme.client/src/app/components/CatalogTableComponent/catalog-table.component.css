@@ -1,31 +1,78 @@
-.table-container {
-  padding: 16px;
-  overflow-x: auto;
+/* Header: flex без кнопки */
+.table-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 1rem;
 }
 
-.warehouse-table {
+/* Контролы занимают всю ширину */
+app-table-controls {
+  flex: 1;
+}
+
+/* Scroll-container */
+.table-container {
+  overflow-x: auto;
+  width: 100%;
+}
+
+/* Table */
+table.catalog-table {
   width: 100%;
   border-collapse: collapse;
+  background-color: #fff;
 }
 
-  .warehouse-table th,
-  .warehouse-table td {
-    border: 1px solid #e6e6e6;
-    padding: 8px;
+  /* Thead */
+  table.catalog-table thead th {
+    padding: 1.25rem 1rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #444;
+    border-bottom: 2px solid #e6e6e6;
+    background-color: #fafafa;
+    white-space: nowrap;
     text-align: left;
   }
 
-  .warehouse-table th {
-    background-color: #f9f9f9;
+  /* Tbody */
+  table.catalog-table tbody td {
+    padding: 1.25rem 1rem;
+    font-size: 1.125rem;
+    color: #555;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+    white-space: nowrap;
   }
 
-  .warehouse-table tbody tr:hover {
-    background-color: #f1f1f1;
+  /* Полосатость и hover */
+  table.catalog-table tbody tr:nth-child(even) {
+    background-color: #fafafa;
   }
 
-.pagination {
-  margin-top: 8px;
+  table.catalog-table tbody tr:hover {
+    background-color: #f5f5f5;
+  }
+
+/* Пагинация */
+.pagination-controls {
   display: flex;
-  gap: 8px;
+  justify-content: center;
   align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
 }
+
+  .pagination-controls button {
+    background: none;
+    border: none;
+    color: #0056b3;
+    cursor: pointer;
+  }
+
+  .pagination-controls span {
+    font-size: 1rem;
+    color: #888;
+  }

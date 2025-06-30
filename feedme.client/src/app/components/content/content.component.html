@@ -6,7 +6,7 @@
 
   <app-supply-controls *ngIf="selectedTab !== 'Каталог'"
                        [(selectedSupply)]="selectedSupply"
-                       (goToCatalog)="goToCatalog()">
+                      >
   </app-supply-controls>
 
   <app-info-cards-wrapper *ngIf="selectedTab !== 'Каталог' && selectedItem"

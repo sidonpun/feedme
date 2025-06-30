@@ -1,9 +1,15 @@
-<div class="table-container">
-  <app-table-controls [(searchQuery)]="searchQuery"
-                      [(rowsPerPage)]="rowsPerPage">
+<!-- Заголовок: поиск + строки на страницу -->
+<div class="table-header">
+  <app-table-controls [searchQuery]="searchQuery"
+                      [rowsPerPage]="rowsPerPage"
+                      (searchQueryChange)="onSearchChange($event)"
+                      (rowsPerPageChange)="onRowsChange($event)">
   </app-table-controls>
+</div>
 
-  <table class="warehouse-table">
+<!-- Скролл-контейнер -->
+<div class="table-container">
+  <table class="catalog-table">
     <thead>
       <tr>
         <th>Номер</th>
@@ -27,12 +33,16 @@
         <td>{{ item.expiryDate }}</td>
         <td>{{ item.supplier }}</td>
       </tr>
+      <tr *ngIf="paginatedData.length === 0">
+        <td colspan="8" class="no-data">Нет данных</td>
+      </tr>
     </tbody>
   </table>
+</div>
 
-  <div class="pagination">
-    <button (click)="prevPage()" [disabled]="currentPage===1">◀️</button>
-    <span>{{currentPage}}</span>
-    <button (click)="nextPage()" [disabled]="currentPage*rowsPerPage>=filteredData.length">▶️</button>
-  </div>
+<!-- Пагинация -->
+<div class="pagination-controls">
+  <button (click)="prevPage()" [disabled]="currentPage === 1">Назад</button>
+  <span>Страница {{ currentPage }} из {{ totalPages }}</span>
+  <button (click)="nextPage()" [disabled]="currentPage === totalPages">Далее</button>
 </div>
