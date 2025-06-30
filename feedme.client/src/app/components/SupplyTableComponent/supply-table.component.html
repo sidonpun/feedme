@@ -1,17 +1,15 @@
-<!-- Заголовок: контролы + кнопка -->
+<!-- supply-table.component.html -->
+<!-- Заголовок таблицы: поиск + кнопка -->
 <div class="table-header">
-  <!-- Кастомный компонент с селектором строк и поиском -->
   <app-table-controls [searchQuery]="searchQuery"
                       [rowsPerPage]="rowsPerPage"
                       (searchQueryChange)="onSearchChange($event)"
                       (rowsPerPageChange)="onRowsChange($event)">
   </app-table-controls>
-
-  <!-- Кнопка добавления -->
   <button class="add-button" (click)="addSupply()">+ Новая поставка</button>
 </div>
 
-<!-- Горизонтальный скролл для таблицы -->
+<!-- Контейнер с горизонтальным скроллом -->
 <div class="table-container">
   <table class="supply-table">
     <thead>
@@ -35,9 +33,11 @@
         <td>{{ item.expiryDate }}</td>
         <td>{{ item.responsible }}</td>
         <td>{{ item.supplier }}</td>
-        <td><button (click)="onSettingsClick.emit(item)">⚙️</button></td>
+        <td>
+          <button (click)="onSettingsClick.emit(item)">⚙️</button>
+        </td>
       </tr>
-      <tr *ngIf="paginatedData.length===0">
+      <tr *ngIf="paginatedData.length === 0">
         <td colspan="8" class="no-data">Нет данных</td>
       </tr>
     </tbody>
@@ -46,7 +46,7 @@
 
 <!-- Пагинация -->
 <div class="pagination-controls">
-  <button (click)="prevPage()" [disabled]="currentPage===1">Назад</button>
-  <span>Страница {{currentPage}} из {{totalPages}}</span>
-  <button (click)="nextPage()" [disabled]="currentPage===totalPages">Далее</button>
+  <button (click)="prevPage()" [disabled]="currentPage === 1">Назад</button>
+  <span>Страница {{ currentPage }} из {{ totalPages }}</span>
+  <button (click)="nextPage()" [disabled]="currentPage === totalPages">Далее</button>
 </div>

@@ -14,7 +14,6 @@ export class CatalogTableComponent implements OnChanges {
   /** Данные каталога */
   @Input() data: any[] = [];
 
-  /** для фильтра и пагинации */
   searchQuery: string = '';
   rowsPerPage: number = 10;
   currentPage: number = 1;
@@ -26,9 +25,8 @@ export class CatalogTableComponent implements OnChanges {
     }
   }
 
-  /** Фильтрует и сбрасывает страницу */
+  /** Убираем пустые записи и применяем поиск, сбрасываем страницу */
   private applyFilters(): void {
-    // 1) чистим пустые объекты
     const nonEmpty = this.data.filter(item =>
       !!(item.id?.toString().trim()) ||
       !!(item.name?.toString().trim()) ||
@@ -36,13 +34,12 @@ export class CatalogTableComponent implements OnChanges {
       !!(item.warehouse?.toString().trim())
     );
 
-    // 2) поиск по ключевым полям
     const q = this.searchQuery.toLowerCase();
     this.filteredData = nonEmpty.filter(item =>
-      (item.id || '').toLowerCase().includes(q) ||
-      (item.name || '').toLowerCase().includes(q) ||
-      (item.category || '').toLowerCase().includes(q) ||
-      (item.warehouse || '').toLowerCase().includes(q)
+      (item.id?.toString().toLowerCase().includes(q)) ||
+      (item.name?.toLowerCase().includes(q)) ||
+      (item.category?.toLowerCase().includes(q)) ||
+      (item.warehouse?.toLowerCase().includes(q))
     );
 
     this.currentPage = 1;

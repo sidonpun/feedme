@@ -1,4 +1,4 @@
-/* Header: flex без кнопки */
+/* Header: flex-контейнер */
 .table-header {
   display: flex;
   align-items: center;
@@ -7,25 +7,25 @@
   padding: 0.5rem 1rem;
 }
 
-/* Контролы занимают всю ширину */
+/* TableControls разрастается */
 app-table-controls {
   flex: 1;
 }
 
-/* Scroll-container */
+/* Контейнер для горизонтального скролла */
 .table-container {
   overflow-x: auto;
   width: 100%;
 }
 
-/* Table */
+/* Сама таблица */
 table.catalog-table {
   width: 100%;
   border-collapse: collapse;
   background-color: #fff;
 }
 
-  /* Thead */
+  /* Шапка */
   table.catalog-table thead th {
     padding: 1.25rem 1rem;
     font-size: 1.125rem;
@@ -37,7 +37,7 @@ table.catalog-table {
     text-align: left;
   }
 
-  /* Tbody */
+  /* Ячейки */
   table.catalog-table tbody td {
     padding: 1.25rem 1rem;
     font-size: 1.125rem;
