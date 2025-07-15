@@ -8,18 +8,40 @@
   position: relative;
 }
 
+.catalog-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 59px;
+  background-color: #f5f5f5;
+  width: 100%;
+  box-shadow: none;
+  padding: 0 20px;
+}
+
 .primary-action-btn {
-  background-color: #FA502D;
-  color: #fff;
+  width: 180px;
+  height: 40px;
+  background-color: #fa502d;
+  color: #ffffff;
+  border-radius: 8px;
   border: none;
-  border-radius: 6px;
-  padding: 10px 16px;
-  font-size: 14px;
   cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
 }
 
   .primary-action-btn:hover {
     background-color: #e64827;
+  }
+
+  .primary-action-btn img {
+    width: 20px;
+    height: 20px;
+    margin-right: 6px;
   }
 
 .custom-table {
