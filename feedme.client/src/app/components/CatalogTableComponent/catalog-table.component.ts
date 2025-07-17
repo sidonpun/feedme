@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableControlsComponent } from '../table-controls/table-controls.component';
@@ -14,6 +14,7 @@ export class CatalogTableComponent implements OnChanges {
   /** Входные данные для каталога */
   @Input() data: any[] = [];
 
+  @Output() onAddSupply = new EventEmitter<void>(); 
   /** Управление фильтрацией и пагинацией */
   searchQuery: string = '';
   rowsPerPage: number = 10;
@@ -76,6 +77,7 @@ export class CatalogTableComponent implements OnChanges {
     return this.filteredData.slice(start, start + this.rowsPerPage);
   }
 
+  addSupply(): void { this.onAddSupply.emit() }
   /** Навигация по страницам */
   prevPage(): void {
     if (this.currentPage > 1) this.currentPage--;
