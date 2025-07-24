@@ -1,8 +1,8 @@
 <div class="content">
-  <div class="catalog-controls" *ngIf="!showNewProductForm">
+  <div class="catalog-controls">
     <button class="primary-action-btn" (click)="handleAddNewItemClick()">
-      <img src="assets/plus.svg" alt="Добавить товар" class="button-icon">
-      <span>Добавить товар</span>
+      <img src="assets/plus.svg" alt="Новая поставка" class="button-icon">
+      <span>Новая поставка</span>
     </button>
   </div>
 
@@ -11,30 +11,7 @@
                    (onSubmit)="handleSubmitNewProduct($event)">
   </app-new-product>
 
-  <div class="custom-table">
-
-    <div class="table-header">
-      <!--  #  ngIf="showNewProductForm"… -->
-      <div>Номер</div>
-      <div>Категория</div>
-      <div>Название</div>
-      <div>Остаток</div>
-      <div>Сумма</div>
-      <div>Склад</div>
-      <div>Срок годности</div>
-      <div>Поставщик</div>
-    </div>
-    <div class="table-body">
-      <div class="table-row" *ngFor="let item of catalogData">
-        <div>{{ item.id }}</div>
-        <div>{{ item.category }}</div>
-        <div>{{ item.name }}</div>
-        <div>{{ item.stock }}</div>
-        <div>{{ item.price }}</div>
-        <div>{{ item.warehouse }}</div>
-        <div>{{ item.expiryDate }}</div>
-        <div>{{ item.supplier }}</div>
-      </div>
-    </div>
-  </div>
+  <app-catalog-table [data]="catalogData"
+                     (onAddSupply)="handleAddNewItemClick()">
+  </app-catalog-table>
 </div>

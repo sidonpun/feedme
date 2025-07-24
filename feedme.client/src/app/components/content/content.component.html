@@ -32,5 +32,6 @@
 
 <!-- Таблица Каталога -->
 <app-catalog-table *ngIf="selectedSupply === 'catalog'"
-                   [data]="catalogData">
+                   [data]="catalogData"
+                   (onAddSupply)="openNewProductPopup()">
 </app-catalog-table>
