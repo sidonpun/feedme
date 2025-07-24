@@ -77,23 +77,35 @@ table.catalog-table {
     background-color: #f5f5f5;
   }
 
-/* Пагинация */
+/* 10. пагинация */
 .pagination-controls {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
-  padding: 0.75rem;
+  margin: 1rem 0;
 }
 
   .pagination-controls button {
-    background: none;
+    background-color: #fa4b00;
+    color: #ffffff;
     border: none;
-    color: #0056b3;
-    cursor: pointer;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.4s ease-in;
   }
 
-  .pagination-controls span {
-    font-size: 1rem;
-    color: #888;
-  }
+    .pagination-controls button:hover:not(:disabled) {
+      background-color: #d94300;
+      cursor: pointer;
+    }
+
+pagination-controls button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+pagination-controls span {
+  font-size: 1 rem;
+}
