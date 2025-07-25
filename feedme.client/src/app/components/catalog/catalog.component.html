@@ -1,13 +1,17 @@
 <div class="content">
   <div class="catalog-controls">
-    <button class="primary-action-btn" (click)="handleAddNewItemClick()">
+    <button class=" primary-action-btn" (click)="openNewProductPopup">
       <img src="assets/plus.svg" alt="Новая поставка" class="button-icon">
       <span>Новая поставка</span>
+    </button>
+    <button class="primary-action-btn" (click)="openNewProductPopup()">
+      <img src="assets/plus.svg" alt="Новый товар" class="button-icon">
+      <span>Новый товар</span>
     </button>
   </div>
 
   <app-new-product *ngIf="showNewProductForm"
-                   (onCancel)="handleCancelNewProduct()"
+                   (onCancel)="closeNewProductPopup()"
                    (onSubmit)="handleSubmitNewProduct($event)">
   </app-new-product>
   <button class="add-button" (click)="addSupply()">+ Новая поставка</button>

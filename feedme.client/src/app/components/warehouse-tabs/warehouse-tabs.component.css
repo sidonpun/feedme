@@ -22,13 +22,6 @@
     margin-right: 8px;
   }
 
-.remove-warehouse-btn {
-  background: transparent;
-  border: none;
-  color: #888;
-  cursor: pointer;
-  margin-left: 5px;
-}
 
 .popup-backdrop {
   position: fixed;

@@ -17,6 +17,7 @@
   width: 100%;
   box-shadow: none;
   padding: 0 20px;
+  gap: 10px;
 }
 .primary-action-btn {
   width: 180px;

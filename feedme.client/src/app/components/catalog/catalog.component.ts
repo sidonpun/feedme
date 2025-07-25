@@ -10,7 +10,7 @@ import { NewProductComponent } from '../new-product/new-product.component';
   styleUrls: ['./catalog.component.css']
 })
 export class CatalogComponent implements OnInit {
-  showNewProductForm: boolean = false;
+  showNewProductForm = false;
 
   catalogData: any[] = [
     {
@@ -40,11 +40,11 @@ export class CatalogComponent implements OnInit {
     this.catalogData = savedCatalog ? JSON.parse(savedCatalog) : this.catalogData;
   }
 
-  handleAddNewItemClick() {
+  openNewProductPopup(): void {
     this.showNewProductForm = true;
   }
 
-  handleCancelNewProduct() {
+  closeNewProductPopup(): void {
     this.showNewProductForm = false;
   }
 

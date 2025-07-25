@@ -5,11 +5,7 @@
        (click)="selectTab(warehouse)">
     <img src="./assets/truck.svg" alt="{{ warehouse }}">
     <span>{{ warehouse }}</span>
-    <button *ngIf="warehouse !== 'Главный склад'"
-            class="remove-warehouse-btn"
-            (click)="handleRemoveWarehouse(warehouse, $event)">
-      ✕
-    </button>
+   
   </div>
 
   <div class="item add-warehouse-btn" (click)="showNewWarehousePopup = true">
