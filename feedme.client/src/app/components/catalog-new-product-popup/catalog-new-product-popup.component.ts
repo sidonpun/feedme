@@ -1,6 +1,12 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  Validators,
+  FormGroup,
+  FormControl,
+} from '@angular/forms';
 
 export interface NewProductFormValues {
   productName: string;
@@ -13,12 +19,15 @@ export interface NewProductFormValues {
   perishableAfterOpening: boolean;
 }
 
+export type NewProductForm = {
+  [K in keyof NewProductFormValues]: FormControl<NewProductFormValues[K]>;
+};
 
 
 @Component({
   selector: 'app-catalog-new-product-popup',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './catalog-new-product-popup.component.html',
   styleUrls: ['./catalog-new-product-popup.component.css']
 })
@@ -34,19 +43,25 @@ export class CatalogNewProductPopupComponent {
   readonly taxRates = ['Без НДС', '10%', '20%'];
   readonly units = ['кг', 'л', 'шт', 'упаковка'];
 
-  submit(): void {
-    const data: NewProductFormValues = {
-      productName: this.productName,
-      category: this.category,
-      taxRate: this.taxRate,
-      unit: this.unit,
-      unitPrice: Number(this.unitPrice),
-      description: this.description,
-      requiresPackaging: this.requiresPackaging,
-      perishableAfterOpening: this.perishableAfterOpening
-    };
-    this.save.emit(data);
-    this.submitForm.emit(data);
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.nonNullable.group({
+      productName: this.fb.nonNullable.control('', Validators.required),
+      category: this.fb.nonNullable.control('', Validators.required),
+      taxRate: this.fb.nonNullable.control(this.taxRates[0]),
+      unit: this.fb.nonNullable.control(this.units[0]),
+      unitPrice: this.fb.nonNullable.control(0),
+      description: this.fb.nonNullable.control(''),
+      requiresPackaging: this.fb.nonNullable.control(false),
+      perishableAfterOpening: this.fb.nonNullable.control(false),
+    }) as FormGroup<NewProductForm>;
+  }
+
+  onSubmit(): void {
+    if (this.form.valid) {
+      const data = this.form.getRawValue();
+      this.save.emit(data);
+      this.submitForm.emit(data);
+    }
   }
 
   close(): void {
