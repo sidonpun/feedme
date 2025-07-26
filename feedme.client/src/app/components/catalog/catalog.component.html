@@ -10,7 +10,7 @@
     </button>
   </div>
 
-  <app-catalog-new-product-popup *ngIf="showNewProductForm"
+  <app-catalog-new-product-popup *ngIf="showNewProductForm()"
                                  (cancel)="closeNewProductPopup()"
                                  (save)="handleSubmitNewProduct($event)">
   </app-catalog-new-product-popup>

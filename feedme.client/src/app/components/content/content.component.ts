@@ -9,6 +9,7 @@ import { SupplyTableComponent } from '../SupplyTableComponent/supply-table.compo
 import { StockTableComponent } from '../StockTableComponent/stock-table.component';
 import { CatalogTableComponent } from '../CatalogTableComponent/catalog-table.component';
 import { NewProductComponent } from '../new-product/new-product.component';
+import { CatalogNewProductPopupComponent } from '../catalog-new-product-popup/catalog-new-product-popup.component';
 
 @Component({
   selector: 'app-content',
@@ -22,7 +23,8 @@ import { NewProductComponent } from '../new-product/new-product.component';
     SupplyTableComponent,
     StockTableComponent,
     CatalogTableComponent,
-    NewProductComponent
+    NewProductComponent,
+    CatalogNewProductPopupComponent
   ],
   templateUrl: './content.component.html',
   styleUrls: ['./content.component.css']
