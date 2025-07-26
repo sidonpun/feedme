@@ -12,7 +12,7 @@
 }
 
 .popup-content {
-  width: 390px;
+  width: 480px;
   background-color: #fff;
   border-radius: 10px;
   padding: 20px;
@@ -27,24 +27,44 @@
     text-align: center;
     margin-bottom: 16px;
   }
-
+.form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
 .input-container {
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px;
+  flex: 1 1 calc(50% - 16px);
 }
 
-  .input-container label {
-    margin-bottom: 6px;
-  }
+.textarea-container {
+  flex-basis: 100%;
+}
+.checkbox {
+  flex-direction: row;
+  align-items: center;
+}
 
-  .input-container input,
-  .input-container select {
-    height: 40px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
+.input-container label {
+  margin-bottom: 6px;
+}
+
+.input-container input,
+.input-container select,
+.input-container textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font: inherit;
+  height: 40px;
+}
+
+.input-container textarea {
+  min-height: 80px;
+  height: auto;
+  resize: vertical;
+}
 
 .popup-buttons {
   display: flex;

@@ -54,11 +54,12 @@ export class CatalogComponent implements OnInit {
       id: Date.now().toString(),
       category: formData.category,
       name: formData.productName,
-      stock: String(formData.quantity),
-      price: String(formData.unitPrice),
-      warehouse: formData.responsible || 'Главный склад',
-      expiryDate: formData.expiryDate,
-      supplier: formData.supplier || 'не задан',
+      unit: formData.unit,
+      unitPrice: formData.unitPrice,
+      taxRate: formData.taxRate,
+      description: formData.description,
+      requiresPackaging: formData.requiresPackaging,
+      perishableAfterOpening: formData.perishableAfterOpening,
     };
     this.catalogData.push(newItem);
     localStorage.setItem('catalogData', JSON.stringify(this.catalogData));

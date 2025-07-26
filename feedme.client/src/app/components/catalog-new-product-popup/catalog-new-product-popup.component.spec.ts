@@ -27,14 +27,13 @@ describe('CatalogNewProductPopupComponent', () => {
     expect(component.cancel.emit).toHaveBeenCalled();
   });
 
-  it('should emit save event on submit when form valid', () => {
+  it('should emit save event on submit', () => {
     spyOn(component.save, 'emit');
-    component.form.patchValue({
-      productName: 'Item',
-      category: 'Готовое блюдо',
-      unitMeasure: 'шт',
-      unitPrice: 10
-    });
+    component.productName = 'Item';
+    component.category = 'Готовое блюдо';
+    component.taxRate = '10%';
+    component.unit = 'шт';
+    component.unitPrice = '10';
     fixture.debugElement.query(By.css('form')).triggerEventHandler('ngSubmit', {});
     expect(component.save.emit).toHaveBeenCalled();
   });
