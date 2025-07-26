@@ -1,24 +1,18 @@
 <div class="content">
-  <div class="catalog-controls">
-    <button class=" primary-action-btn" (click)="openNewProductPopup()">
-      <img src="assets/plus.svg" alt="Новая поставка" class="button-icon">
-      <span>Новая поставка</span>
-    </button>
-    <button class="primary-action-btn" (click)="openNewProductPopup()">
-      <img src="assets/plus.svg" alt="Новый товар" class="button-icon">
-      <span>Новый товар</span>
+  <div class="container" *ngIf="!showNewProductForm" style="justify-content: space-between; padding: 0 20px;">
+    <button class="primary-action-btn" (click)="handleAddNewItemClick()">
+      + Новый товар
     </button>
   </div>
 
-  <app-catalog-new-product-popup *ngIf="showNewProductForm()"
-                                 (cancel)="closeNewProductPopup()"
-                                 (save)="handleSubmitNewProduct($event)">
-  </app-catalog-new-product-popup>
-  <button class="add-button" (click)="addSupply()">+ Новая поставка</button>
-  <div class="custom-table">
 
+  <app-catalog-new-product-popup *ngIf="showNewProductForm"
+                                 (cancel)="handleCancelNewProduct()"
+                                 (submitForm)="handleSubmitNewProduct($event)">
+  </app-catalog-new-product-popup>
+
+  <div class="custom-table" *ngIf="!showNewProductForm">
     <div class="table-header">
-      <!--  #  ngIf="showNewProductForm"… -->
       <div>Номер</div>
       <div>Категория</div>
       <div>Название</div>
@@ -41,4 +35,3 @@
       </div>
     </div>
   </div>
-</div>

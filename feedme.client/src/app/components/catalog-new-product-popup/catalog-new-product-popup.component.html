@@ -1,73 +1,62 @@
-<div class="popup-backdrop" (click)="onCancel()">
-  <div class="popup-content" (click)="$event.stopPropagation()">
+<div class="popup-backdrop">
+  <div class="popup-content" [formGroup]="form">
+    <button class="close-btn" type="button" (click)="close()">×</button>
     <h2>Новый товар</h2>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="form-grid">
-        <div class="form-section">
-          <label>Название товара</label>
-          <input type="text" formControlName="productName" />
-        </div>
-        <div class="form-section">
-          <label>Категория товара</label>
-          <select formControlName="category">
-            <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
-          </select>
-        </div>
-        <div class="form-section">
-          <label>Единица измерения</label>
-          <select formControlName="unitMeasure">
-            <option *ngFor="let u of units" [value]="u">{{ u }}</option>
-          </select>
-        </div>
-        <div class="form-section">
-          <label>Штрихкод</label>
-          <input type="text" formControlName="barcode" />
-        </div>
-        <div class="form-section">
-          <label>Цена за единицу</label>
-          <input type="number" formControlName="unitPrice" step="0.01" />
-        </div>
-        <div class="form-section">
-          <label>Ставка НДС</label>
-          <select formControlName="vatRate">
-            <option *ngFor="let r of vatRates" [value]="r">{{ r }}</option>
-          </select>
-        </div>
-        <div class="form-section">
-          <label>Количество на складе</label>
-          <input type="number" formControlName="quantity" />
-        </div>
-        <div class="form-section">
-          <label>Минимальный остаток</label>
-          <input type="number" formControlName="minimumStock" />
-        </div>
-        <div class="form-section">
-          <label>Ответственный склад</label>
-          <input type="text" formControlName="warehouse" />
-        </div>
-        <div class="form-section">
-          <label>Поставщик</label>
-          <input type="text" formControlName="supplier" />
-        </div>
-        <div class="form-section">
-          <label>Срок годности</label>
-          <input type="date" formControlName="expiryDate" />
-        </div>
-        <div class="form-section full-width">
-          <label>Описание</label>
-          <textarea formControlName="description"></textarea>
-        </div>
-        <div class="checkbox-group">
-          <label>
-            <input type="checkbox" formControlName="requiresPackaging" /> Требует фасовки
-          </label>
-          <label>
-            <input type="checkbox" formControlName="spoilsAfterOpen" /> Портится после вскрытия
-          </label>
-        </div>
+    <form (ngSubmit)="save()">
+      <div class="input-container">
+        <label>Название товара</label>
+        <input formControlName="productName" />
+      </div>
+      <div class="input-container">
+        <label>Категория</label>
+        <select formControlName="category">
+          <option value="">Выберите категорию</option>
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
+      </div>
+      <div class="input-container">
+        <label>Ед. измерения</label>
+        <input formControlName="unitMeasure" />
+      </div>
+      <div class="input-container">
+        <label>Штрихкод</label>
+        <input formControlName="barcode" />
+      </div>
+      <div class="input-container">
+        <label>Количество</label>
+        <input type="number" formControlName="quantity" />
+      </div>
+      <div class="input-container">
+        <label>Цена за единицу</label>
+        <input type="number" formControlName="unitPrice" />
+      </div>
+      <div class="input-container">
+        <label>Дата поставки</label>
+        <input type="date" formControlName="supplyDate" />
+      </div>
+      <div class="input-container">
+        <label>Сумма</label>
+        <input type="number" formControlName="totalCost" />
+      </div>
+      <div class="input-container">
+        <label>Срок годности</label>
+        <input type="date" formControlName="expiryDate" />
+      </div>
+      <div class="input-container">
+        <label>Ответственный склад</label>
+        <input formControlName="responsible" />
+      </div>
+      <div class="input-container">
+        <label>Поставщик</label>
+        <input formControlName="supplier" />
+      </div>
+      <div class="input-container checkbox">
+        <label>
+          <input type="checkbox" formControlName="spoilsAfterOpen" /> Портится после открытия
+        </label>
       </div>
       <div class="popup-buttons">
-        <button type="button" class="cancel-btn" (click)="onCancel()">Отмена</button>
+        <button type="button" class="cancel-btn" (click)="close()">Отмена</button>
         <button type="submit" class="save-btn">Сохранить</button>
       </div>
     </form>

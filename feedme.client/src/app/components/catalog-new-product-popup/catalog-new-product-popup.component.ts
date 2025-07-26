@@ -1,23 +1,25 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 
-export interface NewProductForm {
+export interface NewProductFormValues {
   productName: string;
   category: string;
   unitMeasure: string;
   barcode: string;
-  unitPrice: number;
-  vatRate: string;
   quantity: number;
-  minimumStock: number;
-  warehouse: string;
-  supplier: string;
+  unitPrice: number;
+  supplyDate: string;
+  totalCost: number;
   expiryDate: string;
-  description: string;
-  requiresPackaging: boolean;
+  responsible: string;
+  supplier: string;
   spoilsAfterOpen: boolean;
 }
+
+export type NewProductForm = {
+  [K in keyof NewProductFormValues]: FormControl<NewProductFormValues[K]>;
+};
 
 @Component({
   selector: 'app-catalog-new-product-popup',
@@ -28,40 +30,36 @@ export interface NewProductForm {
 })
 export class CatalogNewProductPopupComponent {
   @Output() cancel = new EventEmitter<void>();
-  @Output() save = new EventEmitter<NewProductForm>();
+  @Output() submitForm = new EventEmitter<NewProductFormValues>();
 
   form: FormGroup<NewProductForm>;
 
-  categories = ['Готовое блюдо', 'Заготовка', 'Товар', 'Добавка'];
-  units = ['шт', 'кг', 'л', 'уп'];
-  vatRates = ['0%', '10%', '20%'];
+  readonly categories = ['Заготовка', 'Готовое блюдо', 'Добавка', 'Товар'];
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.nonNullable.group({
-      productName: ['', Validators.required],
-      category: ['', Validators.required],
-      unitMeasure: ['', Validators.required],
-      barcode: '',
-      unitPrice: 0,
-      vatRate: '0%',
-      quantity: 0,
-      minimumStock: 0,
-      warehouse: '',
-      supplier: '',
-      expiryDate: '',
-      description: '',
-      requiresPackaging: false,
-      spoilsAfterOpen: false
+      productName: this.fb.nonNullable.control('', { validators: Validators.required }),
+      category: this.fb.nonNullable.control('', { validators: Validators.required }),
+      unitMeasure: this.fb.nonNullable.control(''),
+      barcode: this.fb.nonNullable.control(''),
+      quantity: this.fb.nonNullable.control(0),
+      unitPrice: this.fb.nonNullable.control(0),
+      supplyDate: this.fb.nonNullable.control(''),
+      totalCost: this.fb.nonNullable.control(0),
+      expiryDate: this.fb.nonNullable.control(''),
+      responsible: this.fb.nonNullable.control(''),
+      supplier: this.fb.nonNullable.control(''),
+      spoilsAfterOpen: this.fb.nonNullable.control(false)
     });
   }
 
-  onCancel(): void {
-    this.cancel.emit();
+  save(): void {
+    if (this.form.valid) {
+      this.submitForm.emit(this.form.getRawValue());
+    }
   }
 
-  onSubmit(): void {
-    if (this.form.valid) {
-      this.save.emit(this.form.getRawValue());
-    }
+  close(): void {
+    this.cancel.emit();
   }
 }

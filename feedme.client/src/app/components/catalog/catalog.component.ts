@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CatalogNewProductPopupComponent } from '../catalog-new-product-popup/catalog-new-product-popup.component';
+import { CatalogNewProductPopupComponent, NewProductFormValues } from '../catalog-new-product-popup/catalog-new-product-popup.component';
 
 
 @Component({
@@ -49,13 +49,13 @@ export class CatalogComponent implements OnInit {
     this.showNewProductForm.set(false);
   }
 
-  handleSubmitNewProduct(formData: any) {
+  handleSubmitNewProduct(formData: NewProductFormValues) {
     const newItem = {
       id: Date.now().toString(),
       category: formData.category,
       name: formData.productName,
-      stock: formData.stock,
-      price: formData.unitPrice,
+      stock: String(formData.quantity),
+      price: String(formData.unitPrice),
       warehouse: formData.responsible || 'Главный склад',
       expiryDate: formData.expiryDate,
       supplier: formData.supplier || 'не задан',
