@@ -27,31 +27,7 @@
     text-align: center;
     margin-bottom: 16px;
   }
-.form-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-.input-container {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 calc(50% - 16px);
-  min-width: 260px;
-}
 
-  .input-container input,
-  .input-container select,
-  .input-container textarea {
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-}
 .textarea-container {
   flex-basis: 100%;
 }
