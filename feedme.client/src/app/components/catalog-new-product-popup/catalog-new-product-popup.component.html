@@ -3,44 +3,47 @@
     <button class="close-btn" type="button" (click)="close()">×</button>
     <h2>Новый товар</h2>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="input-container">
-        <label>Название товара</label>
-        <input formControlName="productName" />
-      </div>
-      <div class="input-container">
-        <label>Категория</label>
-        <select formControlName="category">
-          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
-        </select>
-      </div>
-      <div class="input-container">
-        <label>Ставка НДС</label>
-        <select formControlName="taxRate">
-          <option *ngFor="let rate of taxRates" [value]="rate">{{ rate }}</option>
-        </select>
-      </div>
-      <div class="input-container">
-        <label>Единица измерения</label>
-        <select formControlName="unit">
-          <option *ngFor="let u of units" [value]="u">{{ u }}</option>
-        </select>
-      </div>
-      <div class="input-container">
-        <label>Цена за единицу</label>
-        <input type="number" formControlName="unitPrice" />
-      </div>
-      <div class="input-container textarea-container">
-        <label>Описание</label>
-        <textarea formControlName="description"></textarea>
-      </div> <div class="input-container checkbox">
-        <label>
-          <input type="checkbox" formControlName="requiresPackaging" /> Требует фасовки
-        </label>
-      </div>
-      <div class="input-container checkbox">
-        <label>
-          <input type="checkbox" formControlName="perishableAfterOpening" /> Портится после вскрытия
-        </label>
+      <div class="form-grid">
+        <div class="input-container">
+          <label>Название товара</label>
+          <input formControlName="productName" />
+        </div>
+        <div class="input-container">
+          <label>Категория</label>
+          <select formControlName="category">
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+        <div class="input-container">
+          <label>Ставка НДС</label>
+          <select formControlName="taxRate">
+            <option *ngFor="let rate of taxRates" [value]="rate">{{ rate }}</option>
+          </select>
+        </div>
+        <div class="input-container">
+          <label>Единица измерения</label>
+          <select formControlName="unit">
+            <option *ngFor="let u of units" [value]="u">{{ u }}</option>
+          </select>
+        </div>
+        <div class="input-container">
+          <label>Цена за единицу</label>
+          <input type="number" formControlName="unitPrice" />
+        </div>
+        <div class="input-container textarea-container">
+          <label>Описание</label>
+          <textarea formControlName="description"></textarea>
+        </div>
+        <div class="input-container checkbox">
+          <label>
+            <input type="checkbox" formControlName="requiresPackaging" /> Требует фасовки
+          </label>
+        </div>
+        <div class="input-container checkbox">
+          <label>
+            <input type="checkbox" formControlName="perishableAfterOpening" /> Портится после вскрытия
+          </label>
+        </div>
       </div>
       <div class="popup-buttons">
         <button type="button" class="cancel-btn" (click)="close()">Отмена</button>

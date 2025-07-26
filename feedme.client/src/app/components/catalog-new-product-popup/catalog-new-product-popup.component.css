@@ -41,30 +41,6 @@
 .textarea-container {
   flex-basis: 100%;
 }
-.checkbox {
-  flex-direction: row;
-  align-items: center;
-}
-
-.input-container label {
-  margin-bottom: 6px;
-}
-
-.input-container input,
-.input-container select,
-.input-container textarea {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font: inherit;
-  height: 40px;
-}
-
-.input-container textarea {
-  min-height: 80px;
-  height: auto;
-  resize: vertical;
-}
 
 .popup-buttons {
   display: flex;
