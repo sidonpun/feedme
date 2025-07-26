@@ -11,5 +11,6 @@
     <Folder Include="src\app\components\NavigationComponent\" />
     <Folder Include="src\app\components\CatalogTableComponent\" />
     <Folder Include="src\app\components\ShitForTest\" />
+    <Folder Include="src\app\components\Новая папка\" />
   </ItemGroup>
 </Project>

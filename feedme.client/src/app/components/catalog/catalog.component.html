@@ -1,6 +1,6 @@
 <div class="content">
   <div class="catalog-controls">
-    <button class=" primary-action-btn" (click)="openNewProductPopup">
+    <button class=" primary-action-btn" (click)="openNewProductPopup()">
       <img src="assets/plus.svg" alt="Новая поставка" class="button-icon">
       <span>Новая поставка</span>
     </button>
@@ -10,10 +10,10 @@
     </button>
   </div>
 
-  <app-new-product *ngIf="showNewProductForm"
-                   (onCancel)="closeNewProductPopup()"
-                   (onSubmit)="handleSubmitNewProduct($event)">
-  </app-new-product>
+  <app-catalog-new-product-popup *ngIf="showNewProductForm"
+                                 (cancel)="closeNewProductPopup()"
+                                 (save)="handleSubmitNewProduct($event)">
+  </app-catalog-new-product-popup>
   <button class="add-button" (click)="addSupply()">+ Новая поставка</button>
   <div class="custom-table">
 

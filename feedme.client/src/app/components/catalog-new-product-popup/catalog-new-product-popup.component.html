@@ -1,0 +1,75 @@
+<div class="popup-backdrop" (click)="onCancel()">
+  <div class="popup-content" (click)="$event.stopPropagation()">
+    <h2>Новый товар</h2>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+        <div class="form-section">
+          <label>Название товара</label>
+          <input type="text" formControlName="productName" />
+        </div>
+        <div class="form-section">
+          <label>Категория товара</label>
+          <select formControlName="category">
+            <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label>Единица измерения</label>
+          <select formControlName="unitMeasure">
+            <option *ngFor="let u of units" [value]="u">{{ u }}</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label>Штрихкод</label>
+          <input type="text" formControlName="barcode" />
+        </div>
+        <div class="form-section">
+          <label>Цена за единицу</label>
+          <input type="number" formControlName="unitPrice" step="0.01" />
+        </div>
+        <div class="form-section">
+          <label>Ставка НДС</label>
+          <select formControlName="vatRate">
+            <option *ngFor="let r of vatRates" [value]="r">{{ r }}</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label>Количество на складе</label>
+          <input type="number" formControlName="quantity" />
+        </div>
+        <div class="form-section">
+          <label>Минимальный остаток</label>
+          <input type="number" formControlName="minimumStock" />
+        </div>
+        <div class="form-section">
+          <label>Ответственный склад</label>
+          <input type="text" formControlName="warehouse" />
+        </div>
+        <div class="form-section">
+          <label>Поставщик</label>
+          <input type="text" formControlName="supplier" />
+        </div>
+        <div class="form-section">
+          <label>Срок годности</label>
+          <input type="date" formControlName="expiryDate" />
+        </div>
+        <div class="form-section full-width">
+          <label>Описание</label>
+          <textarea formControlName="description"></textarea>
+        </div>
+        <div class="checkbox-group">
+          <label>
+            <input type="checkbox" formControlName="requiresPackaging" /> Требует фасовки
+          </label>
+          <label>
+            <input type="checkbox" formControlName="spoilsAfterOpen" /> Портится после вскрытия
+          </label>
+        </div>
+      </div>
+      <div class="popup-buttons">
+        <button type="button" class="cancel-btn" (click)="onCancel()">Отмена</button>
+        <button type="submit" class="save-btn">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>

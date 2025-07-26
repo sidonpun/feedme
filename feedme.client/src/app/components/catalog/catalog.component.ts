@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NewProductComponent } from '../new-product/new-product.component';
+import { CatalogNewProductPopupComponent } from '../catalog-new-product-popup/catalog-new-product-popup.component';
+
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, NewProductComponent],
+  imports: [CommonModule, CatalogNewProductPopupComponent],
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.css']
 })
