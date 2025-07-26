@@ -4,53 +4,54 @@
     <h2>Добавить товар</h2>
     <form (ngSubmit)="handleSubmit()">
 
-      <div class="input-container">
-        <label>Дата поставки</label>
-        <input type="date" [(ngModel)]="supplyDate" name="supplyDate" required>
-      </div>
+      <div class="form-grid">
+        <div class="input-container">
+          <label>Дата поставки</label>
+          <input type="date" [(ngModel)]="supplyDate" name="supplyDate" required>
+        </div>
 
-      <div class="input-container">
-        <label>Название товара</label>
-        <input type="text" [(ngModel)]="name" (input)="updateSuggestions()" name="name" autocomplete="off" required>
-        <div class="suggestions-container" *ngIf="suggestedNames.length > 0 && !isSuggestionSelected">
-          <div class="suggestion-item" *ngFor="let suggestion of suggestedNames" (click)="handleSuggestionSelect(suggestion)">
-            {{ suggestion.name }}
+        <div class="input-container">
+          <label>Название товара</label>
+          <input type="text" [(ngModel)]="name" (input)="updateSuggestions()" name="name" autocomplete="off" required>
+          <div class="suggestions-container" *ngIf="suggestedNames.length > 0 && !isSuggestionSelected">
+            <div class="suggestion-item" *ngFor="let suggestion of suggestedNames" (click)="handleSuggestionSelect(suggestion)">
+              {{ suggestion.name }}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="input-container">
-        <label>Категория товара</label>
-        <select [(ngModel)]="category" name="category" required>
-          <option value="">Выберите категорию</option>
-          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
-        </select>
-      </div>
+        <div class="input-container">
+          <label>Категория товара</label>
+          <select [(ngModel)]="category" name="category" required>
+            <option value="">Выберите категорию</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
 
-      <div class="input-container">
-        <label>Срок годности</label>
-        <input type="date" [(ngModel)]="expiryDate" name="expiryDate" required>
-      </div>
+        <div class="input-container">
+          <label>Срок годности</label>
+          <input type="date" [(ngModel)]="expiryDate" name="expiryDate" required>
+        </div>
 
-      <div class="input-container">
-        <label>Цена за единицу</label>
-        <input type="number" [(ngModel)]="unitPrice" name="unitPrice" required>
-      </div>
+        <div class="input-container">
+          <label>Цена за единицу</label>
+          <input type="number" [(ngModel)]="unitPrice" name="unitPrice" required>
+        </div>
 
-      <div class="input-container">
-        <label>Общая стоимость</label>
-        <input type="number" [(ngModel)]="totalCost" name="totalCost" required>
-      </div>
+        <div class="input-container">
+          <label>Общая стоимость</label>
+          <input type="number" [(ngModel)]="totalCost" name="totalCost" required>
+        </div>
 
-      <div class="input-container">
-        <label>Кол-во товара в поставке</label>
-        <input type="number" [(ngModel)]="stock" name="stock" required>
-      </div>
+        <div class="input-container">
+          <label>Кол-во товара в поставке</label>
+          <input type="number" [(ngModel)]="stock" name="stock" required>
+        </div>
 
-      <div class="popup-buttons">
-        <button type="button" class="cancel-btn" (click)="closePopup()">Отмена</button>
-        <button type="submit" class="save-btn">Сохранить</button>
-      </div>
-    </form>
+        <div class="popup-buttons">
+          <button type="button" class="cancel-btn" (click)="closePopup()">Отмена</button>
+          <button type="submit" class="save-btn">Сохранить</button>
+        </div>
+</form>
   </div>
 </div>

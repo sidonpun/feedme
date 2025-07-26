@@ -38,11 +38,17 @@
     gap: 10px;
     flex-grow: 1;
   }
-
+.form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
 /* Поля формы */
 .input-container {
   display: flex;
   flex-direction: column;
+  flex: 1 1 calc(50% - 16px);
+  min-width: 260px;
 }
 
   .input-container label {
