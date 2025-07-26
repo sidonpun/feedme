@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CatalogNewProductPopupComponent } from '../catalog-new-product-popup/catalog-new-product-popup.component';
 
@@ -11,7 +11,7 @@ import { CatalogNewProductPopupComponent } from '../catalog-new-product-popup/ca
   styleUrls: ['./catalog.component.css']
 })
 export class CatalogComponent implements OnInit {
-  showNewProductForm = false;
+  showNewProductForm = signal(false);
 
   catalogData: any[] = [
     {
@@ -42,11 +42,11 @@ export class CatalogComponent implements OnInit {
   }
 
   openNewProductPopup(): void {
-    this.showNewProductForm = true;
+    this.showNewProductForm.set(true);
   }
 
   closeNewProductPopup(): void {
-    this.showNewProductForm = false;
+    this.showNewProductForm.set(false);
   }
 
   handleSubmitNewProduct(formData: any) {
@@ -62,6 +62,6 @@ export class CatalogComponent implements OnInit {
     };
     this.catalogData.push(newItem);
     localStorage.setItem('catalogData', JSON.stringify(this.catalogData));
-    this.showNewProductForm = false;
+    this.showNewProductForm.set(false);
   }
 }
