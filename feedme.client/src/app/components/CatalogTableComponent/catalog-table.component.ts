@@ -38,7 +38,7 @@ export class CatalogTableComponent implements OnChanges {
       !!(item.totalCost?.toString().trim()) ||
       !!(item.warehouse?.toString().trim()) ||
       !!(item.expiryDate?.toString().trim()) ||
-      !!(item.supplier?.toString().trim())
+      !!(item.perishableAfterOpening?.toString().trim())
     );
 
     // 2) поиск

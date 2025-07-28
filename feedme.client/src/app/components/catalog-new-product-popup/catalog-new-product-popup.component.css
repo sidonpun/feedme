@@ -27,14 +27,43 @@
     text-align: center;
     margin-bottom: 16px;
   }
+.form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 48%;
+  min-width: 230px;
+}
+
+  .input-container textarea {
+    height: 80px;
+  }
 
 .textarea-container {
   flex-basis: 100%;
 }
 
+.input-container.checkbox {
+  flex: 1 1 100%;
+  margin-top: 12px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
 .popup-buttons {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 16px;
   margin-top: 20px;
 }
 
