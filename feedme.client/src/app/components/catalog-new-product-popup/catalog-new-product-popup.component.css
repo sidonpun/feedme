@@ -12,11 +12,12 @@
 }
 
 .popup-content {
-  width: 480px;
+  width: 640px;
+  max-width: 95%;
   background-color: #fff;
   border-radius: 10px;
   padding: 20px;
-  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -24,6 +25,7 @@
 }
 
   .popup-content h2 {
+    margin-top: 0;
     text-align: center;
     margin-bottom: 16px;
   }
@@ -37,28 +39,30 @@
 .input-container {
   display: flex;
   flex-direction: column;
-  flex: 1 1 48%;
-  min-width: 230px;
+  flex: 1 1 calc(50% - 16px);
+  min-width: 260px;
 }
 
   .input-container textarea {
     height: 80px;
   }
-
 .textarea-container {
   flex-basis: 100%;
 }
 
-.input-container.checkbox {
-  flex: 1 1 100%;
+.checkbox-row {
+  display: flex;
+  gap: 32px;
   margin-top: 12px;
+  align-items: center;
+  flex-wrap: wrap;
 }
-
 .checkbox-label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-size: 14px;
+  white-space: nowrap;
 }
 .popup-buttons {
   display: flex;
