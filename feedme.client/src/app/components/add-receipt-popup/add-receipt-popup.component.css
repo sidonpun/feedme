@@ -1,0 +1,38 @@
+.popup-backdrop {
+  /* затемнённый фон */
+}
+.popup-content {
+  width: 480px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+}
+.popup-content h2 {
+  margin-bottom: 16px;
+  text-align: center;
+}
+label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 500;
+}
+input,
+select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  box-sizing: border-box;
+}
+.popup-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+.cancel-btn {
+  background: #ccc;
+}
+.save-btn {
+  background: #007bff;
+  color: #fff;
+}

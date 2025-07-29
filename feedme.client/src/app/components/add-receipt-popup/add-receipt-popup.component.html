@@ -1,0 +1,53 @@
+<div class="popup-backdrop" (click)="onClose()">
+  <div class="popup-content" (click)="$event.stopPropagation()">
+    <h2>Новая поставка</h2>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <label>Товар</label>
+      <select formControlName="productId">
+        <option value="">— Выберите —</option>
+        <option *ngFor="let p of catalog" [value]="p.id">{{ p.name }}</option>
+      </select>
+
+      <label>Поставщик</label>
+      <input formControlName="supplierId" disabled />
+
+      <label>Код ТН ВЭД</label>
+      <input formControlName="tnvedCode" disabled />
+
+      <label>Метод списания</label>
+      <input formControlName="writeoffMethod" disabled />
+
+      <label>Цена закупки за единицу</label>
+      <input formControlName="unitPrice" disabled />
+
+      <label>Дата приёмки</label>
+      <input type="date" formControlName="receiptDate" />
+
+      <label>Номер документа</label>
+      <input type="text" formControlName="documentNumber" />
+
+      <label>Количество</label>
+      <input type="number" formControlName="quantity" />
+
+      <label>Ед. изм.</label>
+      <select formControlName="unit">
+        <option *ngFor="let u of units" [value]="u">{{ u }}</option>
+      </select>
+
+      <label>Общая сумма</label>
+      <input formControlName="totalCost" disabled />
+
+      <label>Срок годности</label>
+      <input type="date" formControlName="expiryDate" />
+
+      <label>Номер партии</label>
+      <input type="text" formControlName="batchCode" />
+
+      <div class="popup-buttons">
+        <button type="button" class="cancel-btn" (click)="onClose()">Отмена</button>
+        <button type="submit" class="save-btn" [disabled]="form.invalid">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
