@@ -30,10 +30,10 @@
     margin-bottom: 16px;
   }
 .form-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
-  justify-content: space-between;
+ 
 }
 
 .input-container {
@@ -50,12 +50,13 @@
   flex-basis: 100%;
 }
 
-.checkbox-row {
-  display: flex;
-  gap: 32px;
-  margin-top: 12px;
-  align-items: center;
-  flex-wrap: wrap;
+.section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  margin-bottom: 8px;
+  font-weight: 600;
 }
 .checkbox-container {
   display: flex;
@@ -102,4 +103,8 @@
   font-size: 24px;
   cursor: pointer;
   color: #777;
+}
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+  border-color: #dc3545;
 }

@@ -30,14 +30,33 @@ describe('CatalogNewProductPopupComponent', () => {
   it('should emit save event on submit', () => {
     spyOn(component.save, 'emit');
     component.form.setValue({
-      productName: 'Item',
-      category: 'Готовое блюдо',
+    
+      name: 'Item',
+      type: 'Товар',
+      code: '001',
+      category: 'Категория',
+      unit: 'кг',
+      weight: 1,
+      writeoffMethod: 'FIFO',
+      allergens: '',
+      packagingRequired: false,
+      spoilsAfterOpening: false,
+      supplier: '',
+      deliveryTime: 0,
+      costEstimate: 0,
       taxRate: '10%',
-      unit: 'шт',
+    
       unitPrice: 10,
       description: '',
       requiresPackaging: false,
-      perishableAfterOpening: false
+      perishableAfterOpening: false,
+      salePrice: 0,
+      tnved: '',
+      isMarked: false,
+      isAlcohol: false,
+      alcoholCode: '',
+      alcoholStrength: 0,
+      alcoholVolume: 0
     });
     fixture.debugElement.query(By.css('form')).triggerEventHandler('ngSubmit', {});
     expect(component.save.emit).toHaveBeenCalled();
