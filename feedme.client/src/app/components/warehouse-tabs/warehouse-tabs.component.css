@@ -1,14 +1,19 @@
 .container.warehouse-tabs {
   display: flex;
   align-items: center;
+  gap: 20px;
+  padding: 0 16px;
   height: 59px;
 }
 
 .item {
-  cursor: pointer;
   display: flex;
   align-items: center;
-  margin-right: 10px;
+  gap: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
 }
 
   .item.selected {
@@ -19,7 +24,7 @@
   .item img {
     width: 24px;
     height: 24px;
-    margin-right: 8px;
+   
   }
 
 
