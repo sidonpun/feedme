@@ -1,47 +1,26 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-// Импорт FontAwesome модуля и ядра иконок
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import {
-  faWarehouse,
-  faBoxes,
-  faChartBar,
-  faTruck,
-  faCog,
-  faListAlt,
-  faSignOutAlt
-} from '@fortawesome/free-solid-svg-icons';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule],
+  imports: [CommonModule, IconComponent],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
+  /**
+   * Сопоставление пунктов меню и названий иконок.
+   */
   icons = {
-    warehouse: faWarehouse,
-    catalog: faBoxes,
-    analytics: faChartBar,
-    delivery: faTruck,
-    orders: faListAlt,
-    settings: faCog,
-    logout: faSignOutAlt
+    warehouse: 'building',
+    catalog: 'boxes',
+    analytics: 'bar-chart',
+    delivery: 'truck',
+    orders: 'card-list',
+    settings: 'gear',
+    logout: 'box-arrow-right',
   };
-
-  constructor(private library: FaIconLibrary) {
-    // Обязательно добавь эту строку, чтобы явно зарегистрировать иконки
-    library.addIcons(
-      faWarehouse,
-      faBoxes,
-      faChartBar,
-      faTruck,
-      faListAlt,
-      faCog,
-      faSignOutAlt
-    );
-  }
 }
