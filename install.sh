@@ -32,6 +32,12 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# Переходим в каталог приложения, если скрипт запущен из корня репозитория
+if [[ ! -f "angular.json" && -d "feedme.client" ]]; then
+  echo "Переходим в каталог feedme.client..."
+  cd feedme.client
+fi
+
 # Проверка версий Node.js и npm
 command -v node >/dev/null 2>&1 || { echo "Ошибка: Node.js не установлен."; exit 1; }
 command -v npm  >/dev/null 2>&1 || { echo "Ошибка: npm не установлен.";   exit 1; }
