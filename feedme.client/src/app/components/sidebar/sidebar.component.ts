@@ -1,22 +1,43 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
+import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faWarehouse,
+  faList,
+  faChartColumn,
+  faTruck,
+  faClipboardList,
+  faCog,
+  faSignOutAlt
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, FontAwesomeModule],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
   readonly icons = {
-    warehouse: 'warehouse',
-    catalog: 'category',
-    analytics: 'analytics',
-    delivery: 'local_shipping',
-    orders: 'assignment',
-    settings: 'settings',
-    logout: 'logout'
+    warehouse: faWarehouse,
+    catalog: faList,
+    analytics: faChartColumn,
+    delivery: faTruck,
+    orders: faClipboardList,
+    settings: faCog,
+    logout: faSignOutAlt
   };
+
+  constructor(private faLibrary: FaIconLibrary) {
+    faLibrary.addIcons(
+      faWarehouse,
+      faList,
+      faChartColumn,
+      faTruck,
+      faClipboardList,
+      faCog,
+      faSignOutAlt
+    );
+  }
 }
