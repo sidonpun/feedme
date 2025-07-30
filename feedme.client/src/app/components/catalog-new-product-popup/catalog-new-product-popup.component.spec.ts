@@ -30,7 +30,6 @@ describe('CatalogNewProductPopupComponent', () => {
   it('should emit save event on submit', () => {
     spyOn(component.save, 'emit');
     component.form.setValue({
-    
       name: 'Item',
       type: 'Товар',
       code: '001',
@@ -45,11 +44,7 @@ describe('CatalogNewProductPopupComponent', () => {
       deliveryTime: 0,
       costEstimate: 0,
       taxRate: '10%',
-    
       unitPrice: 10,
-      description: '',
-      requiresPackaging: false,
-      perishableAfterOpening: false,
       salePrice: 0,
       tnved: '',
       isMarked: false,
