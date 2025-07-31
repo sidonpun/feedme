@@ -5,6 +5,7 @@
                       (searchQueryChange)="onSearchChange($event)"
                       (rowsPerPageChange)="onRowsChange($event)">
   </app-table-controls>
+  <app-catalog-view-switcher [view]="viewMode" (viewChange)="onViewChange($event)"></app-catalog-view-switcher>
   <button class="add-button" (click)="addSupply()">+ Новый товар</button>
 </div>
 
@@ -13,29 +14,20 @@
   <table class="catalog-table">
     <thead>
       <tr>
-        <th>Название</th>
-        <th>Категория</th>
-        <th>НДС</th>
-        <th>Единица измерения</th>
-        <th>Цена за единицуя</th>
-        <th>Описание</th>
-        <th>Требует фасовки</th>
-        <th>Портится после вскрытия</th>
+        <th *ngFor="let col of columns">{{ col.label }}</th>
+        <th class="actions-header"></th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let item of paginatedData">
-        <td>{{ item.productName }}</td>
-        <td>{{ item.category }}</td>
-        <td>{{ item.taxRate }}</td>
-        <td>{{ item.unit }}</td>
-        <td>{{ item.unitPrice }}</td>
-        <td>{{ item.description }}</td>
-        <td>{{ item.requiresPackaging }}</td>
-        <td>{{ item.supplier }}</td>
+        <td *ngFor="let col of columns">{{ format(item[col.key]) }}</td>
+        <td class="actions-cell">
+          <img src="assets/correct.svg" alt="Редактировать" (click)="edit.emit(item)">
+          <img src="assets/delete.svg" alt="Удалить" (click)="remove.emit(item)">
+        </td>
       </tr>
       <tr *ngIf="paginatedData.length === 0">
-        <td colspan="8" class="no-data">Нет данных</td>
+        <td [attr.colspan]="columns.length + 1" class="no-data">Нет данных</td>
       </tr>
     </tbody>
   </table>
