@@ -2,11 +2,17 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableControlsComponent } from '../table-controls/table-controls.component';
+import { CatalogViewSwitcherComponent } from '../catalog-view-switcher/catalog-view-switcher.component';
 
 @Component({
   selector: 'app-catalog-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableControlsComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TableControlsComponent,
+    CatalogViewSwitcherComponent
+  ],
   templateUrl: './catalog-table.component.html',
   styleUrls: ['./catalog-table.component.css']
 })
@@ -14,50 +20,75 @@ export class CatalogTableComponent implements OnChanges {
   /** Входные данные для каталога */
   @Input() data: any[] = [];
 
-  @Output() onAddSupply = new EventEmitter<void>(); 
+  /** Режим отображения таблицы */
+  viewMode: 'info' | 'logistics' = 'info';
+
+  @Output() onAddSupply = new EventEmitter<void>();
+  @Output() edit = new EventEmitter<any>();
+  @Output() remove = new EventEmitter<any>();
   /** Управление фильтрацией и пагинацией */
   searchQuery: string = '';
   rowsPerPage: number = 10;
   currentPage: number = 1;
-  filteredData: any[] = [];
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['data']) {
-      this.applyFilters();
-    }
+  /** Колонки для режима "Основная информация" */
+  readonly infoColumns = [
+    { label: 'Название товара', key: 'name' },
+    { label: 'Тип номенклатуры', key: 'type' },
+    { label: 'Номенклатурный код', key: 'code' },
+    { label: 'Категория', key: 'category' },
+    { label: 'Единица измерения (базовая)', key: 'unit' },
+    { label: 'Вес/объём единицы', key: 'weight' },
+    { label: 'Метод списания', key: 'writeoffMethod' },
+    { label: 'Аллергены', key: 'allergens' },
+    { label: 'Требует фасовки', key: 'packagingRequired' },
+    { label: 'Портится после вскрытия', key: 'spoilsAfterOpening' },
+  ];
+
+  /** Колонки для режима "Закупка и логистика" */
+  readonly logisticsColumns = [
+    { label: 'Поставщик (основной)', key: 'supplier' },
+    { label: 'Срок поставки (дней)', key: 'deliveryTime' },
+    { label: 'Оценочная себестоимость', key: 'costEstimate' },
+    { label: 'Ставка НДС', key: 'taxRate' },
+    { label: 'Цена за единицу', key: 'unitPrice' },
+    { label: 'Код ТН ВЭД', key: 'tnved' },
+    { label: 'Маркируемый товар', key: 'isMarked' },
+    { label: 'Алкогольная продукция', key: 'isAlcohol' },
+  ];
+
+  /** Текущие колонки по выбранному режиму */
+  get columns() {
+    return this.viewMode === 'info' ? this.infoColumns : this.logisticsColumns;
   }
 
-  /** Убираем пустые записи и применяем поиск */
-  private applyFilters(): void {
-    // 1) отбрасываем полностью пустые объекты
-    const nonEmpty = this.data.filter(item =>
-      !!(item.id?.toString().trim()) ||
-      !!(item.category?.toString().trim()) ||
-      !!(item.name?.toString().trim()) ||
-      !!(item.stock?.toString().trim()) ||
-      !!(item.totalCost?.toString().trim()) ||
-      !!(item.warehouse?.toString().trim()) ||
-      !!(item.expiryDate?.toString().trim()) ||
-      !!(item.perishableAfterOpening?.toString().trim())
-    );
+  /** Приведение значения для отображения */
+  format(value: any): string {
+    if (typeof value === 'boolean') {
+      return value ? 'Да' : 'Нет';
+    }
+    return value ?? '';
+  }
 
-    // 2) поиск
-    const q = this.searchQuery.toLowerCase();
-    this.filteredData = nonEmpty.filter(item =>
-      (item.id || '').toString().toLowerCase().includes(q) ||
-      (item.category || '').toLowerCase().includes(q) ||
-      (item.name || '').toLowerCase().includes(q) ||
-      (item.warehouse || '').toLowerCase().includes(q)
-    );
-
-    // 3) сброс страницы
+  ngOnChanges(_: SimpleChanges): void {
     this.currentPage = 1;
+  }
+
+  /** Фильтрованные данные по поисковому запросу */
+  get filteredData(): any[] {
+    const q = this.searchQuery.toLowerCase();
+    if (!q) return this.data;
+    return this.data.filter(item =>
+      Object.values(item).some(val =>
+        val && val.toString().toLowerCase().includes(q)
+      )
+    );
   }
 
   /** Обновление поискового запроса */
   onSearchChange(query: string): void {
     this.searchQuery = query;
-    this.applyFilters();
+    this.currentPage = 1;
   }
 
   /** Обновление количества строк на странице */
@@ -78,6 +109,10 @@ export class CatalogTableComponent implements OnChanges {
   }
 
   addSupply(): void { this.onAddSupply.emit() }
+
+  onViewChange(view: 'info' | 'logistics'): void {
+    this.viewMode = view;
+  }
   /** Навигация по страницам */
   prevPage(): void {
     if (this.currentPage > 1) this.currentPage--;

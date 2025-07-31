@@ -34,6 +34,10 @@ app-table-controls {
   flex: 1;
 }
 
+app-catalog-view-switcher {
+  margin-left: 16px;
+}
+
 /* Контейнер для горизонтального скролла */
 .table-container {
   overflow-x: auto;
@@ -67,6 +71,27 @@ table.catalog-table {
     border-bottom: 1px solid #f0f0f0;
     vertical-align: middle;
     white-space: nowrap;
+  }
+
+  /* колонка действий */
+  table.catalog-table th.actions-header {
+    width: 80px;
+  }
+
+  table.catalog-table td.actions-cell {
+    text-align: center;
+    width: 80px;
+  }
+
+  table.catalog-table td.actions-cell img {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    cursor: pointer;
+  }
+
+  table.catalog-table td.actions-cell img:last-child {
+    margin-right: 0;
   }
 
   /* Полосатость и hover */
