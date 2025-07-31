@@ -73,6 +73,27 @@ table.catalog-table {
     white-space: nowrap;
   }
 
+  /* колонка действий */
+  table.catalog-table th.actions-header {
+    width: 80px;
+  }
+
+  table.catalog-table td.actions-cell {
+    text-align: center;
+    width: 80px;
+  }
+
+  table.catalog-table td.actions-cell img {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    cursor: pointer;
+  }
+
+  table.catalog-table td.actions-cell img:last-child {
+    margin-right: 0;
+  }
+
   /* Полосатость и hover */
   table.catalog-table tbody tr:nth-child(even) {
     background-color: #fafafa;
