@@ -3,7 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableControlsComponent } from '../table-controls/table-controls.component';
 import { CatalogViewSwitcherComponent } from '../catalog-view-switcher/catalog-view-switcher.component';
+
 import { FilterPipe } from '../../pipes/filter.pipe';
+
+
 
 @Component({
   selector: 'app-catalog-table',
@@ -12,8 +15,12 @@ import { FilterPipe } from '../../pipes/filter.pipe';
     CommonModule,
     FormsModule,
     TableControlsComponent,
+
     CatalogViewSwitcherComponent,
     FilterPipe
+
+    CatalogViewSwitcherComponent
+
   ],
   templateUrl: './catalog-table.component.html',
   styleUrls: ['./catalog-table.component.css']
