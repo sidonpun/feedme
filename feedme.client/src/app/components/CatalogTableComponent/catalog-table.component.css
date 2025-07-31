@@ -34,6 +34,10 @@ app-table-controls {
   flex: 1;
 }
 
+app-catalog-view-switcher {
+  margin-left: 16px;
+}
+
 /* Контейнер для горизонтального скролла */
 .table-container {
   overflow-x: auto;

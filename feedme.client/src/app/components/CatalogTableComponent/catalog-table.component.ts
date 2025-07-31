@@ -2,17 +2,26 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableControlsComponent } from '../table-controls/table-controls.component';
+import { CatalogViewSwitcherComponent } from '../catalog-view-switcher/catalog-view-switcher.component';
 
 @Component({
   selector: 'app-catalog-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableControlsComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TableControlsComponent,
+    CatalogViewSwitcherComponent
+  ],
   templateUrl: './catalog-table.component.html',
   styleUrls: ['./catalog-table.component.css']
 })
 export class CatalogTableComponent implements OnChanges {
   /** Входные данные для каталога */
   @Input() data: any[] = [];
+
+  /** Режим отображения таблицы */
+  viewMode: 'info' | 'logistics' = 'info';
 
   @Output() onAddSupply = new EventEmitter<void>(); 
   /** Управление фильтрацией и пагинацией */
@@ -78,6 +87,10 @@ export class CatalogTableComponent implements OnChanges {
   }
 
   addSupply(): void { this.onAddSupply.emit() }
+
+  onViewChange(view: 'info' | 'logistics'): void {
+    this.viewMode = view;
+  }
   /** Навигация по страницам */
   prevPage(): void {
     if (this.currentPage > 1) this.currentPage--;

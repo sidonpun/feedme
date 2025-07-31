@@ -5,7 +5,7 @@
                       (searchQueryChange)="onSearchChange($event)"
                       (rowsPerPageChange)="onRowsChange($event)">
   </app-table-controls>
-  <span>Основная информация</span>
+  <app-catalog-view-switcher [view]="viewMode" (viewChange)="onViewChange($event)"></app-catalog-view-switcher>
   <button class="add-button" (click)="addSupply()">+ Новый товар</button>
 
 </div>
