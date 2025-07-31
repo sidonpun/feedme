@@ -4,6 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { TableControlsComponent } from '../table-controls/table-controls.component';
 import { CatalogViewSwitcherComponent } from '../catalog-view-switcher/catalog-view-switcher.component';
 
+
+import { FilterPipe } from '../../pipes/filter.pipe';
+
+
+
 @Component({
   selector: 'app-catalog-table',
   standalone: true,
@@ -11,7 +16,16 @@ import { CatalogViewSwitcherComponent } from '../catalog-view-switcher/catalog-v
     CommonModule,
     FormsModule,
     TableControlsComponent,
+
     CatalogViewSwitcherComponent
+
+
+    CatalogViewSwitcherComponent,
+    FilterPipe
+
+    CatalogViewSwitcherComponent
+
+
   ],
   templateUrl: './catalog-table.component.html',
   styleUrls: ['./catalog-table.component.css']
@@ -23,9 +37,13 @@ export class CatalogTableComponent implements OnChanges {
   /** Режим отображения таблицы */
   viewMode: 'info' | 'logistics' = 'info';
 
+
   @Output() onAddSupply = new EventEmitter<void>();
   @Output() edit = new EventEmitter<any>();
   @Output() remove = new EventEmitter<any>();
+
+  @Output() onAddSupply = new EventEmitter<void>(); 
+
   /** Управление фильтрацией и пагинацией */
   searchQuery: string = '';
   rowsPerPage: number = 10;
