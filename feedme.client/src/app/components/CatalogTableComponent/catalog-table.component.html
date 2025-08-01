@@ -19,6 +19,10 @@
 
         <th class="actions-header"></th>
 
+
+        <th class="actions-header"></th>
+
+
       </tr>
     </thead>
     <tbody>
@@ -27,14 +31,23 @@
 
         <td class="actions-cell">
           <img src="assets/correct.svg" alt="Редактировать" (click)="edit.emit(item)">
+          <img src="assets/delete.svg" alt="Удалить" (click)="requestDelete(item)">
+
+
+        <td class="actions-cell">
+          <img src="assets/correct.svg" alt="Редактировать" (click)="edit.emit(item)">
           <img src="assets/delete.svg" alt="Удалить" (click)="remove.emit(item)">
+
         </td>
       </tr>
       <tr *ngIf="paginatedData.length === 0">
         <td [attr.colspan]="columns.length + 1" class="no-data">Нет данных</td>
+
+
     </tr>
       <tr *ngIf="paginatedData.length === 0">
         <td [attr.colspan]="columns.length" class="no-data">Нет данных</td>
+
 
       </tr>
     </tbody>
@@ -47,3 +60,9 @@
   <span>Страница {{ currentPage }} из {{ totalPages }}</span>
   <button (click)="nextPage()" [disabled]="currentPage === totalPages">Далее</button>
 </div>
+
+<app-confirm-delete-popup
+  *ngIf="showConfirm"
+  (confirm)="confirmDelete()"
+  (cancel)="cancelDelete()">
+</app-confirm-delete-popup>

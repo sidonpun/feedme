@@ -4,8 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { TableControlsComponent } from '../table-controls/table-controls.component';
 import { CatalogViewSwitcherComponent } from '../catalog-view-switcher/catalog-view-switcher.component';
 
+import { ConfirmDeletePopupComponent } from '../confirm-delete-popup/confirm-delete-popup.component';
+
+
 
 import { FilterPipe } from '../../pipes/filter.pipe';
+
 
 
 
@@ -16,8 +20,13 @@ import { FilterPipe } from '../../pipes/filter.pipe';
     CommonModule,
     FormsModule,
     TableControlsComponent,
+
+ 
+    ConfirmDeletePopupComponent
+
     FilterPipe,
     CatalogViewSwitcherComponent
+
   ],
   templateUrl: './catalog-table.component.html',
   styleUrls: ['./catalog-table.component.css']
@@ -34,12 +43,23 @@ export class CatalogTableComponent implements OnChanges {
   @Output() edit = new EventEmitter<any>();
   @Output() remove = new EventEmitter<any>();
 
+
+  @Output() onAddSupply = new EventEmitter<void>();
+  @Output() edit = new EventEmitter<any>();
+  @Output() remove = new EventEmitter<any>();
+
  
 
   /** Управление фильтрацией и пагинацией */
   searchQuery: string = '';
   rowsPerPage: number = 10;
   currentPage: number = 1;
+
+  /** Строка, выбранная для удаления */
+  deleteCandidate: any | null = null;
+  showConfirm = false;
+
+
 
   /** Колонки для режима "Основная информация" */
   readonly infoColumns = [
@@ -119,6 +139,28 @@ export class CatalogTableComponent implements OnChanges {
   }
 
   addSupply(): void { this.onAddSupply.emit() }
+
+
+  /** Выбор строки для удаления */
+  requestDelete(item: any): void {
+    this.deleteCandidate = item;
+    this.showConfirm = true;
+  }
+
+  /** Подтверждение удаления */
+  confirmDelete(): void {
+    if (this.deleteCandidate) {
+      this.remove.emit(this.deleteCandidate);
+    }
+    this.showConfirm = false;
+    this.deleteCandidate = null;
+  }
+
+  cancelDelete(): void {
+    this.showConfirm = false;
+    this.deleteCandidate = null;
+  }
+
 
   onViewChange(view: 'info' | 'logistics'): void {
     this.viewMode = view;

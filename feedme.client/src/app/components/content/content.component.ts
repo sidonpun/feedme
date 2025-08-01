@@ -99,4 +99,9 @@ export class ContentComponent implements OnInit {
   goToCatalog(): void {
     this.selectedSupply = 'catalog';
   }
+
+  onCatalogRemove(item: any): void {
+    this.catalogData = this.catalogData.filter(i => i !== item);
+    localStorage.setItem('catalogData', JSON.stringify(this.catalogData));
+  }
 }
