@@ -7,6 +7,7 @@
   </app-table-controls>
   <app-catalog-view-switcher [view]="viewMode" (viewChange)="onViewChange($event)"></app-catalog-view-switcher>
   <button class="add-button" (click)="addSupply()">+ Новый товар</button>
+
 </div>
 
 <!-- Горизонтальный скролл для таблицы -->
@@ -15,12 +16,16 @@
     <thead>
       <tr>
         <th *ngFor="let col of columns">{{ col.label }}</th>
+
         <th class="actions-header"></th>
+
+
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let item of paginatedData">
         <td *ngFor="let col of columns">{{ format(item[col.key]) }}</td>
+
         <td class="actions-cell">
           <img src="assets/correct.svg" alt="Редактировать" (click)="edit.emit(item)">
           <img src="assets/delete.svg" alt="Удалить" (click)="requestDelete(item)">
@@ -28,6 +33,7 @@
       </tr>
       <tr *ngIf="paginatedData.length === 0">
         <td [attr.colspan]="columns.length + 1" class="no-data">Нет данных</td>
+
       </tr>
     </tbody>
   </table>

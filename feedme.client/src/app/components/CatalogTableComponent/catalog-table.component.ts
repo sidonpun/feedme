@@ -3,7 +3,17 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableControlsComponent } from '../table-controls/table-controls.component';
 import { CatalogViewSwitcherComponent } from '../catalog-view-switcher/catalog-view-switcher.component';
+
+
 import { ConfirmDeletePopupComponent } from '../confirm-delete-popup/confirm-delete-popup.component';
+
+
+
+import { FilterPipe } from '../../pipes/filter.pipe';
+
+
+
+
 
 @Component({
   selector: 'app-catalog-table',
@@ -12,8 +22,13 @@ import { ConfirmDeletePopupComponent } from '../confirm-delete-popup/confirm-del
     CommonModule,
     FormsModule,
     TableControlsComponent,
-    CatalogViewSwitcherComponent,
-    ConfirmDeletePopupComponent
+
+
+    ConfirmDeletePopupComponent,
+    FilterPipe,
+    CatalogViewSwitcherComponent
+
+
   ],
   templateUrl: './catalog-table.component.html',
   styleUrls: ['./catalog-table.component.css']
@@ -25,9 +40,11 @@ export class CatalogTableComponent implements OnChanges {
   /** Режим отображения таблицы */
   viewMode: 'info' | 'logistics' = 'info';
 
+
   @Output() onAddSupply = new EventEmitter<void>();
   @Output() edit = new EventEmitter<any>();
   @Output() deleteRow = new EventEmitter<any>();
+
   /** Управление фильтрацией и пагинацией */
   searchQuery: string = '';
   rowsPerPage: number = 10;
@@ -36,6 +53,7 @@ export class CatalogTableComponent implements OnChanges {
   /** Строка, выбранная для удаления */
   deleteCandidate: any | null = null;
   showConfirm = false;
+
 
   /** Колонки для режима "Основная информация" */
   readonly infoColumns = [
@@ -116,6 +134,7 @@ export class CatalogTableComponent implements OnChanges {
 
   addSupply(): void { this.onAddSupply.emit() }
 
+
   /** Выбор строки для удаления */
   requestDelete(item: any): void {
     this.deleteCandidate = item;
@@ -125,7 +144,9 @@ export class CatalogTableComponent implements OnChanges {
   /** Подтверждение удаления */
   confirmDelete(): void {
     if (this.deleteCandidate) {
+
       this.deleteRow.emit(this.deleteCandidate);
+
     }
     this.showConfirm = false;
     this.deleteCandidate = null;
@@ -135,6 +156,7 @@ export class CatalogTableComponent implements OnChanges {
     this.showConfirm = false;
     this.deleteCandidate = null;
   }
+
 
   onViewChange(view: 'info' | 'logistics'): void {
     this.viewMode = view;
