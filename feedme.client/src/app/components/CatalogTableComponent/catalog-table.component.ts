@@ -16,16 +16,8 @@ import { FilterPipe } from '../../pipes/filter.pipe';
     CommonModule,
     FormsModule,
     TableControlsComponent,
-
-    CatalogViewSwitcherComponent
-
-
-    CatalogViewSwitcherComponent,
     FilterPipe,
-
     CatalogViewSwitcherComponent
-
-
   ],
   templateUrl: './catalog-table.component.html',
   styleUrls: ['./catalog-table.component.css']
@@ -42,7 +34,7 @@ export class CatalogTableComponent implements OnChanges {
   @Output() edit = new EventEmitter<any>();
   @Output() remove = new EventEmitter<any>();
 
-  @Output() onAddSupply = new EventEmitter<void>(); 
+ 
 
   /** Управление фильтрацией и пагинацией */
   searchQuery: string = '';
