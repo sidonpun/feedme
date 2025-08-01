@@ -21,9 +21,7 @@ import { FilterPipe } from '../../pipes/filter.pipe';
     FormsModule,
     TableControlsComponent,
 
- 
-    ConfirmDeletePopupComponent
-
+    ConfirmDeletePopupComponent,
     FilterPipe,
     CatalogViewSwitcherComponent
 
@@ -44,9 +42,7 @@ export class CatalogTableComponent implements OnChanges {
   @Output() remove = new EventEmitter<any>();
 
 
-  @Output() onAddSupply = new EventEmitter<void>();
-  @Output() edit = new EventEmitter<any>();
-  @Output() remove = new EventEmitter<any>();
+ 
 
  
 
