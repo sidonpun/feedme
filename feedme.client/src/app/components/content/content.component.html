@@ -38,5 +38,6 @@
 <!-- Таблица Каталога -->
 <app-catalog-table *ngIf="selectedSupply === 'catalog'"
                    [data]="catalogData"
-                   (onAddSupply)="openNewProductPopup()">
+                   (onAddSupply)="openNewProductPopup()"
+                   (deleteRow)="onCatalogRemove($event)">
 </app-catalog-table>
