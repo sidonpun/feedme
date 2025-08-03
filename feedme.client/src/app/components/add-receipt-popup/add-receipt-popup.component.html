@@ -1,5 +1,5 @@
-<div class="popup-backdrop" (click)="onClose()">
-  <div class="popup-content" (click)="$event.stopPropagation()">
+<div class="popup-backdrop">
+  <div class="popup-content">
     <h2>Новая поставка</h2>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
