@@ -1,11 +1,19 @@
 
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { WarehouseService } from '../../services/warehouse.service';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+
+import { WarehouseService } from '../../services/warehouse.service';
+
+interface CatalogItem {
+  name: string;
+  category: string;
+  unitPrice: number;
+  supplier?: string;
+  [key: string]: any;
+}
 
 
 @Component({
@@ -24,8 +32,8 @@ export class NewProductComponent implements OnInit {
   readonly form = this.fb.group({
     productName: this.fb.nonNullable.control('', Validators.required),
     category: this.fb.nonNullable.control('', Validators.required),
-    stock: this.fb.nonNullable.control('', Validators.required),
-    unitPrice: this.fb.nonNullable.control('', Validators.required),
+    stock: this.fb.nonNullable.control(0, [Validators.required, Validators.min(0)]),
+    unitPrice: this.fb.nonNullable.control(0, [Validators.required, Validators.min(0)]),
     expiryDate: this.fb.nonNullable.control('', Validators.required),
     responsible: this.fb.nonNullable.control(''),
     supplier: this.fb.nonNullable.control('')
@@ -34,52 +42,49 @@ export class NewProductComponent implements OnInit {
   /** Категории для выбора */
   readonly categories = ['Заготовка', 'Готовое блюдо', 'Добавка', 'Товар'];
 
+
+  /** Все товары каталога */
+  private catalog: CatalogItem[] = [];
+
   /** Текущий выбранный товар каталога */
-  selectedProduct: any | null = null;
+  selectedProduct: CatalogItem | null = null;
 
   /** Поток подсказок по названию */
+  suggestions$!: Observable<CatalogItem[]>;
 
-  suggestions$!: Observable<any[]>;
 
   constructor(private fb: FormBuilder, private warehouseService: WarehouseService) {}
 
   ngOnInit(): void {
 
-    const catalog = this.warehouseService.getCatalog();
-    const nameControl = this.form.get('productName');
-    this.suggestions$ = (nameControl ? nameControl.valueChanges : of('')).pipe(
+    this.catalog = this.warehouseService.getCatalog();
+    const nameControl = this.form.get('productName')!;
+    this.suggestions$ = nameControl.valueChanges.pipe(
       startWith(''),
-      map(value => this.filterCatalog(value || '', catalog))
+      map(value => this.filterCatalog(value || ''))
     );
-
   }
 
-  private filterCatalog(value: string, catalog: any[]): any[] {
+  private filterCatalog(value: string): CatalogItem[] {
     const query = value.trim().toLowerCase();
-    if (!query) {
-      this.selectedProduct = null;
-      this.form.get('category')!.setValue('');
-      return [];
-    }
-    const matches = catalog.filter(item =>
-      item.name.toLowerCase().includes(query)
-    );
-    const exact = matches.find(item => item.name.toLowerCase() === query);
-    if (exact) {
-      this.selectSuggestion(exact);
-      return [];
-    }
     this.selectedProduct = null;
     this.form.get('category')!.setValue('');
-    return matches;
+    if (!query) {
+      return [];
+    }
+    return this.catalog.filter(item =>
+      item.name.toLowerCase().includes(query)
+    );
   }
 
-
-  selectSuggestion(item: any): void {
+  selectSuggestion(item: CatalogItem): void {
     this.selectedProduct = item;
     this.form.patchValue({
       productName: item.name,
-      category: item.category
+      category: item.category,
+      unitPrice: item.unitPrice,
+      supplier: item.supplier ?? ''
+
     });
   }
 
@@ -87,9 +92,18 @@ export class NewProductComponent implements OnInit {
     if (!this.selectedProduct || this.form.invalid) {
       return;
     }
+
+    const { stock, unitPrice, expiryDate, responsible, supplier } = this.form.getRawValue();
     const data = {
-      catalogItem: this.selectedProduct,
-      ...this.form.getRawValue()
+      name: this.selectedProduct.name,
+      category: this.selectedProduct.category,
+      stock,
+      unitPrice,
+      expiryDate,
+      responsible,
+      supplier,
+      totalCost: stock * unitPrice,
+      catalogItem: this.selectedProduct
     };
     this.onSubmit.emit(data);
     this.form.reset();
