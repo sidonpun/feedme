@@ -1,53 +1,94 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { WarehouseService } from '../../services/warehouse.service';
+import { Observable, of } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-new-product',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './new-product.component.html',
   styleUrls: ['./new-product.component.css']
 })
-export class NewProductComponent {
+export class NewProductComponent implements OnInit {
   @Output() onCancel = new EventEmitter<void>();
   @Output() onSubmit = new EventEmitter<any>();
 
-  productName: string = '';
-  category: string = '';
-  stock: string = '';
-  unitPrice: string = '';
-  expiryDate: string = '';
-  responsible: string = '';
-  supplier: string = '';
+  /** Форма добавления товара на склад */
+  readonly form = this.fb.group({
+    productName: this.fb.nonNullable.control('', Validators.required),
+    category: this.fb.nonNullable.control('', Validators.required),
+    stock: this.fb.nonNullable.control('', Validators.required),
+    unitPrice: this.fb.nonNullable.control('', Validators.required),
+    expiryDate: this.fb.nonNullable.control('', Validators.required),
+    responsible: this.fb.nonNullable.control(''),
+    supplier: this.fb.nonNullable.control('')
+  });
 
-  categories: string[] = ['Заготовка', 'Готовое блюдо', 'Добавка', 'Товар'];
+  /** Категории для выбора */
+  readonly categories = ['Заготовка', 'Готовое блюдо', 'Добавка', 'Товар'];
 
-  handleSubmit() {
-    const formData = {
-      productName: this.productName,
-      category: this.category,
-      stock: this.stock,
-      unitPrice: this.unitPrice,
-      expiryDate: this.expiryDate,
-      responsible: this.responsible,
-      supplier: this.supplier
+  /** Текущий выбранный товар каталога */
+  selectedProduct: any | null = null;
+
+  /** Поток подсказок по названию */
+  suggestions$!: Observable<any[]>;
+
+  constructor(private fb: FormBuilder, private warehouseService: WarehouseService) {}
+
+  ngOnInit(): void {
+    const catalog = this.warehouseService.getCatalog();
+    const nameControl = this.form.get('productName');
+    this.suggestions$ = (nameControl ? nameControl.valueChanges : of('')).pipe(
+      startWith(''),
+      map(value => this.filterCatalog(value || '', catalog))
+    );
+  }
+
+  private filterCatalog(value: string, catalog: any[]): any[] {
+    const query = value.trim().toLowerCase();
+    if (!query) {
+      this.selectedProduct = null;
+      this.form.get('category')!.setValue('');
+      return [];
+    }
+    const matches = catalog.filter(item =>
+      item.name.toLowerCase().includes(query)
+    );
+    const exact = matches.find(item => item.name.toLowerCase() === query);
+    if (exact) {
+      this.selectSuggestion(exact);
+      return [];
+    }
+    this.selectedProduct = null;
+    this.form.get('category')!.setValue('');
+    return matches;
+  }
+
+  selectSuggestion(item: any): void {
+    this.selectedProduct = item;
+    this.form.patchValue({
+      productName: item.name,
+      category: item.category
+    });
+  }
+
+  handleSubmit(): void {
+    if (!this.selectedProduct || this.form.invalid) {
+      return;
+    }
+    const data = {
+      catalogItem: this.selectedProduct,
+      ...this.form.getRawValue()
     };
-    this.onSubmit.emit(formData);
-    this.resetForm();
+    this.onSubmit.emit(data);
+    this.form.reset();
+    this.selectedProduct = null;
   }
 
-  resetForm() {
-    this.productName = '';
-    this.category = '';
-    this.stock = '';
-    this.unitPrice = '';
-    this.expiryDate = '';
-    this.responsible = '';
-    this.supplier = '';
-  }
-
-  cancel() {
+  cancel(): void {
     this.onCancel.emit();
   }
 }

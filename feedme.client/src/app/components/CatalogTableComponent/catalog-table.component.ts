@@ -1,34 +1,18 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ConfirmDeletePopupComponent } from '../confirm-delete-popup/confirm-delete-popup.component';
 import { TableControlsComponent } from '../table-controls/table-controls.component';
 import { CatalogViewSwitcherComponent } from '../catalog-view-switcher/catalog-view-switcher.component';
-
-
-import { ConfirmDeletePopupComponent } from '../confirm-delete-popup/confirm-delete-popup.component';
-
-
-
-import { FilterPipe } from '../../pipes/filter.pipe';
-
-
-
-
-
 @Component({
   selector: 'app-catalog-table',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    TableControlsComponent,
-
-
     ConfirmDeletePopupComponent,
-    FilterPipe,
+    TableControlsComponent,
     CatalogViewSwitcherComponent
-
-
   ],
   templateUrl: './catalog-table.component.html',
   styleUrls: ['./catalog-table.component.css']
