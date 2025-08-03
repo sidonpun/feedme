@@ -2,26 +2,27 @@
   <div class="popup-content">
     <button class="close-btn" (click)="cancel()">×</button>
     <h2>Новый товар</h2>
-    <form (ngSubmit)="handleSubmit()">
+    <form [formGroup]="form" (ngSubmit)="handleSubmit()">
       <div class="form-grid">
         <div class="input-container">
           <label>Название товара</label>
           <input type="text"
-                 [(ngModel)]="productName"
-                 name="productName"
-                 (input)="updateSuggestions()"
-                 autocomplete="off"
-                 required>
-          <div class="suggestions-container" *ngIf="suggestions.length">
-            <div class="suggestion-item" *ngFor="let item of suggestions" (click)="selectSuggestion(item)">
-              {{ item.name }}
+
+                 formControlName="productName"
+                 autocomplete="off">
+          <ng-container *ngIf="!selectedProduct && (suggestions$ | async) as suggestions">
+            <div class="suggestions-container" *ngIf="suggestions.length">
+              <div class="suggestion-item" *ngFor="let item of suggestions" (click)="selectSuggestion(item)">
+                {{ item.name }}
+              </div>
             </div>
-          </div>
+          </ng-container>
+
         </div>
 
         <div class="input-container">
           <label>Категория товара</label>
-          <select [(ngModel)]="category" name="category" required>
+          <select formControlName="category" required>
             <option value="">Выберите категорию</option>
             <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
           </select>
@@ -29,33 +30,35 @@
 
         <div class="input-container">
           <label>Количество</label>
-          <input type="number" [(ngModel)]="stock" name="stock" required>
+          <input type="number" formControlName="stock" required>
         </div>
 
         <div class="input-container">
           <label>Цена за единицу</label>
-          <input type="number" [(ngModel)]="unitPrice" name="unitPrice" required>
+          <input type="number" formControlName="unitPrice" required>
         </div>
 
         <div class="input-container">
           <label>Срок годности</label>
-          <input type="date" [(ngModel)]="expiryDate" name="expiryDate" required>
+          <input type="date" formControlName="expiryDate" required>
         </div>
 
         <div class="input-container">
           <label>Ответственный склад</label>
-          <input type="text" [(ngModel)]="responsible" name="responsible">
+          <input type="text" formControlName="responsible">
         </div>
 
         <div class="input-container">
           <label>Поставщик</label>
-          <input type="text" [(ngModel)]="supplier" name="supplier">
+          <input type="text" formControlName="supplier">
         </div>
       </div>
 
       <div class="popup-buttons">
         <button type="button" class="cancel-btn" (click)="cancel()">Отмена</button>
-        <button type="submit" class="save-btn" [disabled]="!selectedProduct">Сохранить</button>
+
+        <button type="submit" class="save-btn" [disabled]="!selectedProduct || form.invalid">Сохранить</button>
+
       </div>
 
     </form>

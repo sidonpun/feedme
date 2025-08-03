@@ -1,12 +1,16 @@
-import { Component, Output, EventEmitter, OnInit } from '@angular/core';
+
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { WarehouseService } from '../../services/warehouse.service';
+import { Observable, of } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-new-product',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './new-product.component.html',
   styleUrls: ['./new-product.component.css']
 })
@@ -14,75 +18,75 @@ export class NewProductComponent implements OnInit {
   @Output() onCancel = new EventEmitter<void>();
   @Output() onSubmit = new EventEmitter<any>();
 
-  productName = '';
-  category = '';
-  stock = '';
-  unitPrice = '';
-  expiryDate = '';
-  responsible = '';
-  supplier = '';
 
-  /** Данные каталога */
-  private catalog: any[] = [];
-  /** Подсказки по названию */
-  suggestions: any[] = [];
-  /** Выбранный товар каталога */
-  selectedProduct: any | null = null;
+  /** Форма добавления товара на склад */
+  readonly form = this.fb.group({
+    productName: this.fb.nonNullable.control('', Validators.required),
+    category: this.fb.nonNullable.control('', Validators.required),
+    stock: this.fb.nonNullable.control('', Validators.required),
+    unitPrice: this.fb.nonNullable.control('', Validators.required),
+    expiryDate: this.fb.nonNullable.control('', Validators.required),
+    responsible: this.fb.nonNullable.control(''),
+    supplier: this.fb.nonNullable.control('')
+  });
 
+  /** Категории для выбора */
   readonly categories = ['Заготовка', 'Готовое блюдо', 'Добавка', 'Товар'];
 
-  constructor(private warehouseService: WarehouseService) {}
+  /** Текущий выбранный товар каталога */
+  selectedProduct: any | null = null;
 
-  ngOnInit(): void {
-    this.catalog = this.warehouseService.getCatalog();
+  /** Поток подсказок по названию */
+  readonly suggestions$: Observable<any[]>;
+
+  constructor(private fb: FormBuilder, private warehouseService: WarehouseService) {
+    const catalog = this.warehouseService.getCatalog();
+    const nameControl = this.form.get('productName');
+    this.suggestions$ = (nameControl ? nameControl.valueChanges : of('')).pipe(
+      startWith(''),
+      map(value => this.filterCatalog(value || '', catalog))
+    );
   }
 
-  updateSuggestions(): void {
-    const query = this.productName.trim().toLowerCase();
-    this.selectedProduct = null;
+  private filterCatalog(value: string, catalog: any[]): any[] {
+    const query = value.trim().toLowerCase();
     if (!query) {
-      this.suggestions = [];
-      return;
+      this.selectedProduct = null;
+      this.form.get('category')!.setValue('');
+      return [];
     }
-    this.suggestions = this.catalog.filter(item =>
+    const matches = catalog.filter(item =>
       item.name.toLowerCase().includes(query)
     );
+    const exact = matches.find(item => item.name.toLowerCase() === query);
+    if (exact) {
+      this.selectSuggestion(exact);
+      return [];
+    }
+    this.selectedProduct = null;
+    this.form.get('category')!.setValue('');
+    return matches;
   }
 
   selectSuggestion(item: any): void {
     this.selectedProduct = item;
-    this.productName = item.name;
-    this.category = item.category;
-    this.suggestions = [];
+    this.form.patchValue({
+      productName: item.name,
+      category: item.category
+    });
   }
 
   handleSubmit(): void {
-    if (!this.selectedProduct) return;
-
-    const formData = {
+    if (!this.selectedProduct || this.form.invalid) {
+      return;
+    }
+    const data = {
       catalogItem: this.selectedProduct,
-      productName: this.selectedProduct.name,
-      category: this.selectedProduct.category,
-      stock: this.stock,
-      unitPrice: this.unitPrice,
-      expiryDate: this.expiryDate,
-      responsible: this.responsible,
-      supplier: this.supplier
+      ...this.form.getRawValue()
     };
+    this.onSubmit.emit(data);
+    this.form.reset();
 
-    this.onSubmit.emit(formData);
-    this.resetForm();
-  }
-
-  resetForm(): void {
-    this.productName = '';
-    this.category = '';
-    this.stock = '';
-    this.unitPrice = '';
-    this.expiryDate = '';
-    this.responsible = '';
-    this.supplier = '';
-    this.suggestions = [];
     this.selectedProduct = null;
   }
 
