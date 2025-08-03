@@ -1,5 +1,6 @@
 
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { WarehouseService } from '../../services/warehouse.service';
@@ -37,15 +38,20 @@ export class NewProductComponent implements OnInit {
   selectedProduct: any | null = null;
 
   /** Поток подсказок по названию */
-  readonly suggestions$: Observable<any[]>;
 
-  constructor(private fb: FormBuilder, private warehouseService: WarehouseService) {
+  suggestions$!: Observable<any[]>;
+
+  constructor(private fb: FormBuilder, private warehouseService: WarehouseService) {}
+
+  ngOnInit(): void {
+
     const catalog = this.warehouseService.getCatalog();
     const nameControl = this.form.get('productName');
     this.suggestions$ = (nameControl ? nameControl.valueChanges : of('')).pipe(
       startWith(''),
       map(value => this.filterCatalog(value || '', catalog))
     );
+
   }
 
   private filterCatalog(value: string, catalog: any[]): any[] {
@@ -67,6 +73,7 @@ export class NewProductComponent implements OnInit {
     this.form.get('category')!.setValue('');
     return matches;
   }
+
 
   selectSuggestion(item: any): void {
     this.selectedProduct = item;
