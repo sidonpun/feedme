@@ -7,6 +7,7 @@
         <div class="input-container">
           <label>Название товара</label>
           <input type="text"
+
                  formControlName="productName"
                  autocomplete="off">
           <ng-container *ngIf="!selectedProduct && (suggestions$ | async) as suggestions">
@@ -16,6 +17,7 @@
               </div>
             </div>
           </ng-container>
+
         </div>
 
         <div class="input-container">
@@ -54,7 +56,9 @@
 
       <div class="popup-buttons">
         <button type="button" class="cancel-btn" (click)="cancel()">Отмена</button>
+
         <button type="submit" class="save-btn" [disabled]="!selectedProduct || form.invalid">Сохранить</button>
+
       </div>
 
     </form>

@@ -1,3 +1,4 @@
+
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -14,6 +15,7 @@ interface CatalogItem {
   [key: string]: any;
 }
 
+
 @Component({
   selector: 'app-new-product',
   standalone: true,
@@ -24,6 +26,7 @@ interface CatalogItem {
 export class NewProductComponent implements OnInit {
   @Output() onCancel = new EventEmitter<void>();
   @Output() onSubmit = new EventEmitter<any>();
+
 
   /** Форма добавления товара на склад */
   readonly form = this.fb.group({
@@ -39,6 +42,7 @@ export class NewProductComponent implements OnInit {
   /** Категории для выбора */
   readonly categories = ['Заготовка', 'Готовое блюдо', 'Добавка', 'Товар'];
 
+
   /** Все товары каталога */
   private catalog: CatalogItem[] = [];
 
@@ -48,9 +52,11 @@ export class NewProductComponent implements OnInit {
   /** Поток подсказок по названию */
   suggestions$!: Observable<CatalogItem[]>;
 
+
   constructor(private fb: FormBuilder, private warehouseService: WarehouseService) {}
 
   ngOnInit(): void {
+
     this.catalog = this.warehouseService.getCatalog();
     const nameControl = this.form.get('productName')!;
     this.suggestions$ = nameControl.valueChanges.pipe(
@@ -78,6 +84,7 @@ export class NewProductComponent implements OnInit {
       category: item.category,
       unitPrice: item.unitPrice,
       supplier: item.supplier ?? ''
+
     });
   }
 
@@ -85,6 +92,7 @@ export class NewProductComponent implements OnInit {
     if (!this.selectedProduct || this.form.invalid) {
       return;
     }
+
     const { stock, unitPrice, expiryDate, responsible, supplier } = this.form.getRawValue();
     const data = {
       name: this.selectedProduct.name,
@@ -99,6 +107,7 @@ export class NewProductComponent implements OnInit {
     };
     this.onSubmit.emit(data);
     this.form.reset();
+
     this.selectedProduct = null;
   }
 
