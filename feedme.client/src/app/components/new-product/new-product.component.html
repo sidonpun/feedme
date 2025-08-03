@@ -6,7 +6,17 @@
       <div class="form-grid">
         <div class="input-container">
           <label>Название товара</label>
-          <input type="text" [(ngModel)]="productName" name="productName" required>
+          <input type="text"
+                 [(ngModel)]="productName"
+                 name="productName"
+                 (input)="updateSuggestions()"
+                 autocomplete="off"
+                 required>
+          <div class="suggestions-container" *ngIf="suggestions.length">
+            <div class="suggestion-item" *ngFor="let item of suggestions" (click)="selectSuggestion(item)">
+              {{ item.name }}
+            </div>
+          </div>
         </div>
 
         <div class="input-container">
@@ -45,7 +55,7 @@
 
       <div class="popup-buttons">
         <button type="button" class="cancel-btn" (click)="cancel()">Отмена</button>
-        <button type="submit" class="save-btn">Сохранить</button>
+        <button type="submit" class="save-btn" [disabled]="!selectedProduct">Сохранить</button>
       </div>
 
     </form>
