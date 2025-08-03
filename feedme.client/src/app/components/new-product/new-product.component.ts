@@ -1,9 +1,11 @@
+
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { WarehouseService } from '../../services/warehouse.service';
 import { Observable, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-new-product',
@@ -12,9 +14,10 @@ import { map, startWith } from 'rxjs/operators';
   templateUrl: './new-product.component.html',
   styleUrls: ['./new-product.component.css']
 })
-export class NewProductComponent {
+export class NewProductComponent implements OnInit {
   @Output() onCancel = new EventEmitter<void>();
   @Output() onSubmit = new EventEmitter<any>();
+
 
   /** Форма добавления товара на склад */
   readonly form = this.fb.group({
@@ -83,6 +86,7 @@ export class NewProductComponent {
     };
     this.onSubmit.emit(data);
     this.form.reset();
+
     this.selectedProduct = null;
   }
 
