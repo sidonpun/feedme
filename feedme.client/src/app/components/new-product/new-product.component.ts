@@ -1,9 +1,12 @@
+
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { WarehouseService } from '../../services/warehouse.service';
 import { Observable, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-new-product',
@@ -15,6 +18,7 @@ import { map, startWith } from 'rxjs/operators';
 export class NewProductComponent implements OnInit {
   @Output() onCancel = new EventEmitter<void>();
   @Output() onSubmit = new EventEmitter<any>();
+
 
   /** Форма добавления товара на склад */
   readonly form = this.fb.group({
@@ -34,17 +38,20 @@ export class NewProductComponent implements OnInit {
   selectedProduct: any | null = null;
 
   /** Поток подсказок по названию */
+
   suggestions$!: Observable<any[]>;
 
   constructor(private fb: FormBuilder, private warehouseService: WarehouseService) {}
 
   ngOnInit(): void {
+
     const catalog = this.warehouseService.getCatalog();
     const nameControl = this.form.get('productName');
     this.suggestions$ = (nameControl ? nameControl.valueChanges : of('')).pipe(
       startWith(''),
       map(value => this.filterCatalog(value || '', catalog))
     );
+
   }
 
   private filterCatalog(value: string, catalog: any[]): any[] {
@@ -67,6 +74,7 @@ export class NewProductComponent implements OnInit {
     return matches;
   }
 
+
   selectSuggestion(item: any): void {
     this.selectedProduct = item;
     this.form.patchValue({
@@ -85,6 +93,7 @@ export class NewProductComponent implements OnInit {
     };
     this.onSubmit.emit(data);
     this.form.reset();
+
     this.selectedProduct = null;
   }
 
