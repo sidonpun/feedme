@@ -61,7 +61,7 @@
 .checkbox-container {
   display: flex;
   align-items: center;
-  flex: 1 1 calc(50% - 16px);
+  flex: 1 1 ;
 }
 .checkbox-label {
   display: flex;
