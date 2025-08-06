@@ -1,5 +1,5 @@
 
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, Input } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -18,6 +18,7 @@ import { map, startWith } from 'rxjs/operators';
 export class NewProductComponent implements OnInit {
   @Output() onCancel = new EventEmitter<void>();
   @Output() onSubmit = new EventEmitter<any>();
+  @Input() warehouse!: string;
 
 
   /** Форма добавления товара на склад */
@@ -45,7 +46,7 @@ export class NewProductComponent implements OnInit {
 
   ngOnInit(): void {
 
-    const catalog = this.warehouseService.getCatalog();
+    const catalog = this.warehouseService.getCatalog(this.warehouse);
     const nameControl = this.form.get('productName');
     this.suggestions$ = (nameControl ? nameControl.valueChanges : of('')).pipe(
       startWith(''),

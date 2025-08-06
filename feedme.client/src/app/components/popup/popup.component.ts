@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 export class PopupComponent implements OnInit {
   @Output() onClose = new EventEmitter<void>();
   @Output() onAddItem = new EventEmitter<any>();
+  @Input() warehouse!: string;
 
   name = '';
   category = '';
@@ -27,7 +28,7 @@ export class PopupComponent implements OnInit {
   categories = ['Заготовка', 'Готовое блюдо', 'Добавка', 'Товар'];
 
   ngOnInit() {
-    const savedData = localStorage.getItem('catalogData');
+    const savedData = localStorage.getItem(`warehouseCatalog_${this.warehouse}`);
     this.catalogData = savedData ? JSON.parse(savedData) : [];
   }
 
