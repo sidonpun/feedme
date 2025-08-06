@@ -51,7 +51,7 @@ export class ContentComponent implements OnInit {
   private loadAllData(): void {
     this.supplyData = JSON.parse(localStorage.getItem(`warehouseSupplies_${this.selectedTab}`) || '[]');
     this.stockData = JSON.parse(localStorage.getItem(`warehouseStock_${this.selectedTab}`) || '[]');
-    this.catalogData = JSON.parse(localStorage.getItem('catalogData') || '[]');
+    this.catalogData = JSON.parse(localStorage.getItem(`warehouseCatalog_${this.selectedTab}`) || '[]');
   }
 
   /** Смена вкладки склада */
@@ -83,7 +83,7 @@ export class ContentComponent implements OnInit {
       localStorage.setItem(`warehouseStock_${this.selectedTab}`, JSON.stringify(this.stockData));
     } else {
       this.catalogData.push(item);
-      localStorage.setItem('catalogData', JSON.stringify(this.catalogData));
+      localStorage.setItem(`warehouseCatalog_${this.selectedTab}`, JSON.stringify(this.catalogData));
     }
     this.closeNewProductPopup();
   }
@@ -102,6 +102,6 @@ export class ContentComponent implements OnInit {
 
   onCatalogRemove(item: any): void {
     this.catalogData = this.catalogData.filter(i => i !== item);
-    localStorage.setItem('catalogData', JSON.stringify(this.catalogData));
+    localStorage.setItem(`warehouseCatalog_${this.selectedTab}`, JSON.stringify(this.catalogData));
   }
 }
