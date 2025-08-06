@@ -1,3 +1,4 @@
+using feedme.Server.Repositories;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 
 namespace feedme.Server;
@@ -12,6 +13,7 @@ public class Program
         // Add services to the container.
 
         builder.Services.AddControllers();
+        builder.Services.AddSingleton<ICatalogRepository, InMemoryCatalogRepository>();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
 

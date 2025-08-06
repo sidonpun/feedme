@@ -1,11 +1,23 @@
 
+
 import { Component, EventEmitter, OnInit, Output, Input } from '@angular/core';
+
 
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { WarehouseService } from '../../services/warehouse.service';
+import { CatalogService, CatalogItem } from '../../services/catalog.service';
 import { Observable, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+
+interface FormValues {
+  productName: string;
+  category: string;
+  stock: string;
+  unitPrice: string;
+  expiryDate: string;
+  responsible: string;
+  supplier: string;
+}
 
 
 @Component({
@@ -17,8 +29,10 @@ import { map, startWith } from 'rxjs/operators';
 })
 export class NewProductComponent implements OnInit {
   @Output() onCancel = new EventEmitter<void>();
+
   @Output() onSubmit = new EventEmitter<any>();
   @Input() warehouse!: string;
+
 
 
   /** Форма добавления товара на склад */
@@ -36,13 +50,14 @@ export class NewProductComponent implements OnInit {
   readonly categories = ['Заготовка', 'Готовое блюдо', 'Добавка', 'Товар'];
 
   /** Текущий выбранный товар каталога */
-  selectedProduct: any | null = null;
+  selectedProduct: CatalogItem | null = null;
 
   /** Поток подсказок по названию */
 
-  suggestions$!: Observable<any[]>;
+  suggestions$!: Observable<CatalogItem[]>;
 
-  constructor(private fb: FormBuilder, private warehouseService: WarehouseService) {}
+  private catalog: CatalogItem[] = [];
+
 
   ngOnInit(): void {
 
@@ -53,16 +68,26 @@ export class NewProductComponent implements OnInit {
       map(value => this.filterCatalog(value || '', catalog))
     );
 
+
+  ngOnInit(): void {
+    this.catalogService.getAll().subscribe(catalog => {
+      this.catalog = catalog;
+      const nameControl = this.form.get('productName');
+      this.suggestions$ = (nameControl ? nameControl.valueChanges : of('')).pipe(
+        startWith(''),
+        map(value => this.filterCatalog(value || ''))
+      );
+    });
   }
 
-  private filterCatalog(value: string, catalog: any[]): any[] {
+  private filterCatalog(value: string): CatalogItem[] {
     const query = value.trim().toLowerCase();
     if (!query) {
       this.selectedProduct = null;
       this.form.get('category')!.setValue('');
       return [];
     }
-    const matches = catalog.filter(item =>
+    const matches = this.catalog.filter(item =>
       item.name.toLowerCase().includes(query)
     );
     const exact = matches.find(item => item.name.toLowerCase() === query);
@@ -76,7 +101,7 @@ export class NewProductComponent implements OnInit {
   }
 
 
-  selectSuggestion(item: any): void {
+  selectSuggestion(item: CatalogItem): void {
     this.selectedProduct = item;
     this.form.patchValue({
       productName: item.name,
