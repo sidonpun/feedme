@@ -1,13 +1,9 @@
-
-
-import { Component, EventEmitter, OnInit, Output, Input } from '@angular/core';
-
-
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { CatalogService, CatalogItem } from '../../services/catalog.service';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { CatalogItem, CatalogService } from '../../services/catalog.service';
 
 interface FormValues {
   productName: string;
@@ -30,10 +26,13 @@ interface FormValues {
 export class NewProductComponent implements OnInit {
   @Output() onCancel = new EventEmitter<void>();
 
-  @Output() onSubmit = new EventEmitter<any>();
+  @Output() onSubmit = new EventEmitter<FormValues & { catalogItem: CatalogItem }>();
   @Input() warehouse!: string;
 
-
+  constructor(
+    private fb: FormBuilder,
+    private catalogService: CatalogService
+  ) {}
 
   /** Форма добавления товара на склад */
   readonly form = this.fb.group({
@@ -58,18 +57,9 @@ export class NewProductComponent implements OnInit {
 
   private catalog: CatalogItem[] = [];
 
-
   ngOnInit(): void {
+    this.form.patchValue({ responsible: this.warehouse });
 
-    const catalog = this.warehouseService.getCatalog(this.warehouse);
-    const nameControl = this.form.get('productName');
-    this.suggestions$ = (nameControl ? nameControl.valueChanges : of('')).pipe(
-      startWith(''),
-      map(value => this.filterCatalog(value || '', catalog))
-    );
-
-
-  ngOnInit(): void {
     this.catalogService.getAll().subscribe(catalog => {
       this.catalog = catalog;
       const nameControl = this.form.get('productName');
@@ -113,9 +103,9 @@ export class NewProductComponent implements OnInit {
     if (!this.selectedProduct || this.form.invalid) {
       return;
     }
-    const data = {
+    const data: FormValues & { catalogItem: CatalogItem } = {
       catalogItem: this.selectedProduct,
-      ...this.form.getRawValue()
+      ...(this.form.getRawValue() as FormValues)
     };
     this.onSubmit.emit(data);
     this.form.reset();
