@@ -29,7 +29,7 @@
         <td class="actions-cell">
           <img src="assets/correct.svg" alt="Редактировать" (click)="edit.emit(item)">
           <img src="assets/delete.svg" alt="Удалить" (click)="requestDelete(item)">
-        </td>cd
+        </td>
       </tr>
       <tr *ngIf="paginatedData.length === 0">
         <td [attr.colspan]="columns.length + 1" class="no-data">Нет данных</td>
