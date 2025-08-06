@@ -4,7 +4,6 @@ import { Injectable } from '@angular/core';
 export class WarehouseService {
   private suppliesKey(tab: string) { return `warehouseSupplies_${tab}`; }
   private stockKey(tab: string) { return `warehouseStock_${tab}`; }
-  private catalogKey = 'catalogData';
 
   getSupplies(tab: string): any[] {
     return JSON.parse(localStorage.getItem(this.suppliesKey(tab)) || '[]');
@@ -26,13 +25,4 @@ export class WarehouseService {
     localStorage.setItem(this.stockKey(tab), JSON.stringify(arr));
   }
 
-  getCatalog(): any[] {
-    return JSON.parse(localStorage.getItem(this.catalogKey) || '[]');
-  }
-
-  addCatalog(item: any): void {
-    const arr = this.getCatalog();
-    arr.push(item);
-    localStorage.setItem(this.catalogKey, JSON.stringify(arr));
-  }
 }
