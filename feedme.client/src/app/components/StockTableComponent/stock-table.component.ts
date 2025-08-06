@@ -29,8 +29,12 @@ export class StockTableComponent {
     return this.filteredData.slice(start, start + this.rowsPerPage);
   }
 
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredData.length / this.rowsPerPage));
+  }
+
   nextPage() {
-    if ((this.currentPage * this.rowsPerPage) < this.filteredData.length) {
+    if (this.currentPage < this.totalPages) {
       this.currentPage++;
     }
   }
