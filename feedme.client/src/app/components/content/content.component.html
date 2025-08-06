@@ -8,8 +8,9 @@
 </app-supply-controls>
 
 <app-new-product *ngIf="showPopup && selectedSupply !== 'catalog'"
-                 (onSubmit)="onNewProductSubmit($event)"
-                 (onCancel)="showPopup = false">
+                [warehouse]="selectedTab"
+                (onSubmit)="onNewProductSubmit($event)"
+                (onCancel)="showPopup = false">
 </app-new-product>
 
 <app-catalog-new-product-popup *ngIf="showPopup && selectedSupply === 'catalog'"

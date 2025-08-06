@@ -1,4 +1,8 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+
+
+import { Component, EventEmitter, OnInit, Output, Input } from '@angular/core';
+
+
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CatalogService, CatalogItem } from '../../services/catalog.service';
@@ -25,7 +29,10 @@ interface FormValues {
 })
 export class NewProductComponent implements OnInit {
   @Output() onCancel = new EventEmitter<void>();
-  @Output() onSubmit = new EventEmitter<FormValues & { catalogItem: CatalogItem }>();
+
+  @Output() onSubmit = new EventEmitter<any>();
+  @Input() warehouse!: string;
+
 
 
   /** Форма добавления товара на склад */
@@ -51,7 +58,16 @@ export class NewProductComponent implements OnInit {
 
   private catalog: CatalogItem[] = [];
 
-  constructor(private fb: FormBuilder, private catalogService: CatalogService) {}
+
+  ngOnInit(): void {
+
+    const catalog = this.warehouseService.getCatalog(this.warehouse);
+    const nameControl = this.form.get('productName');
+    this.suggestions$ = (nameControl ? nameControl.valueChanges : of('')).pipe(
+      startWith(''),
+      map(value => this.filterCatalog(value || '', catalog))
+    );
+
 
   ngOnInit(): void {
     this.catalogService.getAll().subscribe(catalog => {
