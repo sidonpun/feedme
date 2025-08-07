@@ -5,12 +5,10 @@
     <!-- Allows the build (or compile) script located on package.json to run on Build -->
     <ShouldRunBuildScript>false</ShouldRunBuildScript>
     <!-- Folder where production build objects will be placed -->
-    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\feedme.client\browser\</BuildOutputFolder>
+    <BuildOutputFolder>$(MSBuildProjectDirectory)\\dist\\feedme.client\\browser\\</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="src\app\components\NavigationComponent\" />
-    <Folder Include="src\app\components\CatalogTableComponent\" />
-    <Folder Include="src\app\components\ShitForTest\" />
-    <Folder Include="src\app\components\Новая папка\" />
+    <Folder Include="src\\app\\components\\NavigationComponent\\" />
+    <Folder Include="src\\app\\components\\CatalogTableComponent\\" />
   </ItemGroup>
 </Project>
