@@ -10,6 +10,7 @@ import { StockTableComponent } from '../StockTableComponent/stock-table.componen
 import { CatalogTableComponent } from '../CatalogTableComponent/catalog-table.component';
 import { NewProductComponent } from '../new-product/new-product.component';
 import { CatalogNewProductPopupComponent } from '../catalog-new-product-popup/catalog-new-product-popup.component';
+import { CatalogService, CatalogItem } from '../../services/catalog.service';
 
 @Component({
   selector: 'app-content',
@@ -38,20 +39,24 @@ export class ContentComponent implements OnInit {
 
   supplyData: any[] = [];
   stockData: any[] = [];
-  catalogData: any[] = [];
+  catalogData: CatalogItem[] = [];
 
   selectedItem: any = null;
   showPopup = false;
+
+  constructor(private catalogService: CatalogService) {}
 
   ngOnInit(): void {
     this.loadAllData();
   }
 
-  /** Загружаем данные из localStorage */
+  /** Загружаем данные из localStorage и сервера */
   private loadAllData(): void {
     this.supplyData = JSON.parse(localStorage.getItem(`warehouseSupplies_${this.selectedTab}`) || '[]');
     this.stockData = JSON.parse(localStorage.getItem(`warehouseStock_${this.selectedTab}`) || '[]');
-    this.catalogData = JSON.parse(localStorage.getItem(`warehouseCatalog_${this.selectedTab}`) || '[]');
+    this.catalogService.getAll().subscribe(data => {
+      this.catalogData = data;
+    });
   }
 
   /** Смена вкладки склада */
@@ -78,14 +83,17 @@ export class ContentComponent implements OnInit {
     if (this.selectedSupply === 'supplies') {
       this.supplyData.push(item);
       localStorage.setItem(`warehouseSupplies_${this.selectedTab}`, JSON.stringify(this.supplyData));
+      this.closeNewProductPopup();
     } else if (this.selectedSupply === 'stock') {
       this.stockData.push(item);
       localStorage.setItem(`warehouseStock_${this.selectedTab}`, JSON.stringify(this.stockData));
+      this.closeNewProductPopup();
     } else {
-      this.catalogData.push(item);
-      localStorage.setItem(`warehouseCatalog_${this.selectedTab}`, JSON.stringify(this.catalogData));
+      this.catalogService.create(item).subscribe(created => {
+        this.catalogData.push(created);
+        this.closeNewProductPopup();
+      });
     }
-    this.closeNewProductPopup();
   }
 
   handleSettingsClick(item: any): void {
@@ -100,8 +108,7 @@ export class ContentComponent implements OnInit {
     this.selectedSupply = 'catalog';
   }
 
-  onCatalogRemove(item: any): void {
+  onCatalogRemove(item: CatalogItem): void {
     this.catalogData = this.catalogData.filter(i => i !== item);
-    localStorage.setItem(`warehouseCatalog_${this.selectedTab}`, JSON.stringify(this.catalogData));
   }
 }
