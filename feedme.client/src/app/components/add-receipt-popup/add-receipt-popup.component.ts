@@ -57,8 +57,8 @@ export class AddReceiptPopupComponent implements OnInit {
     if (!id) return;
     this.catalogService.getById(id).subscribe(item => {
       this.form.patchValue({
-        supplierId: item.supplierId,
-        tnvedCode: item.tnvedCode,
+        supplierId: item.supplier,
+        tnvedCode: item.tnved,
         writeoffMethod: item.writeoffMethod,
         unitPrice: item.unitPrice
       });
