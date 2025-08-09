@@ -15,17 +15,12 @@ export class PopupComponent implements OnInit {
   @Input() warehouse!: string;
 
   name = '';
-  category = '';
-  expiryDate = '';
-  unitPrice = '';
-  totalCost = '';
   stock = '';
-  supplyDate = '';
+  expiryDate = '';
   isSuggestionSelected = false;
 
   suggestedNames: any[] = [];
   catalogData: any[] = [];
-  categories = ['Заготовка', 'Готовое блюдо', 'Добавка', 'Товар'];
 
   ngOnInit() {
     const savedData = localStorage.getItem(`warehouseCatalog_${this.warehouse}`);
@@ -45,28 +40,22 @@ export class PopupComponent implements OnInit {
 
   handleSuggestionSelect(suggestion: any) {
     this.name = suggestion.name;
-    this.category = suggestion.category;
-    this.stock = suggestion.stock || '';
-    this.unitPrice = suggestion.price || '';
-    this.expiryDate = suggestion.expiryDate || '';
-    this.supplyDate = suggestion.supplyDate || '';
-    this.totalCost = suggestion.totalCost || '';
     this.suggestedNames = [];
     this.isSuggestionSelected = true;
   }
 
   handleSubmit() {
+    if (!this.isSuggestionSelected) {
+      return;
+    }
+
     const id = Date.now().toString();
 
     const newItem = {
       id,
       name: this.name,
-      category: this.category,
       stock: this.stock,
-      unitPrice: this.unitPrice,
       expiryDate: this.expiryDate,
-      supplyDate: this.supplyDate,
-      totalCost: this.totalCost
     };
 
     this.onAddItem.emit(newItem);
@@ -75,13 +64,10 @@ export class PopupComponent implements OnInit {
 
   resetForm() {
     this.name = '';
-    this.category = '';
     this.stock = '';
-    this.unitPrice = '';
     this.expiryDate = '';
-    this.supplyDate = '';
-    this.totalCost = '';
     this.suggestedNames = [];
+    this.isSuggestionSelected = false;
   }
 
   closePopup() {
