@@ -1,19 +1,22 @@
+using System.Collections.Concurrent;
 using feedme.Server.Models;
 
 namespace feedme.Server.Repositories;
 
 public class InMemoryCatalogRepository : ICatalogRepository
 {
-    private readonly List<CatalogItem> _items = new();
+    private readonly ConcurrentDictionary<string, CatalogItem> _items = new();
 
-    public IEnumerable<CatalogItem> GetAll() => _items;
+    public IEnumerable<CatalogItem> GetAll() => _items.Values;
 
-    public CatalogItem? GetById(string id) => _items.FirstOrDefault(i => i.Id == id);
+    public CatalogItem? GetById(string id) =>
+        _items.TryGetValue(id, out var item) ? item : null;
 
     public CatalogItem Add(CatalogItem item)
     {
-        item.Id = Guid.NewGuid().ToString();
-        _items.Add(item);
+        var id = Guid.NewGuid().ToString();
+        item.Id = id;
+        _items[id] = item;
         return item;
     }
 }
