@@ -2,17 +2,14 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable, of } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { map, startWith, take } from 'rxjs/operators';
 import { CatalogItem, CatalogService } from '../../services/catalog.service';
 
-interface FormValues {
+/** Значения формы добавления поставки */
+interface SupplyFormValues {
   productName: string;
-  category: string;
   stock: string;
-  unitPrice: string;
   expiryDate: string;
-  responsible: string;
-  supplier: string;
 }
 
 
@@ -26,7 +23,14 @@ interface FormValues {
 export class NewProductComponent implements OnInit {
   @Output() onCancel = new EventEmitter<void>();
 
-  @Output() onSubmit = new EventEmitter<FormValues & { catalogItem: CatalogItem }>();
+  @Output() onSubmit = new EventEmitter<SupplyFormValues & {
+    catalogItem: CatalogItem;
+    category: string;
+    unitPrice: number;
+    supplier: string;
+    responsible: string;
+  }>();
+
   @Input() warehouse!: string;
 
   constructor(
@@ -34,47 +38,41 @@ export class NewProductComponent implements OnInit {
     private catalogService: CatalogService
   ) {}
 
-  /** Форма добавления товара на склад */
+  /** Форма добавления поставки */
   readonly form = this.fb.group({
     productName: this.fb.nonNullable.control('', Validators.required),
-    category: this.fb.nonNullable.control('', Validators.required),
     stock: this.fb.nonNullable.control('', Validators.required),
-    unitPrice: this.fb.nonNullable.control('', Validators.required),
-    expiryDate: this.fb.nonNullable.control('', Validators.required),
-    responsible: this.fb.nonNullable.control(''),
-    supplier: this.fb.nonNullable.control('')
+    expiryDate: this.fb.nonNullable.control('', Validators.required)
   });
-
-  /** Категории для выбора */
-  readonly categories = ['Заготовка', 'Готовое блюдо', 'Добавка', 'Товар'];
 
   /** Текущий выбранный товар каталога */
   selectedProduct: CatalogItem | null = null;
 
   /** Поток подсказок по названию */
-
-  suggestions$!: Observable<CatalogItem[]>;
+  suggestions$: Observable<CatalogItem[]> = of([]);
 
   private catalog: CatalogItem[] = [];
 
   ngOnInit(): void {
-    this.form.patchValue({ responsible: this.warehouse });
+    const nameControl = this.form.controls.productName;
+    this.suggestions$ = nameControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this.filterCatalog(value || ''))
+    );
 
-    this.catalogService.getAll().subscribe(catalog => {
-      this.catalog = catalog;
-      const nameControl = this.form.get('productName');
-      this.suggestions$ = (nameControl ? nameControl.valueChanges : of('')).pipe(
-        startWith(''),
-        map(value => this.filterCatalog(value || ''))
-      );
-    });
+    this.catalogService
+      .getAll()
+      .pipe(take(1))
+      .subscribe(catalog => {
+        this.catalog = catalog;
+        nameControl.setValue(nameControl.value);
+      });
   }
 
   private filterCatalog(value: string): CatalogItem[] {
     const query = value.trim().toLowerCase();
     if (!query) {
       this.selectedProduct = null;
-      this.form.get('category')!.setValue('');
       return [];
     }
     const matches = this.catalog.filter(item =>
@@ -82,34 +80,36 @@ export class NewProductComponent implements OnInit {
     );
     const exact = matches.find(item => item.name.toLowerCase() === query);
     if (exact) {
-      this.selectSuggestion(exact);
+      this.selectedProduct = exact;
+      this.form.patchValue({ productName: exact.name }, { emitEvent: false });
       return [];
     }
     this.selectedProduct = null;
-    this.form.get('category')!.setValue('');
     return matches;
   }
 
-
   selectSuggestion(item: CatalogItem): void {
     this.selectedProduct = item;
-    this.form.patchValue({
-      productName: item.name,
-      category: item.category
-    });
+    this.form.patchValue({ productName: item.name }, { emitEvent: false });
   }
 
   handleSubmit(): void {
     if (!this.selectedProduct || this.form.invalid) {
       return;
     }
-    const data: FormValues & { catalogItem: CatalogItem } = {
-      catalogItem: this.selectedProduct,
-      ...(this.form.getRawValue() as FormValues)
+    const { stock, expiryDate } = this.form.getRawValue();
+    const data = {
+      productName: this.selectedProduct.name,
+      stock,
+      expiryDate,
+      category: this.selectedProduct.category,
+      unitPrice: this.selectedProduct.unitPrice,
+      supplier: this.selectedProduct.supplier,
+      responsible: this.warehouse,
+      catalogItem: this.selectedProduct
     };
     this.onSubmit.emit(data);
     this.form.reset();
-
     this.selectedProduct = null;
   }
 
