@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { take } from 'rxjs';
 
 import { WarehouseTabsComponent } from '../warehouse-tabs/warehouse-tabs.component';
 import { SupplyControlsComponent } from '../supply-controls/supply-controls.component';
@@ -89,10 +90,13 @@ export class ContentComponent implements OnInit {
       localStorage.setItem(`warehouseStock_${this.selectedTab}`, JSON.stringify(this.stockData));
       this.closeNewProductPopup();
     } else {
-      this.catalogService.create(item).subscribe(created => {
-        this.catalogData.push(created);
-        this.closeNewProductPopup();
-      });
+      this.catalogService
+        .create(item)
+        .pipe(take(1))
+        .subscribe(created => {
+          this.catalogData.push(created);
+          this.closeNewProductPopup();
+        });
     }
   }
 
