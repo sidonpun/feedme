@@ -53,7 +53,6 @@ export type NewProductForm = {
 export class CatalogNewProductPopupComponent {
   @Output() cancel = new EventEmitter<void>();
   @Output() save = new EventEmitter<NewProductFormValues>();
-  @Output() submitForm = new EventEmitter<NewProductFormValues>();
 
   form: FormGroup<NewProductForm>;
 
@@ -111,11 +110,10 @@ export class CatalogNewProductPopupComponent {
     });
   }
   onSubmit(): void {
-    if (this.form.valid) {
-      const data = this.form.getRawValue();
-      this.save.emit(data);
-      this.submitForm.emit(data);
+    if (this.form.invalid) {
+      return;
     }
+    this.save.emit(this.form.getRawValue());
   }
 
   close(): void {
