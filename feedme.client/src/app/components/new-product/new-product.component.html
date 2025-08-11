@@ -2,7 +2,7 @@
   <div class="popup-content">
     <button class="close-btn" (click)="cancel()">×</button>
     <h2>Новый товар</h2>
-    <form [formGroup]="form" (ngSubmit)="handleSubmit()">
+    <form [formGroup]="form">
       <div class="form-grid">
         <div class="input-container">
           <label>Название товара</label>
@@ -33,7 +33,10 @@
 
       <div class="popup-buttons">
         <button type="button" class="cancel-btn" (click)="cancel()">Отмена</button>
-        <button type="submit" class="save-btn" [disabled]="!selectedProduct || form.invalid">Сохранить</button>
+        <button type="button"
+                class="save-btn"
+                [disabled]="!selectedProduct || form.invalid"
+                (click)="handleSubmit()">Сохранить</button>
       </div>
     </form>
   </div>

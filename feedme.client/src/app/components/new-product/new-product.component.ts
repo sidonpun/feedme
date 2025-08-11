@@ -95,6 +95,7 @@ export class NewProductComponent implements OnInit {
 
   handleSubmit(): void {
     if (!this.selectedProduct || this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
     const { stock, expiryDate } = this.form.getRawValue();
