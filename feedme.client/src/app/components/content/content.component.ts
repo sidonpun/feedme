@@ -44,6 +44,7 @@ export class ContentComponent implements OnInit {
 
   selectedItem: any = null;
   showPopup = false;
+  saveError: string | null = null;
 
   constructor(private catalogService: CatalogService) {}
 
@@ -73,10 +74,12 @@ export class ContentComponent implements OnInit {
 
   /** Открыть попап добавления */
   openNewProductPopup(): void {
+    this.saveError = null;
     this.showPopup = true;
   }
   closeNewProductPopup(): void {
     this.showPopup = false;
+    this.saveError = null;
   }
 
   /** Получить новые данные из формы */
@@ -97,8 +100,11 @@ export class ContentComponent implements OnInit {
           next: created => {
             this.catalogData = [...this.catalogData, created];
             this.closeNewProductPopup();
+            this.saveError = null;
           },
-          error: err => console.error('Ошибка при добавлении товара в каталог', err)
+          error: () => {
+            this.saveError = 'Не удалось сохранить товар. Попробуйте ещё раз.';
+          }
         });
     }
   }
