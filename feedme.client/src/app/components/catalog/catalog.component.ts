@@ -34,9 +34,12 @@ export class CatalogComponent implements OnInit {
     this.catalogService
       .create(item)
       .pipe(take(1))
-      .subscribe(created => {
-        const updated = [...this.catalogDataSubject.value, created];
-        this.catalogDataSubject.next(updated);
+      .subscribe({
+        next: created => {
+          const updated = [...this.catalogDataSubject.value, created];
+          this.catalogDataSubject.next(updated);
+        },
+        error: err => console.error('Ошибка при добавлении товара в каталог', err)
       });
   }
 }
