@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable, of } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { map, startWith, take } from 'rxjs/operators';
 import { CatalogItem, CatalogService } from '../../services/catalog.service';
 
 /** Значения формы добавления поставки */
@@ -49,19 +49,27 @@ export class NewProductComponent implements OnInit {
   selectedProduct: CatalogItem | null = null;
 
   /** Поток подсказок по названию */
-  suggestions$!: Observable<CatalogItem[]>;
+
+  suggestions$: Observable<CatalogItem[]> = of([]);
 
   private catalog: CatalogItem[] = [];
 
   ngOnInit(): void {
-    this.catalogService.getAll().subscribe(catalog => {
-      this.catalog = catalog;
-      const nameControl = this.form.get('productName');
-      this.suggestions$ = (nameControl ? nameControl.valueChanges : of('')).pipe(
-        startWith(''),
-        map(value => this.filterCatalog(value || ''))
-      );
-    });
+
+    const nameControl = this.form.controls.productName;
+    this.suggestions$ = nameControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this.filterCatalog(value || ''))
+    );
+
+    this.catalogService
+      .getAll()
+      .pipe(take(1))
+      .subscribe(catalog => {
+        this.catalog = catalog;
+        nameControl.setValue(nameControl.value);
+      });
+
   }
 
   private filterCatalog(value: string): CatalogItem[] {
@@ -85,11 +93,14 @@ export class NewProductComponent implements OnInit {
 
   selectSuggestion(item: CatalogItem): void {
     this.selectedProduct = item;
-    this.form.patchValue({ productName: item.name });
+
+    this.form.patchValue({ productName: item.name }, { emitEvent: false });
+
   }
 
   handleSubmit(): void {
     if (!this.selectedProduct || this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
     const { stock, expiryDate } = this.form.getRawValue();
