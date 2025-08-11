@@ -49,11 +49,13 @@ export class NewProductComponent implements OnInit {
   selectedProduct: CatalogItem | null = null;
 
   /** Поток подсказок по названию */
+
   suggestions$: Observable<CatalogItem[]> = of([]);
 
   private catalog: CatalogItem[] = [];
 
   ngOnInit(): void {
+
     const nameControl = this.form.controls.productName;
     this.suggestions$ = nameControl.valueChanges.pipe(
       startWith(''),
@@ -67,6 +69,7 @@ export class NewProductComponent implements OnInit {
         this.catalog = catalog;
         nameControl.setValue(nameControl.value);
       });
+
   }
 
   private filterCatalog(value: string): CatalogItem[] {
@@ -90,7 +93,9 @@ export class NewProductComponent implements OnInit {
 
   selectSuggestion(item: CatalogItem): void {
     this.selectedProduct = item;
+
     this.form.patchValue({ productName: item.name }, { emitEvent: false });
+
   }
 
   handleSubmit(): void {

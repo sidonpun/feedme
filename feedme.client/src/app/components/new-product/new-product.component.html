@@ -33,10 +33,12 @@
 
       <div class="popup-buttons">
         <button type="button" class="cancel-btn" (click)="cancel()">Отмена</button>
+
         <button type="button"
                 class="save-btn"
                 [disabled]="!selectedProduct || form.invalid"
                 (click)="handleSubmit()">Сохранить</button>
+
       </div>
     </form>
   </div>

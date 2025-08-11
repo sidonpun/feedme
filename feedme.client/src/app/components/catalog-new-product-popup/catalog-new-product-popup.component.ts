@@ -111,7 +111,9 @@ export class CatalogNewProductPopupComponent {
   }
   onSubmit(): void {
     if (this.form.invalid) {
+
       this.form.markAllAsTouched();
+
       return;
     }
     this.save.emit(this.form.getRawValue());
