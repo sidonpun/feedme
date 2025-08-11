@@ -1,6 +1,8 @@
 const { env } = require('process');
 
-const target = env["services__feedme-server__https__0"] ?? 'https://localhost:7221';
+const httpsTarget = env['services__feedme-server__https__0'];
+const httpTarget = env['services__feedme-server__http__0'];
+const target = httpsTarget ?? httpTarget ?? 'https://localhost:7221';
 
 const PROXY_CONFIG = [
   {
