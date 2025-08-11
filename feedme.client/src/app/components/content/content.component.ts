@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { take } from 'rxjs';
+import { take, tap, catchError, EMPTY } from 'rxjs';
 
 import { WarehouseTabsComponent } from '../warehouse-tabs/warehouse-tabs.component';
 import { SupplyControlsComponent } from '../supply-controls/supply-controls.component';
@@ -44,6 +44,7 @@ export class ContentComponent implements OnInit {
 
   selectedItem: any = null;
   showPopup = false;
+  errorMessage: string | null = null;
 
   constructor(private catalogService: CatalogService) {}
 
@@ -55,9 +56,20 @@ export class ContentComponent implements OnInit {
   private loadAllData(): void {
     this.supplyData = JSON.parse(localStorage.getItem(`warehouseSupplies_${this.selectedTab}`) || '[]');
     this.stockData = JSON.parse(localStorage.getItem(`warehouseStock_${this.selectedTab}`) || '[]');
-    this.catalogService.getAll().subscribe(data => {
-      this.catalogData = data;
-    });
+    this.catalogService
+      .getAll()
+      .pipe(
+        take(1),
+        tap(data => {
+          this.catalogData = data;
+          this.errorMessage = null;
+        }),
+        catchError(() => {
+          this.errorMessage = 'Не удалось загрузить каталог. Попробуйте ещё раз.';
+          return EMPTY;
+        })
+      )
+      .subscribe();
   }
 
   /** Смена вкладки склада */
@@ -73,10 +85,12 @@ export class ContentComponent implements OnInit {
 
   /** Открыть попап добавления */
   openNewProductPopup(): void {
+    this.errorMessage = null;
     this.showPopup = true;
   }
   closeNewProductPopup(): void {
     this.showPopup = false;
+    this.errorMessage = null;
   }
 
   /** Получить новые данные из формы */
@@ -92,14 +106,19 @@ export class ContentComponent implements OnInit {
     } else {
       this.catalogService
         .create(item)
-        .pipe(take(1))
-        .subscribe({
-          next: created => {
+        .pipe(
+          take(1),
+          tap(created => {
             this.catalogData = [...this.catalogData, created];
             this.closeNewProductPopup();
-          },
-          error: err => console.error('Ошибка при добавлении товара в каталог', err)
-        });
+            this.errorMessage = null;
+          }),
+          catchError(() => {
+            this.errorMessage = 'Не удалось сохранить товар. Попробуйте ещё раз.';
+            return EMPTY;
+          })
+        )
+        .subscribe();
     }
   }
 

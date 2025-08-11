@@ -55,3 +55,8 @@
     height: 24px;
     margin-right: 8px;
   }
+
+.error-message {
+  color: #dc3545;
+  margin: 8px 0;
+}

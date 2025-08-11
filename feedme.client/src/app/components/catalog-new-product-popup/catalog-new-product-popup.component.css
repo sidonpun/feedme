@@ -29,6 +29,11 @@
     text-align: center;
     margin-bottom: 16px;
   }
+.error-message {
+  color: #dc3545;
+  text-align: center;
+  margin-bottom: 16px;
+}
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
