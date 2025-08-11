@@ -93,9 +93,12 @@ export class ContentComponent implements OnInit {
       this.catalogService
         .create(item)
         .pipe(take(1))
-        .subscribe(created => {
-          this.catalogData.push(created);
-          this.closeNewProductPopup();
+        .subscribe({
+          next: created => {
+            this.catalogData = [...this.catalogData, created];
+            this.closeNewProductPopup();
+          },
+          error: err => console.error('Ошибка при добавлении товара в каталог', err)
         });
     }
   }
