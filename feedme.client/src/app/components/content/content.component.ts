@@ -44,7 +44,9 @@ export class ContentComponent implements OnInit {
 
   selectedItem: any = null;
   showPopup = false;
+
   errorMessage: string | null = null;
+
 
   constructor(private catalogService: CatalogService) {}
 
@@ -80,12 +82,16 @@ export class ContentComponent implements OnInit {
 
   /** Открыть попап добавления */
   openNewProductPopup(): void {
+
     this.errorMessage = null;
+
     this.showPopup = true;
   }
   closeNewProductPopup(): void {
     this.showPopup = false;
+
     this.errorMessage = null;
+
   }
 
   /** Получить новые данные из формы */
@@ -106,10 +112,12 @@ export class ContentComponent implements OnInit {
           next: created => {
             this.catalogData = [...this.catalogData, created];
             this.closeNewProductPopup();
+
             this.errorMessage = null;
           },
           error: () => {
             this.errorMessage = 'Не удалось сохранить товар. Попробуйте ещё раз.';
+
           }
         });
     }

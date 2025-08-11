@@ -18,7 +18,9 @@
 <app-catalog-new-product-popup *ngIf="showPopup && selectedSupply === 'catalog'"
                                (save)="onNewProductSubmit($event)"
                                (cancel)="closeNewProductPopup()"
+
                                [errorMessage]="errorMessage">
+
 </app-catalog-new-product-popup>
 
 <app-info-cards-wrapper *ngIf="selectedSupply !== 'catalog' && selectedItem"

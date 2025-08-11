@@ -19,6 +19,7 @@ export class CatalogComponent implements OnInit {
 
   private readonly catalogDataSubject = new BehaviorSubject<CatalogItem[]>([]);
   readonly catalogData$ = this.catalogDataSubject.asObservable();
+
   errorMessage: string | null = null;
 
   constructor(private catalogService: CatalogService) {}
@@ -44,10 +45,12 @@ export class CatalogComponent implements OnInit {
         next: created => {
           const updated = [...this.catalogDataSubject.value, created];
           this.catalogDataSubject.next(updated);
+
           this.errorMessage = null;
         },
         error: () => {
           this.errorMessage = 'Не удалось сохранить товар. Попробуйте ещё раз.';
+
         }
       });
   }
