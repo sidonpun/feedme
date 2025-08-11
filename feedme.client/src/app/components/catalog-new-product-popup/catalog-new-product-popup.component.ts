@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -51,6 +51,7 @@ export type NewProductForm = {
   styleUrls: ['./catalog-new-product-popup.component.css']
 })
 export class CatalogNewProductPopupComponent {
+  @Input() errorMessage: string | null = null;
   @Output() cancel = new EventEmitter<void>();
   @Output() save = new EventEmitter<NewProductFormValues>();
 
