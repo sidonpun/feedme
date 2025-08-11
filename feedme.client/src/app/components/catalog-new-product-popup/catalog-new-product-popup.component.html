@@ -2,6 +2,7 @@
   <div class="popup-content">
     <button class="close-btn" type="button" (click)="close()">×</button>
     <h2>Новый товар</h2>
+    <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="section">
         <h3 class="section-title">Основная информация</h3>
