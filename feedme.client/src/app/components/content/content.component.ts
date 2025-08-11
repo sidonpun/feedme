@@ -44,7 +44,9 @@ export class ContentComponent implements OnInit {
 
   selectedItem: any = null;
   showPopup = false;
-  saveError: string | null = null;
+
+  errorMessage: string | null = null;
+
 
   constructor(private catalogService: CatalogService) {}
 
@@ -56,8 +58,14 @@ export class ContentComponent implements OnInit {
   private loadAllData(): void {
     this.supplyData = JSON.parse(localStorage.getItem(`warehouseSupplies_${this.selectedTab}`) || '[]');
     this.stockData = JSON.parse(localStorage.getItem(`warehouseStock_${this.selectedTab}`) || '[]');
-    this.catalogService.getAll().subscribe(data => {
-      this.catalogData = data;
+    this.catalogService.getAll().subscribe({
+      next: data => {
+        this.catalogData = data;
+        this.errorMessage = null;
+      },
+      error: () => {
+        this.errorMessage = 'Не удалось загрузить каталог. Попробуйте ещё раз.';
+      }
     });
   }
 
@@ -74,12 +82,16 @@ export class ContentComponent implements OnInit {
 
   /** Открыть попап добавления */
   openNewProductPopup(): void {
-    this.saveError = null;
+
+    this.errorMessage = null;
+
     this.showPopup = true;
   }
   closeNewProductPopup(): void {
     this.showPopup = false;
-    this.saveError = null;
+
+    this.errorMessage = null;
+
   }
 
   /** Получить новые данные из формы */
@@ -100,10 +112,12 @@ export class ContentComponent implements OnInit {
           next: created => {
             this.catalogData = [...this.catalogData, created];
             this.closeNewProductPopup();
-            this.saveError = null;
+
+            this.errorMessage = null;
           },
           error: () => {
-            this.saveError = 'Не удалось сохранить товар. Попробуйте ещё раз.';
+            this.errorMessage = 'Не удалось сохранить товар. Попробуйте ещё раз.';
+
           }
         });
     }

@@ -19,7 +19,8 @@ export class CatalogComponent implements OnInit {
 
   private readonly catalogDataSubject = new BehaviorSubject<CatalogItem[]>([]);
   readonly catalogData$ = this.catalogDataSubject.asObservable();
-  saveError: string | null = null;
+
+  errorMessage: string | null = null;
 
   constructor(private catalogService: CatalogService) {}
 
@@ -27,7 +28,12 @@ export class CatalogComponent implements OnInit {
     this.catalogService
       .getAll()
       .pipe(take(1))
-      .subscribe(data => this.catalogDataSubject.next(data));
+      .subscribe({
+        next: data => this.catalogDataSubject.next(data),
+        error: () => {
+          this.errorMessage = 'Не удалось загрузить каталог. Попробуйте ещё раз.';
+        }
+      });
   }
 
   /** Добавляет новый товар в каталог */
@@ -39,10 +45,12 @@ export class CatalogComponent implements OnInit {
         next: created => {
           const updated = [...this.catalogDataSubject.value, created];
           this.catalogDataSubject.next(updated);
-          this.saveError = null;
+
+          this.errorMessage = null;
         },
         error: () => {
-          this.saveError = 'Не удалось сохранить товар. Попробуйте ещё раз.';
+          this.errorMessage = 'Не удалось сохранить товар. Попробуйте ещё раз.';
+
         }
       });
   }
