@@ -5,6 +5,7 @@
     <button (click)="activeTab='logistics'" [class.active]="activeTab==='logistics'">Закупка и логистика</button>
   </div>
 </div>
+<div class="error-message" *ngIf="saveError">{{ saveError }}</div>
 
 <div *ngIf="activeTab==='info'">
   <table class="catalog-table">

@@ -15,6 +15,10 @@
   border-bottom: 2px solid #007bff;
   color: #007bff;
 }
+.error-message {
+  color: #dc3545;
+  margin-top: 8px;
+}
 .catalog-table {
   width: 100%;
   border-collapse: collapse;
