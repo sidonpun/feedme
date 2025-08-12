@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { take, tap, catchError, EMPTY } from 'rxjs';
+
+import { EMPTY, catchError, take, tap } from 'rxjs';
+
 
 import { WarehouseTabsComponent } from '../warehouse-tabs/warehouse-tabs.component';
 import { SupplyControlsComponent } from '../supply-controls/supply-controls.component';
@@ -11,7 +13,7 @@ import { StockTableComponent } from '../StockTableComponent/stock-table.componen
 import { CatalogTableComponent } from '../CatalogTableComponent/catalog-table.component';
 import { NewProductComponent } from '../new-product/new-product.component';
 import { CatalogNewProductPopupComponent } from '../catalog-new-product-popup/catalog-new-product-popup.component';
-import { CatalogService, CatalogItem } from '../../services/catalog.service';
+import { CatalogItem, CatalogService } from '../../services/catalog.service';
 
 @Component({
   selector: 'app-content',
@@ -32,6 +34,8 @@ import { CatalogService, CatalogItem } from '../../services/catalog.service';
   styleUrls: ['./content.component.css']
 })
 export class ContentComponent implements OnInit {
+  private readonly catalogService = inject(CatalogService);
+
   /** Вкладка склада (для табов вверху) */
   selectedTab: string = 'Главный склад';
 
@@ -46,10 +50,6 @@ export class ContentComponent implements OnInit {
   showPopup = false;
   errorMessage: string | null = null;
 
-  errorMessage: string | null = null;
-
-
-  constructor(private catalogService: CatalogService) {}
 
   ngOnInit(): void {
     this.loadAllData();
@@ -68,10 +68,8 @@ export class ContentComponent implements OnInit {
           this.catalogData = data;
           this.errorMessage = null;
         }),
-        catchError(() => {
-          this.errorMessage = 'Не удалось загрузить каталог. Попробуйте ещё раз.';
-          return EMPTY;
-        })
+
+        catchError(() => this.handleError('Не удалось загрузить каталог. Попробуйте ещё раз.'))
       )
       .subscribe();
 
@@ -123,10 +121,7 @@ export class ContentComponent implements OnInit {
 
             this.errorMessage = null;
           }),
-          catchError(() => {
-            this.errorMessage = 'Не удалось сохранить товар. Попробуйте ещё раз.';
-            return EMPTY;
-          })
+          catchError(() => this.handleError('Не удалось сохранить товар. Попробуйте ещё раз.'))
         )
         .subscribe();
 
@@ -147,5 +142,10 @@ export class ContentComponent implements OnInit {
 
   onCatalogRemove(item: CatalogItem): void {
     this.catalogData = this.catalogData.filter(i => i !== item);
+  }
+
+  private handleError(message: string) {
+    this.errorMessage = message;
+    return EMPTY;
   }
 }

@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BehaviorSubject, take, tap, catchError, EMPTY } from 'rxjs';
+
+import { BehaviorSubject, EMPTY, catchError, take, tap } from 'rxjs';
+
 import { FilterPipe } from '../../pipes/filter.pipe';
 import { NewProductFormValues } from '../catalog-new-product-popup/catalog-new-product-popup.component';
-import { CatalogService, CatalogItem } from '../../services/catalog.service';
+import { CatalogItem, CatalogService } from '../../services/catalog.service';
 
 @Component({
   selector: 'app-catalog',
@@ -14,6 +16,8 @@ import { CatalogService, CatalogItem } from '../../services/catalog.service';
   styleUrls: ['./catalog.component.css']
 })
 export class CatalogComponent implements OnInit {
+  private readonly catalogService = inject(CatalogService);
+
   activeTab: 'info' | 'logistics' = 'info';
   filter = '';
 
@@ -21,9 +25,6 @@ export class CatalogComponent implements OnInit {
   readonly catalogData$ = this.catalogDataSubject.asObservable();
   errorMessage: string | null = null;
 
-  errorMessage: string | null = null;
-
-  constructor(private catalogService: CatalogService) {}
 
   ngOnInit(): void {
     this.catalogService
@@ -32,10 +33,7 @@ export class CatalogComponent implements OnInit {
       .pipe(
         take(1),
         tap(data => this.catalogDataSubject.next(data)),
-        catchError(() => {
-          this.errorMessage = 'Не удалось загрузить каталог. Попробуйте ещё раз.';
-          return EMPTY;
-        })
+        catchError(() => this.handleError('Не удалось загрузить каталог. Попробуйте ещё раз.'))
       )
       .subscribe();
 
@@ -53,12 +51,14 @@ export class CatalogComponent implements OnInit {
 
           this.errorMessage = null;
         }),
-        catchError(() => {
-          this.errorMessage = 'Не удалось сохранить товар. Попробуйте ещё раз.';
-          return EMPTY;
-        })
+        catchError(() => this.handleError('Не удалось сохранить товар. Попробуйте ещё раз.'))
       )
       .subscribe();
+  }
+
+  private handleError(message: string) {
+    this.errorMessage = message;
+    return EMPTY;
 
   }
 }
