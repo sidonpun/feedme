@@ -1,7 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { EMPTY, catchError, take, tap } from 'rxjs';
+
 
 import { WarehouseTabsComponent } from '../warehouse-tabs/warehouse-tabs.component';
 import { SupplyControlsComponent } from '../supply-controls/supply-controls.component';
@@ -48,6 +50,7 @@ export class ContentComponent implements OnInit {
   showPopup = false;
   errorMessage: string | null = null;
 
+
   ngOnInit(): void {
     this.loadAllData();
   }
@@ -56,6 +59,7 @@ export class ContentComponent implements OnInit {
   private loadAllData(): void {
     this.supplyData = JSON.parse(localStorage.getItem(`warehouseSupplies_${this.selectedTab}`) || '[]');
     this.stockData = JSON.parse(localStorage.getItem(`warehouseStock_${this.selectedTab}`) || '[]');
+
     this.catalogService
       .getAll()
       .pipe(
@@ -64,9 +68,11 @@ export class ContentComponent implements OnInit {
           this.catalogData = data;
           this.errorMessage = null;
         }),
+
         catchError(() => this.handleError('Не удалось загрузить каталог. Попробуйте ещё раз.'))
       )
       .subscribe();
+
   }
 
   /** Смена вкладки склада */
@@ -82,12 +88,16 @@ export class ContentComponent implements OnInit {
 
   /** Открыть попап добавления */
   openNewProductPopup(): void {
+
     this.errorMessage = null;
+
     this.showPopup = true;
   }
   closeNewProductPopup(): void {
     this.showPopup = false;
+
     this.errorMessage = null;
+
   }
 
   /** Получить новые данные из формы */
@@ -108,11 +118,13 @@ export class ContentComponent implements OnInit {
           tap(created => {
             this.catalogData = [...this.catalogData, created];
             this.closeNewProductPopup();
+
             this.errorMessage = null;
           }),
           catchError(() => this.handleError('Не удалось сохранить товар. Попробуйте ещё раз.'))
         )
         .subscribe();
+
     }
   }
 

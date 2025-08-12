@@ -1,4 +1,7 @@
+
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+
+
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -51,7 +54,9 @@ export type NewProductForm = {
   styleUrls: ['./catalog-new-product-popup.component.css']
 })
 export class CatalogNewProductPopupComponent {
+
   private readonly fb = inject(FormBuilder);
+
 
   @Input() errorMessage: string | null = null;
   @Output() cancel = new EventEmitter<void>();

@@ -1,7 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { BehaviorSubject, EMPTY, catchError, take, tap } from 'rxjs';
+
 import { FilterPipe } from '../../pipes/filter.pipe';
 import { NewProductFormValues } from '../catalog-new-product-popup/catalog-new-product-popup.component';
 import { CatalogItem, CatalogService } from '../../services/catalog.service';
@@ -23,15 +25,18 @@ export class CatalogComponent implements OnInit {
   readonly catalogData$ = this.catalogDataSubject.asObservable();
   errorMessage: string | null = null;
 
+
   ngOnInit(): void {
     this.catalogService
       .getAll()
+
       .pipe(
         take(1),
         tap(data => this.catalogDataSubject.next(data)),
         catchError(() => this.handleError('Не удалось загрузить каталог. Попробуйте ещё раз.'))
       )
       .subscribe();
+
   }
 
   /** Добавляет новый товар в каталог */
@@ -43,6 +48,7 @@ export class CatalogComponent implements OnInit {
         tap(created => {
           const updated = [...this.catalogDataSubject.value, created];
           this.catalogDataSubject.next(updated);
+
           this.errorMessage = null;
         }),
         catchError(() => this.handleError('Не удалось сохранить товар. Попробуйте ещё раз.'))
@@ -53,5 +59,6 @@ export class CatalogComponent implements OnInit {
   private handleError(message: string) {
     this.errorMessage = message;
     return EMPTY;
+
   }
 }
