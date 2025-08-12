@@ -6,19 +6,14 @@ const httpTarget = env['services__feedme-server__http__0'];
 // Prefer the HTTP endpoint to avoid TLS issues when no certificates are configured
 const target = httpTarget ?? httpsTarget ?? 'http://localhost:5016';
 
-
 const PROXY_CONFIG = [
   {
-    context: [
-
-      '/weatherforecast',
-      '/api/**'
-
-    ],
+    context: ['/api', '/api/**'],
     target,
     secure: false,
-    logLevel: 'error'
+    logLevel: 'error',
   },
-]
+];
+
 
 module.exports = PROXY_CONFIG;

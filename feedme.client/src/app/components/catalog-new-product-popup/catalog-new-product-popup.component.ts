@@ -1,11 +1,14 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+
+
 import { CommonModule } from '@angular/common';
 import {
-  ReactiveFormsModule,
   FormBuilder,
-  Validators,
-  FormGroup,
   FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 
 export interface NewProductFormValues {
@@ -51,19 +54,20 @@ export type NewProductForm = {
   styleUrls: ['./catalog-new-product-popup.component.css']
 })
 export class CatalogNewProductPopupComponent {
+
+  private readonly fb = inject(FormBuilder);
+
+
   @Input() errorMessage: string | null = null;
   @Output() cancel = new EventEmitter<void>();
   @Output() save = new EventEmitter<NewProductFormValues>();
-
-  form: FormGroup<NewProductForm>;
 
   readonly categories = ['Заготовка', 'Готовое блюдо', 'Добавка', 'Товар'];
   readonly types = ['Товар', 'Заготовка', 'Упаковка'];
   readonly taxRates = ['Без НДС', '10%', '20%'];
   readonly units = ['кг', 'л', 'шт', 'упаковка'];
 
-  constructor(private fb: FormBuilder) {
-    this.form = this.fb.nonNullable.group({
+  form: FormGroup<NewProductForm> = this.fb.nonNullable.group({
      
       name: this.fb.nonNullable.control('', Validators.required),
       type: this.fb.nonNullable.control(this.types[0], Validators.required),
@@ -89,8 +93,9 @@ export class CatalogNewProductPopupComponent {
       alcoholCode: this.fb.nonNullable.control(''),
       alcoholStrength: this.fb.nonNullable.control(0),
       alcoholVolume: this.fb.nonNullable.control(0),
-    }) as FormGroup<NewProductForm>;
+  }) as FormGroup<NewProductForm>;
 
+  constructor() {
     this.form.get('isAlcohol')!.valueChanges.subscribe((val) => {
       const alcoholControls = [
         'alcoholCode',
@@ -110,6 +115,7 @@ export class CatalogNewProductPopupComponent {
       });
     });
   }
+
   onSubmit(): void {
     if (this.form.invalid) {
 
