@@ -46,9 +46,6 @@ export class ContentComponent implements OnInit {
   showPopup = false;
   errorMessage: string | null = null;
 
-  errorMessage: string | null = null;
-
-
   constructor(private catalogService: CatalogService) {}
 
   ngOnInit(): void {
