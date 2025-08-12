@@ -46,6 +46,9 @@ export class ContentComponent implements OnInit {
   showPopup = false;
   errorMessage: string | null = null;
 
+  errorMessage: string | null = null;
+
+
   constructor(private catalogService: CatalogService) {}
 
   ngOnInit(): void {
@@ -56,6 +59,7 @@ export class ContentComponent implements OnInit {
   private loadAllData(): void {
     this.supplyData = JSON.parse(localStorage.getItem(`warehouseSupplies_${this.selectedTab}`) || '[]');
     this.stockData = JSON.parse(localStorage.getItem(`warehouseStock_${this.selectedTab}`) || '[]');
+
     this.catalogService
       .getAll()
       .pipe(
@@ -70,6 +74,7 @@ export class ContentComponent implements OnInit {
         })
       )
       .subscribe();
+
   }
 
   /** Смена вкладки склада */
@@ -85,12 +90,16 @@ export class ContentComponent implements OnInit {
 
   /** Открыть попап добавления */
   openNewProductPopup(): void {
+
     this.errorMessage = null;
+
     this.showPopup = true;
   }
   closeNewProductPopup(): void {
     this.showPopup = false;
+
     this.errorMessage = null;
+
   }
 
   /** Получить новые данные из формы */
@@ -111,6 +120,7 @@ export class ContentComponent implements OnInit {
           tap(created => {
             this.catalogData = [...this.catalogData, created];
             this.closeNewProductPopup();
+
             this.errorMessage = null;
           }),
           catchError(() => {
@@ -119,6 +129,7 @@ export class ContentComponent implements OnInit {
           })
         )
         .subscribe();
+
     }
   }
 

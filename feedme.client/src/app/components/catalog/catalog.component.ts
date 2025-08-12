@@ -21,11 +21,14 @@ export class CatalogComponent implements OnInit {
   readonly catalogData$ = this.catalogDataSubject.asObservable();
   errorMessage: string | null = null;
 
+  errorMessage: string | null = null;
+
   constructor(private catalogService: CatalogService) {}
 
   ngOnInit(): void {
     this.catalogService
       .getAll()
+
       .pipe(
         take(1),
         tap(data => this.catalogDataSubject.next(data)),
@@ -35,6 +38,7 @@ export class CatalogComponent implements OnInit {
         })
       )
       .subscribe();
+
   }
 
   /** Добавляет новый товар в каталог */
@@ -46,6 +50,7 @@ export class CatalogComponent implements OnInit {
         tap(created => {
           const updated = [...this.catalogDataSubject.value, created];
           this.catalogDataSubject.next(updated);
+
           this.errorMessage = null;
         }),
         catchError(() => {
@@ -54,5 +59,6 @@ export class CatalogComponent implements OnInit {
         })
       )
       .subscribe();
+
   }
 }
