@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BehaviorSubject, take } from 'rxjs';
+import { BehaviorSubject, EMPTY, catchError, take, tap } from 'rxjs';
 import { FilterPipe } from '../../pipes/filter.pipe';
 import { NewProductFormValues } from '../catalog-new-product-popup/catalog-new-product-popup.component';
-import { CatalogService, CatalogItem } from '../../services/catalog.service';
+import { CatalogItem, CatalogService } from '../../services/catalog.service';
 
 @Component({
   selector: 'app-catalog',
@@ -14,32 +14,44 @@ import { CatalogService, CatalogItem } from '../../services/catalog.service';
   styleUrls: ['./catalog.component.css']
 })
 export class CatalogComponent implements OnInit {
+  private readonly catalogService = inject(CatalogService);
+
   activeTab: 'info' | 'logistics' = 'info';
   filter = '';
 
   private readonly catalogDataSubject = new BehaviorSubject<CatalogItem[]>([]);
   readonly catalogData$ = this.catalogDataSubject.asObservable();
-
-  constructor(private catalogService: CatalogService) {}
+  errorMessage: string | null = null;
 
   ngOnInit(): void {
     this.catalogService
       .getAll()
-      .pipe(take(1))
-      .subscribe(data => this.catalogDataSubject.next(data));
+      .pipe(
+        take(1),
+        tap(data => this.catalogDataSubject.next(data)),
+        catchError(() => this.handleError('Не удалось загрузить каталог. Попробуйте ещё раз.'))
+      )
+      .subscribe();
   }
 
   /** Добавляет новый товар в каталог */
   addProduct(item: NewProductFormValues): void {
     this.catalogService
       .create(item)
-      .pipe(take(1))
-      .subscribe({
-        next: created => {
+      .pipe(
+        take(1),
+        tap(created => {
           const updated = [...this.catalogDataSubject.value, created];
           this.catalogDataSubject.next(updated);
-        },
-        error: err => console.error('Ошибка при добавлении товара в каталог', err)
-      });
+          this.errorMessage = null;
+        }),
+        catchError(() => this.handleError('Не удалось сохранить товар. Попробуйте ещё раз.'))
+      )
+      .subscribe();
+  }
+
+  private handleError(message: string) {
+    this.errorMessage = message;
+    return EMPTY;
   }
 }

@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { take } from 'rxjs';
+import { EMPTY, catchError, take, tap } from 'rxjs';
 
 import { WarehouseTabsComponent } from '../warehouse-tabs/warehouse-tabs.component';
 import { SupplyControlsComponent } from '../supply-controls/supply-controls.component';
@@ -11,7 +11,7 @@ import { StockTableComponent } from '../StockTableComponent/stock-table.componen
 import { CatalogTableComponent } from '../CatalogTableComponent/catalog-table.component';
 import { NewProductComponent } from '../new-product/new-product.component';
 import { CatalogNewProductPopupComponent } from '../catalog-new-product-popup/catalog-new-product-popup.component';
-import { CatalogService, CatalogItem } from '../../services/catalog.service';
+import { CatalogItem, CatalogService } from '../../services/catalog.service';
 
 @Component({
   selector: 'app-content',
@@ -32,6 +32,8 @@ import { CatalogService, CatalogItem } from '../../services/catalog.service';
   styleUrls: ['./content.component.css']
 })
 export class ContentComponent implements OnInit {
+  private readonly catalogService = inject(CatalogService);
+
   /** Вкладка склада (для табов вверху) */
   selectedTab: string = 'Главный склад';
 
@@ -44,8 +46,7 @@ export class ContentComponent implements OnInit {
 
   selectedItem: any = null;
   showPopup = false;
-
-  constructor(private catalogService: CatalogService) {}
+  errorMessage: string | null = null;
 
   ngOnInit(): void {
     this.loadAllData();
@@ -55,9 +56,17 @@ export class ContentComponent implements OnInit {
   private loadAllData(): void {
     this.supplyData = JSON.parse(localStorage.getItem(`warehouseSupplies_${this.selectedTab}`) || '[]');
     this.stockData = JSON.parse(localStorage.getItem(`warehouseStock_${this.selectedTab}`) || '[]');
-    this.catalogService.getAll().subscribe(data => {
-      this.catalogData = data;
-    });
+    this.catalogService
+      .getAll()
+      .pipe(
+        take(1),
+        tap(data => {
+          this.catalogData = data;
+          this.errorMessage = null;
+        }),
+        catchError(() => this.handleError('Не удалось загрузить каталог. Попробуйте ещё раз.'))
+      )
+      .subscribe();
   }
 
   /** Смена вкладки склада */
@@ -73,10 +82,12 @@ export class ContentComponent implements OnInit {
 
   /** Открыть попап добавления */
   openNewProductPopup(): void {
+    this.errorMessage = null;
     this.showPopup = true;
   }
   closeNewProductPopup(): void {
     this.showPopup = false;
+    this.errorMessage = null;
   }
 
   /** Получить новые данные из формы */
@@ -92,14 +103,16 @@ export class ContentComponent implements OnInit {
     } else {
       this.catalogService
         .create(item)
-        .pipe(take(1))
-        .subscribe({
-          next: created => {
+        .pipe(
+          take(1),
+          tap(created => {
             this.catalogData = [...this.catalogData, created];
             this.closeNewProductPopup();
-          },
-          error: err => console.error('Ошибка при добавлении товара в каталог', err)
-        });
+            this.errorMessage = null;
+          }),
+          catchError(() => this.handleError('Не удалось сохранить товар. Попробуйте ещё раз.'))
+        )
+        .subscribe();
     }
   }
 
@@ -117,5 +130,10 @@ export class ContentComponent implements OnInit {
 
   onCatalogRemove(item: CatalogItem): void {
     this.catalogData = this.catalogData.filter(i => i !== item);
+  }
+
+  private handleError(message: string) {
+    this.errorMessage = message;
+    return EMPTY;
   }
 }
