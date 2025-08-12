@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { take } from 'rxjs';
+import { take, tap, catchError, EMPTY } from 'rxjs';
 
 import { WarehouseTabsComponent } from '../warehouse-tabs/warehouse-tabs.component';
 import { SupplyControlsComponent } from '../supply-controls/supply-controls.component';
@@ -44,6 +44,7 @@ export class ContentComponent implements OnInit {
 
   selectedItem: any = null;
   showPopup = false;
+  errorMessage: string | null = null;
 
   errorMessage: string | null = null;
 
@@ -58,15 +59,22 @@ export class ContentComponent implements OnInit {
   private loadAllData(): void {
     this.supplyData = JSON.parse(localStorage.getItem(`warehouseSupplies_${this.selectedTab}`) || '[]');
     this.stockData = JSON.parse(localStorage.getItem(`warehouseStock_${this.selectedTab}`) || '[]');
-    this.catalogService.getAll().subscribe({
-      next: data => {
-        this.catalogData = data;
-        this.errorMessage = null;
-      },
-      error: () => {
-        this.errorMessage = 'Не удалось загрузить каталог. Попробуйте ещё раз.';
-      }
-    });
+
+    this.catalogService
+      .getAll()
+      .pipe(
+        take(1),
+        tap(data => {
+          this.catalogData = data;
+          this.errorMessage = null;
+        }),
+        catchError(() => {
+          this.errorMessage = 'Не удалось загрузить каталог. Попробуйте ещё раз.';
+          return EMPTY;
+        })
+      )
+      .subscribe();
+
   }
 
   /** Смена вкладки склада */
@@ -107,19 +115,21 @@ export class ContentComponent implements OnInit {
     } else {
       this.catalogService
         .create(item)
-        .pipe(take(1))
-        .subscribe({
-          next: created => {
+        .pipe(
+          take(1),
+          tap(created => {
             this.catalogData = [...this.catalogData, created];
             this.closeNewProductPopup();
 
             this.errorMessage = null;
-          },
-          error: () => {
+          }),
+          catchError(() => {
             this.errorMessage = 'Не удалось сохранить товар. Попробуйте ещё раз.';
+            return EMPTY;
+          })
+        )
+        .subscribe();
 
-          }
-        });
     }
   }
 
