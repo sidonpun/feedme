@@ -1,4 +1,8 @@
-﻿module.exports = function (config) {
+// добавим Puppeteer, чтобы в CI был доступный Chrome
+const { executablePath } = require('puppeteer');
+process.env.CHROME_BIN = executablePath();
+
+module.exports = function (config) {
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
@@ -34,12 +38,20 @@
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: false,
+
+    // оставляю твой лаунчер, но добавляю флаги для контейнеров/агентов
     customLaunchers: {
       ChromeHeadlessNoSandbox: {
         base: 'ChromeHeadless',
-        flags: ['--no-sandbox']
+        flags: [
+          '--no-sandbox',
+          '--disable-gpu',
+          '--disable-dev-shm-usage'
+        ]
       }
     },
+
+    // используем твой лаунчер
     browsers: ['ChromeHeadlessNoSandbox'],
     singleRun: true,
     restartOnFileChange: false,
@@ -47,4 +59,3 @@
     hostname: 'localhost'
   });
 };
-
