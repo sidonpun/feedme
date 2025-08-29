@@ -4,7 +4,7 @@ namespace feedme.Server.Repositories;
 
 public interface ICatalogRepository
 {
-    IEnumerable<CatalogItem> GetAll();
-    CatalogItem? GetById(string id);
-    CatalogItem Add(CatalogItem item);
+    Task<IEnumerable<CatalogItem>> GetAllAsync();
+    Task<CatalogItem?> GetByIdAsync(string id);
+    Task<CatalogItem> AddAsync(CatalogItem item);
 }

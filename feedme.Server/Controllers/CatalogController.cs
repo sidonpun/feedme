@@ -16,20 +16,20 @@ public class CatalogController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<CatalogItem>> Get()
-        => Ok(_repository.GetAll());
+    public async Task<ActionResult<IEnumerable<CatalogItem>>> Get()
+        => Ok(await _repository.GetAllAsync());
 
     [HttpGet("{id}")]
-    public ActionResult<CatalogItem> GetById(string id)
+    public async Task<ActionResult<CatalogItem>> GetById(string id)
     {
-        var item = _repository.GetById(id);
+        var item = await _repository.GetByIdAsync(id);
         return item is null ? NotFound() : Ok(item);
     }
 
     [HttpPost]
-    public ActionResult<CatalogItem> Create([FromBody] CatalogItem item)
+    public async Task<ActionResult<CatalogItem>> Create([FromBody] CatalogItem item)
     {
-        var created = _repository.Add(item);
+        var created = await _repository.AddAsync(item);
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 }
