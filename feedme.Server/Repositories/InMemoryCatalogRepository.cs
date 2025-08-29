@@ -7,16 +7,20 @@ public class InMemoryCatalogRepository : ICatalogRepository
 {
     private readonly ConcurrentDictionary<string, CatalogItem> _items = new();
 
-    public IEnumerable<CatalogItem> GetAll() => _items.Values;
+    public Task<IEnumerable<CatalogItem>> GetAllAsync() =>
+        Task.FromResult<IEnumerable<CatalogItem>>(_items.Values);
 
-    public CatalogItem? GetById(string id) =>
-        _items.TryGetValue(id, out var item) ? item : null;
+    public Task<CatalogItem?> GetByIdAsync(string id)
+    {
+        var item = _items.TryGetValue(id, out var value) ? value : null;
+        return Task.FromResult(item);
+    }
 
-    public CatalogItem Add(CatalogItem item)
+    public Task<CatalogItem> AddAsync(CatalogItem item)
     {
         var id = Guid.NewGuid().ToString();
         item.Id = id;
         _items[id] = item;
-        return item;
+        return Task.FromResult(item);
     }
 }
