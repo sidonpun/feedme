@@ -9,34 +9,36 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+**/bin
+**/obj
+**/node_modules
+.vs
+.git
 
-# Этот этап используется для сборки проекта службы
-FROM mcr.microsoft.com/dotnet/sdk:9.0-nanoserver-1809 AS with-node
+# ---------- 1) Сборка Angular-клиента ----------
+FROM node:18-bullseye AS client-build
+WORKDIR /client
+COPY feedme.client/package*.json ./
+RUN npm ci
+COPY feedme.client/ .
+# Выкладка в плоскую папку dist (чтобы copy был простым)
+RUN npm run build -- --configuration production --output-path=dist
+
+# ---------- 2) Сборка .NET сервера ----------
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS server-build
 WORKDIR /src
-RUN curl https://nodejs.org/dist/v18.18.0/node-v18.18.0-win-x64.zip --output node.zip
-RUN tar -xf node.zip
-USER ContainerAdministrator
-RUN setx /M path "%path%;C:\src\node-v18.18.0-win-x64"
-USER ContainerUser
-RUN npm install -g @angular/cli
+COPY feedme.Server/*.csproj feedme.Server/
+RUN dotnet restore feedme.Server/feedme.Server.csproj
+COPY feedme.Server/ feedme.Server/
+RUN dotnet publish feedme.Server/feedme.Server.csproj -c Release -o /out /p:UseAppHost=false
 
-FROM with-node AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["feedme.Server/feedme.Server.csproj", "feedme.Server/"]
-COPY ["feedme.client/feedme.client.esproj", "feedme.client/"]
-RUN dotnet restore "./feedme.Server/feedme.Server.csproj"
-COPY . .
-WORKDIR "/src/feedme.Server"
-RUN dotnet build "./feedme.Server.csproj" -c %BUILD_CONFIGURATION% -o /app/build
-
-# Этот этап используется для публикации проекта службы, который будет скопирован на последний этап
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./feedme.Server.csproj" -c %BUILD_CONFIGURATION% -o /app/publish /p:UseAppHost=false
-
-# Этот этап используется в рабочей среде или при запуске из VS в обычном режиме (по умолчанию, когда конфигурация отладки не используется)
-FROM base AS final
+# ---------- 3) Финальный образ ----------
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=server-build /out ./
+# Готовый Angular кладём в wwwroot (сервер должен раздавать статику)
+COPY --from=client-build /client/dist/ /app/wwwroot/
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
 ENTRYPOINT ["dotnet", "feedme.Server.dll"]
+
