@@ -1,16 +1,15 @@
-import { Component } from '@angular/core'
-import { count } from 'rxjs';
+import { Component } from '@angular/core';
 
 @Component({
-  selector: 'hello-component',
+  selector: 'app-hello',
   standalone: true,
-  styleUrls: ['./hello.component.css'],
   templateUrl: './hello.component.html',
+  styleUrls: ['./hello.component.css'],
 })
-
 export class HelloComponent {
-  count: number = 0;
-  OnClick() {
+  count = 0;
+
+  onClick(): void {
     this.count++;
   }
 }
