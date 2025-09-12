@@ -6,7 +6,7 @@
     "pretest": "npm ci || npm i",
     "start": "npx ng serve --open",
     "build": "npx ng build",
-    "test": "npx ng test --watch=false --browsers=ChromeHeadlessCI",
+    "test": "npx ng test --watch=false --browsers=ChromeHeadlessNoSandbox",
     "lint": "npx ng lint"
   },
   "dependencies": {
@@ -20,7 +20,10 @@
     "@angular/router": "^19.2.8",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.15.0"
+    "zone.js": "~0.15.0",
+    "@fortawesome/angular-fontawesome": "^1.0.0",
+    "@fortawesome/free-solid-svg-icons": "^7.0.1",
+    "@fortawesome/fontawesome-svg-core": "^7.0.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^19.2.8",
@@ -33,7 +36,8 @@
     "karma-jasmine": "^5.1.0",
     "karma-chrome-launcher": "^3.2.0",
     "karma-coverage": "^2.2.0",
-    "puppeteer": "^22.12.0"
+    "puppeteer": "^22.12.0",
+    "karma-jasmine-html-reporter": "^2.1.0"
   },
   "engines": {
     "node": ">=18.19 <23",
