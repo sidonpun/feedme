@@ -5,7 +5,7 @@ WORKDIR /build
 COPY package.json package-lock.json ./
 COPY feedme.client ./feedme.client
 RUN npm ci --no-audit --no-fund
-RUN npm exec --workspace feedme.client ng build --configuration=production --output-path=/client/dist
+RUN npm exec --workspace feedme.client -- ng build --configuration=production --output-path=dist
 
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS server-build
@@ -21,7 +21,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 COPY --from=server-build /out ./
 
-COPY --from=client-build /client/dist/ ./wwwroot
+COPY --from=client-build /build/feedme.client/dist/ ./wwwroot
 
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
