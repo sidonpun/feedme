@@ -2,3 +2,13 @@
   color: red;
   font-weight: bold;
 }
+.rounded-button button {
+  border-radius: 10%;
+  background-color: blue;
+  box-shadow: initial;
+}
+
+.rounded-button :hover {
+  background-color: red;
+}
+
