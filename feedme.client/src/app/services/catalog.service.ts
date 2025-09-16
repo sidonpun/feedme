@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ApiUrlService } from './api-url.service';
 
 export interface CatalogItem {
   id: string;
@@ -30,9 +31,9 @@ export interface CatalogItem {
 
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
-  private readonly baseUrl = '/api/catalog';
-
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = inject(ApiUrlService);
+  private readonly baseUrl = this.apiUrl.build('/api/catalog');
 
   getAll(): Observable<CatalogItem[]> {
     return this.http.get<CatalogItem[]>(this.baseUrl);
