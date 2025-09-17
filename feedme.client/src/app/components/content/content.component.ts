@@ -103,11 +103,11 @@ export class ContentComponent implements OnInit {
   /** Получить новые данные из формы */
   onNewProductSubmit(item: any): void {
     if (this.selectedSupply === 'supplies') {
-      this.supplyData.push(item);
+      this.supplyData = [...this.supplyData, item];
       localStorage.setItem(`warehouseSupplies_${this.selectedTab}`, JSON.stringify(this.supplyData));
       this.closeNewProductPopup();
     } else if (this.selectedSupply === 'stock') {
-      this.stockData.push(item);
+      this.stockData = [...this.stockData, item];
       localStorage.setItem(`warehouseStock_${this.selectedTab}`, JSON.stringify(this.stockData));
       this.closeNewProductPopup();
     } else {

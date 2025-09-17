@@ -4,6 +4,19 @@ import { FormsModule } from '@angular/forms';
 import { ConfirmDeletePopupComponent } from '../confirm-delete-popup/confirm-delete-popup.component';
 import { TableControlsComponent } from '../table-controls/table-controls.component';
 import { CatalogViewSwitcherComponent } from '../catalog-view-switcher/catalog-view-switcher.component';
+import { CatalogItem } from '../../services/catalog.service';
+
+type CatalogView = 'info' | 'logistics';
+
+interface CatalogColumn {
+  label: string;
+  key: keyof CatalogItem;
+}
+
+interface FilterOptions {
+  justAdded?: boolean;
+  preservePage?: boolean;
+}
 @Component({
   selector: 'app-catalog-table',
   standalone: true,
@@ -19,28 +32,29 @@ import { CatalogViewSwitcherComponent } from '../catalog-view-switcher/catalog-v
 })
 export class CatalogTableComponent implements OnChanges {
   /** Входные данные для каталога */
-  @Input() data: any[] = [];
+  @Input() data: CatalogItem[] = [];
 
   /** Режим отображения таблицы */
-  viewMode: 'info' | 'logistics' = 'info';
+  viewMode: CatalogView = 'info';
 
 
   @Output() onAddSupply = new EventEmitter<void>();
-  @Output() edit = new EventEmitter<any>();
-  @Output() deleteRow = new EventEmitter<any>();
+  @Output() edit = new EventEmitter<CatalogItem>();
+  @Output() deleteRow = new EventEmitter<CatalogItem>();
 
   /** Управление фильтрацией и пагинацией */
-  searchQuery: string = '';
-  rowsPerPage: number = 10;
-  currentPage: number = 1;
+  searchQuery = '';
+  rowsPerPage = 10;
+  currentPage = 1;
+  filteredData: CatalogItem[] = [];
 
   /** Строка, выбранная для удаления */
-  deleteCandidate: any | null = null;
+  deleteCandidate: CatalogItem | null = null;
   showConfirm = false;
 
 
   /** Колонки для режима "Основная информация" */
-  readonly infoColumns = [
+  private readonly infoColumns: CatalogColumn[] = [
     { label: 'Название товара', key: 'name' },
     { label: 'Тип номенклатуры', key: 'type' },
     { label: 'Номенклатурный код', key: 'code' },
@@ -54,7 +68,7 @@ export class CatalogTableComponent implements OnChanges {
   ];
 
   /** Колонки для режима "Закупка и логистика" */
-  readonly logisticsColumns = [
+  private readonly logisticsColumns: CatalogColumn[] = [
     { label: 'Поставщик (основной)', key: 'supplier' },
     { label: 'Срок поставки (дней)', key: 'deliveryTime' },
     { label: 'Оценочная себестоимость', key: 'costEstimate' },
@@ -65,9 +79,20 @@ export class CatalogTableComponent implements OnChanges {
     { label: 'Алкогольная продукция', key: 'isAlcohol' },
   ];
 
+  private readonly columnsByView: Record<CatalogView, CatalogColumn[]> = {
+    info: this.infoColumns,
+    logistics: this.logisticsColumns,
+  };
+
+  private readonly searchableKeys: (keyof CatalogItem)[] = Array.from(
+    new Set([...this.infoColumns, ...this.logisticsColumns].map(column => column.key))
+  ) as (keyof CatalogItem)[];
+
+  private previousLength = 0;
+
   /** Текущие колонки по выбранному режиму */
-  get columns() {
-    return this.viewMode === 'info' ? this.infoColumns : this.logisticsColumns;
+  get columns(): CatalogColumn[] {
+    return this.columnsByView[this.viewMode];
   }
 
   /** Приведение значения для отображения */
@@ -78,31 +103,30 @@ export class CatalogTableComponent implements OnChanges {
     return value ?? '';
   }
 
-  ngOnChanges(_: SimpleChanges): void {
-    this.currentPage = 1;
-  }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['data']) {
+      const { firstChange } = changes['data'];
+      const newLength = this.data.length;
+      const justAdded = !firstChange && newLength > this.previousLength;
+      this.previousLength = newLength;
 
-  /** Фильтрованные данные по поисковому запросу */
-  get filteredData(): any[] {
-    const q = this.searchQuery.toLowerCase();
-    if (!q) return this.data;
-    return this.data.filter(item =>
-      Object.values(item).some(val =>
-        val && val.toString().toLowerCase().includes(q)
-      )
-    );
+      this.applyFilters({
+        justAdded,
+        preservePage: true,
+      });
+    }
   }
 
   /** Обновление поискового запроса */
   onSearchChange(query: string): void {
     this.searchQuery = query;
-    this.currentPage = 1;
+    this.applyFilters();
   }
 
   /** Обновление количества строк на странице */
   onRowsChange(rows: number): void {
     this.rowsPerPage = rows;
-    this.currentPage = 1;
+    this.applyFilters();
   }
 
   /** Общее число страниц */
@@ -111,16 +135,18 @@ export class CatalogTableComponent implements OnChanges {
   }
 
   /** Данные для текущей страницы */
-  get paginatedData(): any[] {
+  get paginatedData(): CatalogItem[] {
     const start = (this.currentPage - 1) * this.rowsPerPage;
     return this.filteredData.slice(start, start + this.rowsPerPage);
   }
 
-  addSupply(): void { this.onAddSupply.emit() }
+  addSupply(): void {
+    this.onAddSupply.emit();
+  }
 
 
   /** Выбор строки для удаления */
-  requestDelete(item: any): void {
+  requestDelete(item: CatalogItem): void {
     this.deleteCandidate = item;
     this.showConfirm = true;
   }
@@ -142,8 +168,9 @@ export class CatalogTableComponent implements OnChanges {
   }
 
 
-  onViewChange(view: 'info' | 'logistics'): void {
+  onViewChange(view: CatalogView): void {
     this.viewMode = view;
+    this.applyFilters({ preservePage: true });
   }
   /** Навигация по страницам */
   prevPage(): void {
@@ -151,5 +178,53 @@ export class CatalogTableComponent implements OnChanges {
   }
   nextPage(): void {
     if (this.currentPage < this.totalPages) this.currentPage++;
+  }
+
+  private applyFilters(options: FilterOptions = {}): void {
+    const { justAdded = false, preservePage = false } = options;
+    const normalizedQuery = this.normalize(this.searchQuery);
+    const nonEmptyItems = this.data.filter(item => this.hasDataForSearch(item));
+
+    const matches = normalizedQuery
+      ? nonEmptyItems.filter(item =>
+          this.searchableKeys.some(key =>
+            this.normalize(item[key]).includes(normalizedQuery)
+          )
+        )
+      : nonEmptyItems;
+
+    this.filteredData = matches;
+
+    if (justAdded && !normalizedQuery) {
+      this.currentPage = this.totalPages;
+      return;
+    }
+
+    if (preservePage) {
+      this.currentPage = Math.min(this.currentPage, this.totalPages);
+      return;
+    }
+
+    this.currentPage = 1;
+  }
+
+  private normalize(value: unknown): string {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    if (typeof value === 'boolean') {
+      return value ? 'да' : 'нет';
+    }
+
+    if (value instanceof Date) {
+      return value.toISOString().toLowerCase();
+    }
+
+    return value.toString().trim().toLowerCase();
+  }
+
+  private hasDataForSearch(item: CatalogItem): boolean {
+    return this.searchableKeys.some(key => this.normalize(item[key]).length > 0);
   }
 }
