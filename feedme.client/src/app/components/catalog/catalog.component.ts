@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, Pipe, PipeTransform, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -8,10 +8,24 @@ import { FilterPipe } from '../../pipes/filter.pipe';
 import { NewProductFormValues } from '../catalog-new-product-popup/catalog-new-product-popup.component';
 import { CatalogItem, CatalogService } from '../../services/catalog.service';
 
+@Pipe({
+  name: 'booleanLabel',
+  standalone: true,
+})
+export class BooleanLabelPipe implements PipeTransform {
+  transform(value: boolean | null | undefined): string {
+    if (value === null || value === undefined) {
+      return '—';
+    }
+
+    return value ? 'Да' : 'Нет';
+  }
+}
+
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, FilterPipe],
+  imports: [CommonModule, FormsModule, FilterPipe, BooleanLabelPipe],
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.css']
 })

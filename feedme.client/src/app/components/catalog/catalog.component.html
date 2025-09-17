@@ -33,7 +33,10 @@
         <td>{{ item.weight }}</td>
         <td>{{ item.writeoffMethod }}</td>
         <td>{{ item.allergens }}</td>
-        <td>{{ item.flags }}</td>
+        <td>
+          <div>Требует фасовки: {{ item.packagingRequired | booleanLabel }}</div>
+          <div>Портится после вскрытия: {{ item.spoilsAfterOpening | booleanLabel }}</div>
+        </td>
       </tr>
     </tbody>
   </table>
