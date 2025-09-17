@@ -2,10 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Linq;
 using feedme.Server.Models;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
-
-using feedme.Server;
 
 namespace feedme.Server.Tests;
 
@@ -14,7 +11,7 @@ public class ReceiptsApiTests
     [Fact]
     public async Task PostReceipt_ReturnsCreatedReceiptWithCalculatedTotals()
     {
-        await using var factory = new WebApplicationFactory<Program>();
+        await using var factory = new FeedmeApplicationFactory();
         using var client = factory.CreateClient();
 
         var request = new
@@ -49,7 +46,7 @@ public class ReceiptsApiTests
     [Fact]
     public async Task GetReceiptById_ReturnsStoredReceipt()
     {
-        await using var factory = new WebApplicationFactory<Program>();
+        await using var factory = new FeedmeApplicationFactory();
         using var client = factory.CreateClient();
 
         var createResponse = await client.PostAsJsonAsync("/api/receipts", new
@@ -80,7 +77,7 @@ public class ReceiptsApiTests
     [Fact]
     public async Task GetReceiptById_ReturnsNotFoundForUnknownReceipt()
     {
-        await using var factory = new WebApplicationFactory<Program>();
+        await using var factory = new FeedmeApplicationFactory();
         using var client = factory.CreateClient();
 
         var response = await client.GetAsync($"/api/receipts/{Guid.NewGuid()}");
