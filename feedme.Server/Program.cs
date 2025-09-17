@@ -13,6 +13,7 @@ public class Program
 
         builder.Services.AddControllers();
         builder.Services.AddSingleton<ICatalogRepository, InMemoryCatalogRepository>();
+        builder.Services.AddSingleton<IReceiptRepository, InMemoryReceiptRepository>();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
 
