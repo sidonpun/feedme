@@ -21,7 +21,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let item of paginatedData">
-        <td>{{ item.name }}</td>
+        <td>{{ item.name || item.productName }}</td>
         <td>{{ item.category }}</td>
         <td>{{ item.expiryDate }}</td>
         <td>{{ item.unitPrice }}</td>

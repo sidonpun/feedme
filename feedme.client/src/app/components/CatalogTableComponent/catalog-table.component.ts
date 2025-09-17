@@ -84,6 +84,12 @@ export class CatalogTableComponent implements OnChanges {
     logistics: this.logisticsColumns,
   };
 
+
+  private readonly searchableKeys: (keyof CatalogItem)[] = Array.from(
+    new Set([...this.infoColumns, ...this.logisticsColumns].map(column => column.key))
+  ) as (keyof CatalogItem)[];
+
+
   private previousLength = 0;
 
   /** Текущие колонки по выбранному режиму */
@@ -179,16 +185,14 @@ export class CatalogTableComponent implements OnChanges {
   private applyFilters(options: FilterOptions = {}): void {
     const { justAdded = false, preservePage = false } = options;
     const normalizedQuery = this.normalize(this.searchQuery);
-    const activeColumns = this.columns;
 
-    const nonEmptyItems = this.data.filter(item =>
-      activeColumns.some(column => this.normalize(item[column.key]).length > 0)
-    );
+    const nonEmptyItems = this.data.filter(item => this.hasDataForSearch(item));
 
     const matches = normalizedQuery
       ? nonEmptyItems.filter(item =>
-          activeColumns.some(column =>
-            this.normalize(item[column.key]).includes(normalizedQuery)
+          this.searchableKeys.some(key =>
+            this.normalize(item[key]).includes(normalizedQuery)
+
           )
         )
       : nonEmptyItems;
@@ -223,4 +227,10 @@ export class CatalogTableComponent implements OnChanges {
 
     return value.toString().trim().toLowerCase();
   }
+
+
+  private hasDataForSearch(item: CatalogItem): boolean {
+    return this.searchableKeys.some(key => this.normalize(item[key]).length > 0);
+  }
+
 }
