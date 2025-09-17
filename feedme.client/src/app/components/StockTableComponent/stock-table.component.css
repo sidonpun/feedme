@@ -28,6 +28,35 @@ table.stock-table thead th {
   text-align: left;
 }
 
+table.stock-table thead th.sorted {
+  color: #fa4b00;
+}
+
+table.stock-table thead th .sort-button {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+table.stock-table thead th .sort-button:focus-visible {
+  outline: 2px solid #fa4b00;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+table.stock-table thead th .sort-indicator {
+  font-size: 0.75rem;
+}
+
 table.stock-table tbody td {
   padding: 1.25rem 1rem;
   font-size: 1.125rem;
