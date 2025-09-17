@@ -57,6 +57,35 @@ table.supply-table {
     text-align: left;
   }
 
+.sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.sort-button:hover,
+.sort-button:focus-visible {
+  color: #fa4b00;
+  outline: none;
+}
+
+.sort-button--active {
+  color: #fa4b00;
+}
+
+.sort-icon {
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
   /* 7. строки */
   table.supply-table tbody td {
     padding: 1.25rem 1rem;
@@ -83,34 +112,33 @@ table.supply-table {
   }
 
 /* 10. пагинация */
-.pagination-controls
-{
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   gap: 1rem;
-   margin: 1rem 0;
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1rem 0;
 }
 .pagination-controls button {
-    background-color: #fa4b00;
-    color: #ffffff;
-    border: none;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    border-radius: 0.25rem;
-    transition: background-color 0.4s ease-in;
-
-  }
-.pagination-controls button:hover:not(:disabled) {
-      background-color: #d94300;
-      cursor: pointer;
-  }
-pagination-controls button:disabled
-{
-    opacity: 0.6;
-    cursor: not-allowed;
+  background-color: #fa4b00;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.4s ease-in;
 }
-pagination-controls span
-{
-    font-size: 1 rem;
+
+.pagination-controls button:hover:not(:disabled) {
+  background-color: #d94300;
+  cursor: pointer;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pagination-controls span {
+  font-size: 1rem;
 }
