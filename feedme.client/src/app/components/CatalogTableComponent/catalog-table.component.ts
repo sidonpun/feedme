@@ -5,6 +5,7 @@ import { ConfirmDeletePopupComponent } from '../confirm-delete-popup/confirm-del
 import { TableControlsComponent } from '../table-controls/table-controls.component';
 import { CatalogViewSwitcherComponent } from '../catalog-view-switcher/catalog-view-switcher.component';
 import { CatalogItem } from '../../services/catalog.service';
+import { sortBySelector, SortDirection, toggleDirection } from '../../utils/sort.util';
 
 type CatalogView = 'info' | 'logistics';
 
@@ -47,6 +48,10 @@ export class CatalogTableComponent implements OnChanges {
   rowsPerPage = 10;
   currentPage = 1;
   filteredData: CatalogItem[] = [];
+
+  /** Параметры сортировки */
+  sortKey: keyof CatalogItem | null = null;
+  sortDirection: SortDirection = 'asc';
 
   /** Строка, выбранная для удаления */
   deleteCandidate: CatalogItem | null = null;
@@ -172,7 +177,29 @@ export class CatalogTableComponent implements OnChanges {
 
   onViewChange(view: CatalogView): void {
     this.viewMode = view;
+    if (this.sortKey && !this.columns.some(column => column.key === this.sortKey)) {
+      this.sortKey = null;
+    }
     this.applyFilters({ preservePage: true });
+  }
+
+  onSortColumn(column: CatalogColumn): void {
+    if (this.sortKey === column.key) {
+      this.sortDirection = toggleDirection(this.sortDirection);
+    } else {
+      this.sortKey = column.key;
+      this.sortDirection = 'asc';
+    }
+
+    this.applyFilters({ preservePage: true });
+  }
+
+  getAriaSort(column: CatalogColumn): 'none' | 'ascending' | 'descending' {
+    if (this.sortKey !== column.key) {
+      return 'none';
+    }
+
+    return this.sortDirection === 'asc' ? 'ascending' : 'descending';
   }
   /** Навигация по страницам */
   prevPage(): void {
@@ -197,7 +224,7 @@ export class CatalogTableComponent implements OnChanges {
         )
       : nonEmptyItems;
 
-    this.filteredData = matches;
+    this.filteredData = this.sortData(matches);
 
     if (justAdded && !normalizedQuery) {
       this.currentPage = this.totalPages;
@@ -231,6 +258,15 @@ export class CatalogTableComponent implements OnChanges {
 
   private hasDataForSearch(item: CatalogItem): boolean {
     return this.searchableKeys.some(key => this.normalize(item[key]).length > 0);
+  }
+
+  private sortData(items: CatalogItem[]): CatalogItem[] {
+    if (!this.sortKey) {
+      return [...items];
+    }
+
+    const key = this.sortKey;
+    return sortBySelector(items, item => item[key], this.sortDirection);
   }
 
 }

@@ -10,23 +10,24 @@
   <table class="stock-table">
     <thead>
       <tr>
-        <th>Название</th>
-        <th>Категория</th>
-        <th>Срок годности</th>
-        <th>Цена за единицу</th>
-        <th>Стоимость</th>
-        <th>Остаток</th>
+        <th *ngFor="let column of columns"
+            [attr.aria-sort]="getAriaSort(column.field)"
+            [class.sorted]="sortKey === column.field">
+          <button type="button"
+                  class="sort-button"
+                  (click)="changeSort(column.field)">
+            <span>{{ column.label }}</span>
+            <span class="sort-indicator" *ngIf="sortKey === column.field">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </button>
+        </th>
         <th>Действие</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let item of paginatedData">
-        <td>{{ item.name || item.productName }}</td>
-        <td>{{ item.category }}</td>
-        <td>{{ item.expiryDate }}</td>
-        <td>{{ item.unitPrice }}</td>
-        <td>{{ item.totalCost }}</td>
-        <td>{{ item.stock }}</td>
+        <td *ngFor="let column of columns">{{ formatValue(item, column) }}</td>
         <td class="actions-cell">
           <button (click)="onSettingsClick.emit(item)">⚙️</button>
         </td>

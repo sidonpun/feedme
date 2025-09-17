@@ -15,7 +15,18 @@
   <table class="catalog-table">
     <thead>
       <tr>
-        <th *ngFor="let col of columns">{{ col.label }}</th>
+        <th *ngFor="let col of columns"
+            [attr.aria-sort]="getAriaSort(col)"
+            [class.sorted]="sortKey === col.key">
+          <button type="button"
+                  class="sort-button"
+                  (click)="onSortColumn(col)">
+            <span>{{ col.label }}</span>
+            <span class="sort-indicator" *ngIf="sortKey === col.key">
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            </span>
+          </button>
+        </th>
 
         <th class="actions-header"></th>
 
