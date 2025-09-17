@@ -24,4 +24,5 @@ COPY --from=server-build /out ./
 COPY --from=client-build /build/feedme.client/dist/ ./wwwroot
 
 ENV ASPNETCORE_URLS=http://+:8080
+ENTRYPOINT ["dotnet", "feedme.Server.dll"]
 EXPOSE 8080
