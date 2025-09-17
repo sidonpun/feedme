@@ -14,13 +14,83 @@
   <table class="supply-table">
     <thead>
       <tr>
-        <th>Название</th>
-        <th>Категория</th>
-        <th>Количество</th>
-        <th>Цена</th>
-        <th>Срок годности</th>
-        <th>Ответственный склад</th>
-        <th>Поставщик</th>
+        <th [attr.aria-sort]="getAriaSort('productName')">
+          <button type="button"
+                  class="sort-button"
+                  (click)="toggleSort('productName')"
+                  [class.sort-button--active]="isSortedBy('productName')">
+            <span>Название</span>
+            <span class="sort-icon" aria-hidden="true" *ngIf="isSortedBy('productName')">
+              {{ sortState?.direction === 'asc' ? '▲' : '▼' }}
+            </span>
+          </button>
+        </th>
+        <th [attr.aria-sort]="getAriaSort('category')">
+          <button type="button"
+                  class="sort-button"
+                  (click)="toggleSort('category')"
+                  [class.sort-button--active]="isSortedBy('category')">
+            <span>Категория</span>
+            <span class="sort-icon" aria-hidden="true" *ngIf="isSortedBy('category')">
+              {{ sortState?.direction === 'asc' ? '▲' : '▼' }}
+            </span>
+          </button>
+        </th>
+        <th [attr.aria-sort]="getAriaSort('stock')">
+          <button type="button"
+                  class="sort-button"
+                  (click)="toggleSort('stock')"
+                  [class.sort-button--active]="isSortedBy('stock')">
+            <span>Количество</span>
+            <span class="sort-icon" aria-hidden="true" *ngIf="isSortedBy('stock')">
+              {{ sortState?.direction === 'asc' ? '▲' : '▼' }}
+            </span>
+          </button>
+        </th>
+        <th [attr.aria-sort]="getAriaSort('unitPrice')">
+          <button type="button"
+                  class="sort-button"
+                  (click)="toggleSort('unitPrice')"
+                  [class.sort-button--active]="isSortedBy('unitPrice')">
+            <span>Цена</span>
+            <span class="sort-icon" aria-hidden="true" *ngIf="isSortedBy('unitPrice')">
+              {{ sortState?.direction === 'asc' ? '▲' : '▼' }}
+            </span>
+          </button>
+        </th>
+        <th [attr.aria-sort]="getAriaSort('expiryDate')">
+          <button type="button"
+                  class="sort-button"
+                  (click)="toggleSort('expiryDate')"
+                  [class.sort-button--active]="isSortedBy('expiryDate')">
+            <span>Срок годности</span>
+            <span class="sort-icon" aria-hidden="true" *ngIf="isSortedBy('expiryDate')">
+              {{ sortState?.direction === 'asc' ? '▲' : '▼' }}
+            </span>
+          </button>
+        </th>
+        <th [attr.aria-sort]="getAriaSort('responsible')">
+          <button type="button"
+                  class="sort-button"
+                  (click)="toggleSort('responsible')"
+                  [class.sort-button--active]="isSortedBy('responsible')">
+            <span>Ответственный склад</span>
+            <span class="sort-icon" aria-hidden="true" *ngIf="isSortedBy('responsible')">
+              {{ sortState?.direction === 'asc' ? '▲' : '▼' }}
+            </span>
+          </button>
+        </th>
+        <th [attr.aria-sort]="getAriaSort('supplier')">
+          <button type="button"
+                  class="sort-button"
+                  (click)="toggleSort('supplier')"
+                  [class.sort-button--active]="isSortedBy('supplier')">
+            <span>Поставщик</span>
+            <span class="sort-icon" aria-hidden="true" *ngIf="isSortedBy('supplier')">
+              {{ sortState?.direction === 'asc' ? '▲' : '▼' }}
+            </span>
+          </button>
+        </th>
         <th>Действие</th>
       </tr>
     </thead>
