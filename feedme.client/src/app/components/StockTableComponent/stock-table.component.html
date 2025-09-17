@@ -1,6 +1,8 @@
 <div class="table-header">
-  <app-table-controls [(searchQuery)]="searchQuery"
-                      [(rowsPerPage)]="rowsPerPage">
+  <app-table-controls [searchQuery]="searchQuery"
+                      [rowsPerPage]="rowsPerPage"
+                      (searchQueryChange)="onSearchChange($event)"
+                      (rowsPerPageChange)="onRowsChange($event)">
   </app-table-controls>
 </div>
 
