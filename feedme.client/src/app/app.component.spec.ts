@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+
 import { AppComponent } from './app.component';
 import { CatalogItem, CatalogService } from './services/catalog.service';
 import { of } from 'rxjs';
@@ -20,7 +22,9 @@ describe('AppComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [AppComponent],
-      providers: [{ provide: CatalogService, useValue: catalogService }]
+
+      providers: [provideHttpClient()]
+
     }).compileComponents();
   });
 
