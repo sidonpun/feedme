@@ -1,10 +1,15 @@
+using feedme.Server.Data;
+using feedme.Server.Extensions;
 using feedme.Server.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace feedme.Server;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
         builder.AddServiceDefaults();
@@ -12,10 +17,34 @@ public class Program
         // Add services to the container.
 
         builder.Services.AddControllers();
-        builder.Services.AddSingleton<ICatalogRepository, InMemoryCatalogRepository>();
-        builder.Services.AddSingleton<IReceiptRepository, InMemoryReceiptRepository>();
+        builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
+        {
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            var provider = configuration["Database:Provider"];
+
+            if (string.Equals(provider, "InMemory", StringComparison.OrdinalIgnoreCase))
+            {
+                var databaseName = configuration["Database:InMemoryName"] ?? "feedme-tests";
+                options.UseInMemoryDatabase(databaseName);
+                return;
+            }
+
+            var connectionString = configuration.GetConnectionString(AppDbContext.ConnectionStringName);
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException($"Connection string '{AppDbContext.ConnectionStringName}' is not configured.");
+            }
+
+            options.UseNpgsql(connectionString);
+        });
+        builder.Services.AddScoped<ICatalogRepository, PostgresCatalogRepository>();
+        builder.Services.AddScoped<IReceiptRepository, PostgresReceiptRepository>();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
+
+        builder.Services.AddHealthChecks()
+            .AddDbContextCheck<AppDbContext>();
 
         builder.Services.AddCors(options =>
         {
@@ -45,6 +74,8 @@ public class Program
 
         app.MapFallbackToFile("/index.html");
 
-        app.Run();
+        await app.ApplyMigrationsAsync();
+
+        await app.RunAsync();
     }
 }
