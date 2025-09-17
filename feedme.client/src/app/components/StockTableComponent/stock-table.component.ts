@@ -4,7 +4,9 @@ import { TableControlsComponent } from '../table-controls/table-controls.compone
 
 interface StockTableItem {
   name?: string;
+
   productName?: string;
+
   category?: string;
   expiryDate?: string | Date;
   unitPrice?: string | number;
@@ -93,7 +95,9 @@ export class StockTableComponent implements OnChanges {
     const { justAdded = false, preservePage = false } = options;
     const normalizedQuery = this.normalize(this.searchQuery);
 
+
     const nonEmptyItems = this.data.filter(item => this.hasSearchableValue(item));
+
 
     const matches = normalizedQuery
       ? nonEmptyItems.filter(item => this.matchesQuery(item, normalizedQuery))
@@ -116,7 +120,9 @@ export class StockTableComponent implements OnChanges {
 
   private matchesQuery(item: StockTableItem, query: string): boolean {
     return this.searchableFields.some(field =>
+
       this.normalize(this.readField(item, field)).includes(query)
+
     );
   }
 
@@ -127,6 +133,7 @@ export class StockTableComponent implements OnChanges {
         ? value.toISOString().toLowerCase()
         : value.toString().trim().toLowerCase();
   }
+
 
   private readField(item: StockTableItem, field: keyof StockTableItem): unknown {
     if (field === 'name') {
@@ -141,4 +148,5 @@ export class StockTableComponent implements OnChanges {
       this.normalize(this.readField(item, field)).length > 0
     );
   }
+
 }
