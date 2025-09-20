@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { EMPTY, catchError, take, tap } from 'rxjs';
-
-
 import { WarehouseTabsComponent } from '../warehouse-tabs/warehouse-tabs.component';
 import { SupplyControlsComponent } from '../supply-controls/supply-controls.component';
 import { InfoCardsWrapperComponent } from '../info-cards-wrapper/info-cards-wrapper.component';
@@ -60,6 +58,10 @@ export class ContentComponent implements OnInit {
     this.supplyData = JSON.parse(localStorage.getItem(`warehouseSupplies_${this.selectedTab}`) || '[]');
     this.stockData = JSON.parse(localStorage.getItem(`warehouseStock_${this.selectedTab}`) || '[]');
 
+    this.loadCatalog();
+  }
+
+  private loadCatalog(): void {
     this.catalogService
       .getAll()
       .pipe(
@@ -68,11 +70,9 @@ export class ContentComponent implements OnInit {
           this.catalogData = data;
           this.errorMessage = null;
         }),
-
         catchError(() => this.handleError('Не удалось загрузить каталог. Попробуйте ещё раз.'))
       )
       .subscribe();
-
   }
 
   /** Смена вкладки склада */
@@ -141,7 +141,29 @@ export class ContentComponent implements OnInit {
   }
 
   onCatalogRemove(item: CatalogItem): void {
-    this.catalogData = this.catalogData.filter(i => i !== item);
+    const targetId = item?.id?.trim();
+
+    if (!targetId) {
+      this.errorMessage = 'Не удалось удалить товар: отсутствует идентификатор.';
+      return;
+    }
+
+    this.errorMessage = null;
+
+    const previousCatalog = [...this.catalogData];
+    this.catalogData = this.catalogData.filter(catalogItem => catalogItem.id !== targetId);
+
+    this.catalogService
+      .delete(targetId)
+      .pipe(
+        take(1),
+        tap(() => this.loadCatalog()),
+        catchError(() => {
+          this.catalogData = previousCatalog;
+          return this.handleError('Не удалось удалить товар. Попробуйте ещё раз.');
+        })
+      )
+      .subscribe();
   }
 
   private handleError(message: string) {

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { ApiUrlService } from './api-url.service';
 
 export interface CatalogItem {
@@ -45,5 +45,16 @@ export class CatalogService {
 
   create(item: Omit<CatalogItem, 'id'>): Observable<CatalogItem> {
     return this.http.post<CatalogItem>(this.baseUrl, item);
+  }
+
+  delete(id: string): Observable<void> {
+    const normalizedId = id?.trim();
+
+    if (!normalizedId) {
+      return throwError(() => new Error('Catalog item identifier is required.'));
+    }
+
+    const targetUrl = `${this.baseUrl}/${encodeURIComponent(normalizedId)}`;
+    return this.http.delete<void>(targetUrl);
   }
 }

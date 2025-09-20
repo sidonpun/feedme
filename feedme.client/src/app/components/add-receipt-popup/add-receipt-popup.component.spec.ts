@@ -11,6 +11,7 @@ describe('AddReceiptPopupComponent', () => {
   let fixture: ComponentFixture<AddReceiptPopupComponent>;
   let catalogService: jasmine.SpyObj<CatalogService>;
   let receiptService: jasmine.SpyObj<ReceiptService>;
+  const runInContext = <T>(fn: () => T): T => TestBed.runInInjectionContext(fn);
 
   const catalogItem: CatalogItem = {
     id: 'product-1',
@@ -76,7 +77,7 @@ describe('AddReceiptPopupComponent', () => {
 
     fixture = TestBed.createComponent(AddReceiptPopupComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    runInContext(() => fixture.detectChanges());
   });
 
   it('should create', () => {
@@ -84,40 +85,44 @@ describe('AddReceiptPopupComponent', () => {
   });
 
   it('should emit close on onClose', () => {
-    spyOn(component.close, 'emit');
-    const btn = fixture.debugElement.query(By.css('.cancel-btn'));
-    btn.nativeElement.click();
-    expect(component.close.emit).toHaveBeenCalled();
+    runInContext(() => {
+      spyOn(component.close, 'emit');
+      const btn = fixture.debugElement.query(By.css('.cancel-btn'));
+      btn.nativeElement.click();
+      expect(component.close.emit).toHaveBeenCalled();
+    });
   });
 
   it('should construct receipt payload and close popup on submit', () => {
-    spyOn(component.close, 'emit');
+    runInContext(() => {
+      spyOn(component.close, 'emit');
 
-    component.form.controls.productId.setValue(catalogItem.id);
-    component.form.controls.number.setValue(' RCPT-001 ');
-    component.form.controls.warehouse.setValue('  Главный склад  ');
-    component.form.controls.receivedAt.setValue('2024-04-15');
-    component.form.controls.quantity.setValue(5);
-    component.form.controls.unit.setValue('кг');
+      component.form.controls.productId.setValue(catalogItem.id);
+      component.form.controls.number.setValue(' RCPT-001 ');
+      component.form.controls.warehouse.setValue('  Главный склад  ');
+      component.form.controls.receivedAt.setValue('2024-04-15');
+      component.form.controls.quantity.setValue(5);
+      component.form.controls.unit.setValue('кг');
 
-    component.onSubmit();
+      component.onSubmit();
 
-    expect(receiptService.saveReceipt).toHaveBeenCalledWith({
-      number: 'RCPT-001',
-      supplier: catalogItem.supplier,
-      warehouse: 'Главный склад',
-      receivedAt: '2024-04-15T00:00:00.000Z',
-      items: [
-        {
-          catalogItemId: catalogItem.id,
-          itemName: catalogItem.name,
-          quantity: 5,
-          unit: 'кг',
-          unitPrice: catalogItem.unitPrice
-        }
-      ]
+      expect(receiptService.saveReceipt).toHaveBeenCalledWith({
+        number: 'RCPT-001',
+        supplier: catalogItem.supplier,
+        warehouse: 'Главный склад',
+        receivedAt: '2024-04-15T00:00:00.000Z',
+        items: [
+          {
+            catalogItemId: catalogItem.id,
+            itemName: catalogItem.name,
+            quantity: 5,
+            unit: 'кг',
+            unitPrice: catalogItem.unitPrice
+          }
+        ]
+      });
+
+      expect(component.close.emit).toHaveBeenCalled();
     });
-
-    expect(component.close.emit).toHaveBeenCalled();
   });
 });
