@@ -3,8 +3,9 @@ import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 
 import { AddReceiptPopupComponent } from './add-receipt-popup.component';
-import { CatalogService } from '../../services/catalog.service';
+import { CatalogService, CatalogItem } from '../../services/catalog.service';
 import { ReceiptService } from '../../services/receipt.service';
+import { Receipt } from '../../models/receipt';
 
 describe('AddReceiptPopupComponent', () => {
   let component: AddReceiptPopupComponent;
@@ -14,8 +15,11 @@ describe('AddReceiptPopupComponent', () => {
     await TestBed.configureTestingModule({
       imports: [AddReceiptPopupComponent],
       providers: [
-        { provide: CatalogService, useValue: { getAll: () => of([]), getById: () => of() } },
-        { provide: ReceiptService, useValue: { saveReceipt: () => of() } }
+        {
+          provide: CatalogService,
+          useValue: { getAll: () => of<CatalogItem[]>([]), getById: () => of({} as CatalogItem) }
+        },
+        { provide: ReceiptService, useValue: { saveReceipt: () => of({} as Receipt) } }
       ]
     }).compileComponents();
 
