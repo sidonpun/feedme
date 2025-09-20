@@ -18,5 +18,9 @@
                        (onSettingsClick)="handleSettingsClick($event)">
   </app-warehouse-table>
 
-  <app-popup (onAddItem)="handleAddItem($event)"></app-popup>
+  <ng-container *ngIf="showPopup">
+    <app-popup (onAddItem)="onAddItem($event)"
+               (onClose)="closePopup()">
+    </app-popup>
+  </ng-container>
 </div>

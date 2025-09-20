@@ -47,21 +47,16 @@ export class ContentComponent implements OnInit {
     this.tableData = data ? JSON.parse(data) : [];
   }
 
-  handleAddItem(newItem: any) {
-    this.tableData.push(newItem);
-    localStorage.setItem(
-      `warehouseData_${this.selectedTab}`,
-      JSON.stringify(this.tableData)
-    );
-    // Закрываем попап после добавления
-    this.showPopup = false;
-  }
   handleSettingsClick(item: any) {
     this.selectedItem = item;
   }
 
   openPopup() {
     this.showPopup = true;
+  }
+
+  closePopup() {
+    this.showPopup = false;
   }
 
   goToCatalog() {
@@ -73,7 +68,12 @@ export class ContentComponent implements OnInit {
   }
 
   onAddItem(item: any) {
-    this.handleAddItem(item);
-    this.showPopup = false;
+    const updatedData = [...this.tableData, item];
+    this.tableData = updatedData;
+    localStorage.setItem(
+      `warehouseData_${this.selectedTab}`,
+      JSON.stringify(updatedData)
+    );
+    this.closePopup();
   }
 }
