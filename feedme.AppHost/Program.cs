@@ -3,7 +3,7 @@ using Aspire.Hosting;
 var builder = DistributedApplication.CreateBuilder(args);
 
 var postgres = builder.AddPostgres("postgres")
-    .WithImage("postgres:16-alpine")
+    .WithImageTag("16-alpine")
     .WithDataVolume();
 
 var warehouseDb = postgres.AddDatabase("WarehouseDb");
