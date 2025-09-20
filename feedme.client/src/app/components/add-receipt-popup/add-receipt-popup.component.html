@@ -10,7 +10,7 @@
       </select>
 
       <label>Поставщик</label>
-      <input formControlName="supplierId" disabled />
+      <input formControlName="supplier" disabled />
 
       <label>Код ТН ВЭД</label>
       <input formControlName="tnvedCode" disabled />
@@ -21,11 +21,14 @@
       <label>Цена закупки за единицу</label>
       <input formControlName="unitPrice" disabled />
 
+      <label>Склад</label>
+      <input type="text" formControlName="warehouse" />
+
       <label>Дата приёмки</label>
-      <input type="date" formControlName="receiptDate" />
+      <input type="date" formControlName="receivedAt" />
 
       <label>Номер документа</label>
-      <input type="text" formControlName="documentNumber" />
+      <input type="text" formControlName="number" />
 
       <label>Количество</label>
       <input type="number" formControlName="quantity" />
