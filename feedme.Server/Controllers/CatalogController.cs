@@ -32,4 +32,16 @@ public class CatalogController : ControllerBase
         var created = await _repository.AddAsync(item);
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return NotFound();
+        }
+
+        var deleted = await _repository.DeleteAsync(id);
+        return deleted ? NoContent() : NotFound();
+    }
 }

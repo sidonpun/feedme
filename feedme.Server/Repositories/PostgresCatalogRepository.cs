@@ -38,6 +38,28 @@ public class PostgresCatalogRepository(AppDbContext context) : ICatalogRepositor
         return (await GetByIdAsync(normalized.Id))!;
     }
 
+    public async Task<bool> DeleteAsync(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return false;
+        }
+
+        var normalizedId = id.Trim();
+        var existingItem = await _context.CatalogItems
+            .SingleOrDefaultAsync(item => item.Id == normalizedId);
+
+        if (existingItem is null)
+        {
+            return false;
+        }
+
+        _context.CatalogItems.Remove(existingItem);
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
     private static CatalogItem Normalize(CatalogItem item)
     {
         if (item is null)
