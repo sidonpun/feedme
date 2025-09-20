@@ -1,8 +1,10 @@
 // src/environments/environment.prod.ts
-export const environment = {
+//
+// Продакшен-сборка также использует фиксированный адрес API, который
+// развёрнут на публичном сервере приложения.
+import type { EnvironmentConfig } from './environment.model';
+
+export const environment: EnvironmentConfig = {
   production: true,
-  /**
-   * Продакшен-сборка также работает с основным сервером по фиксированному адресу.
-   */
   apiBaseUrl: 'http://185.251.90.40:8080'
 };

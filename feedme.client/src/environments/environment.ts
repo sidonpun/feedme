@@ -1,9 +1,10 @@
 // src/environments/environment.ts
-export const environment = {
-  production: false,
-  /**
-   * Базовый адрес API, который используется клиентом в режиме разработки.
-   * Указываем удалённый сервер, чтобы фронтенд всегда работал с общей базой.
-   */
-  apiBaseUrl: 'http://185.251.90.40:8080'
+//
+// В режиме разработки базовый адрес API берём из origin браузера. Это
+// гарантирует, что прокси или локальный backend будут использоваться без
+// дополнительной конфигурации.
+import type { EnvironmentConfig } from './environment.model';
+
+export const environment: EnvironmentConfig = {
+  production: false
 };
