@@ -1,4 +1,5 @@
 using System.Reflection;
+using feedme.Server.Configuration;
 using feedme.Server.Data;
 using feedme.Server.Extensions;
 using feedme.Server.Repositories;
@@ -29,7 +30,7 @@ public class Program
                 return;
             }
 
-            var connectionString = ResolveConnectionString(configuration);
+            var connectionString = DatabaseConnectionStringResolver.Resolve(configuration);
 
             options.UseNpgsql(connectionString);
         });
@@ -72,27 +73,6 @@ public class Program
         await app.ApplyMigrationsAsync();
 
         await app.RunAsync();
-    }
-
-    private static string ResolveConnectionString(IConfiguration configuration)
-    {
-        var connectionString = configuration.GetConnectionString(AppDbContext.ConnectionStringName);
-
-        if (!string.IsNullOrWhiteSpace(connectionString))
-        {
-            return connectionString;
-        }
-
-        const string fallbackConnectionName = "Default";
-        var fallbackConnectionString = configuration.GetConnectionString(fallbackConnectionName);
-
-        if (!string.IsNullOrWhiteSpace(fallbackConnectionString))
-        {
-            return fallbackConnectionString;
-        }
-
-        throw new InvalidOperationException(
-            $"Connection string '{AppDbContext.ConnectionStringName}' is not configured. Provide the '{AppDbContext.ConnectionStringName}' connection string or configure the '{fallbackConnectionName}' fallback connection string via configuration or environment variables.");
     }
 
     private static void ConfigureInMemoryDatabase(DbContextOptionsBuilder options, IConfiguration configuration)
