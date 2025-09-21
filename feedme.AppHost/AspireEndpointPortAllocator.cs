@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 
@@ -5,15 +6,16 @@ namespace feedme.AppHost;
 
 internal static class AspireEndpointPortAllocator
 {
-    private static readonly string[] EndpointVariableNames =
-    [
-        "DOTNET_RESOURCE_SERVICE_ENDPOINT_URL",
-        "DOTNET_DASHBOARD_OTLP_ENDPOINT_URL"
-    ];
+    private static readonly IReadOnlyDictionary<string, EndpointDefinition> EndpointDefinitions =
+        new Dictionary<string, EndpointDefinition>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["DOTNET_RESOURCE_SERVICE_ENDPOINT_URL"] = new EndpointDefinition(Uri.UriSchemeHttps, "localhost"),
+            ["DOTNET_DASHBOARD_OTLP_ENDPOINT_URL"] = new EndpointDefinition(Uri.UriSchemeHttps, "localhost")
+        };
 
     public static void EnsureRequiredPortsAreAvailable()
     {
-        foreach (var variableName in EndpointVariableNames)
+        foreach (var variableName in EndpointDefinitions.Keys)
         {
             EnsureEndpointPortAvailable(variableName);
         }
@@ -23,48 +25,80 @@ internal static class AspireEndpointPortAllocator
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(variableName);
 
-        var rawValue = Environment.GetEnvironmentVariable(variableName);
+        var definition = EndpointDefinitions.GetValueOrDefault(variableName);
+        var context = TryCreateContextFromEnvironment(variableName, definition);
 
-        if (string.IsNullOrWhiteSpace(rawValue))
+        if (context is null || context.Addresses.Count == 0)
         {
             return;
         }
 
-        if (!Uri.TryCreate(rawValue, UriKind.Absolute, out var endpointUri))
+        var requiresUpdate = context.RequiresUpdate;
+        var port = context.Uri.Port;
+
+        if (port <= 0)
+        {
+            requiresUpdate = true;
+        }
+        else if (!requiresUpdate && !IsPortAvailable(context.Addresses, port))
+        {
+            requiresUpdate = true;
+        }
+
+        if (!requiresUpdate)
         {
             return;
         }
 
-        if (!IsSupportedScheme(endpointUri.Scheme) || endpointUri.Port <= 0)
+        var newPort = FindAvailablePort(context.Addresses);
+
+        if (!context.RequiresUpdate && newPort == port)
         {
             return;
         }
 
-        var addresses = ResolveAddresses(endpointUri);
-
-        if (addresses.Count == 0)
-        {
-            return;
-        }
-
-        if (IsPortAvailable(addresses, endpointUri.Port))
-        {
-            return;
-        }
-
-        var newPort = FindAvailablePort(addresses);
-
-        if (newPort == endpointUri.Port)
-        {
-            return;
-        }
-
-        var builder = new UriBuilder(endpointUri)
+        var builder = new UriBuilder(context.Uri)
         {
             Port = newPort
         };
 
         Environment.SetEnvironmentVariable(variableName, builder.Uri.ToString());
+    }
+
+    private static EndpointContext? TryCreateContextFromEnvironment(string variableName, EndpointDefinition? definition)
+    {
+        var rawValue = Environment.GetEnvironmentVariable(variableName);
+
+        if (!string.IsNullOrWhiteSpace(rawValue) && Uri.TryCreate(rawValue, UriKind.Absolute, out var endpointUri))
+        {
+            var addresses = ResolveAddresses(endpointUri);
+            var hasSupportedScheme = IsSupportedScheme(endpointUri.Scheme);
+            var hasValidPort = endpointUri.Port > 0;
+
+            if (addresses.Count > 0 && hasSupportedScheme && hasValidPort)
+            {
+                return new EndpointContext(endpointUri, addresses, requiresUpdate: false);
+            }
+
+            if (definition is null)
+            {
+                return null;
+            }
+
+            var fallbackAddresses = addresses.Count > 0 ? addresses : definition.Addresses;
+            var fallbackUri = hasSupportedScheme && addresses.Count > 0
+                ? endpointUri
+                : definition.CreateFallbackUri();
+
+            return new EndpointContext(fallbackUri, fallbackAddresses, requiresUpdate: true);
+        }
+
+        if (definition is null)
+        {
+            return null;
+        }
+
+        return new EndpointContext(definition.CreateFallbackUri(), definition.Addresses, requiresUpdate: true);
     }
 
     private static bool IsSupportedScheme(string scheme)
@@ -174,6 +208,31 @@ internal static class AspireEndpointPortAllocator
         finally
         {
             listener?.Stop();
+        }
+    }
+
+    private sealed record EndpointContext(Uri Uri, IReadOnlyList<IPAddress> Addresses, bool RequiresUpdate);
+
+    private sealed class EndpointDefinition
+    {
+        private readonly string _scheme;
+        private readonly string _host;
+        private IReadOnlyList<IPAddress>? _addresses;
+
+        public EndpointDefinition(string scheme, string host)
+        {
+            _scheme = scheme;
+            _host = host;
+        }
+
+        public IReadOnlyList<IPAddress> Addresses => _addresses ??= ResolveAddresses(CreateFallbackUri());
+
+        public Uri CreateFallbackUri()
+        {
+            return new UriBuilder(_scheme, _host)
+            {
+                Port = 0
+            }.Uri;
         }
     }
 }

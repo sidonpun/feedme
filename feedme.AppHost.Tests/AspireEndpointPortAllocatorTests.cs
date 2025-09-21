@@ -61,6 +61,30 @@ public class AspireEndpointPortAllocatorTests
         }
     }
 
+    [Fact]
+    public void EnsureEndpointPortAvailable_AssignsPortWhenVariableIsMissing()
+    {
+        const string variableName = "DOTNET_RESOURCE_SERVICE_ENDPOINT_URL";
+
+        try
+        {
+            Environment.SetEnvironmentVariable(variableName, null);
+
+            AspireEndpointPortAllocator.EnsureEndpointPortAvailable(variableName);
+
+            var updatedValue = Environment.GetEnvironmentVariable(variableName);
+            Assert.False(string.IsNullOrWhiteSpace(updatedValue));
+
+            var updatedUri = new Uri(updatedValue!);
+            Assert.True(updatedUri.Port > 0);
+            Assert.True(IsPortCurrentlyAvailable(updatedUri), "Allocated port is unexpectedly unavailable.");
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(variableName, null);
+        }
+    }
+
     private static int GetFreePort()
     {
         using var listener = new TcpListener(IPAddress.Loopback, 0);
