@@ -1,4 +1,7 @@
 using Aspire.Hosting;
+using feedme.AppHost;
+
+AspireEndpointPortAllocator.EnsureRequiredPortsAreAvailable();
 
 var builder = DistributedApplication.CreateBuilder(args);
 
