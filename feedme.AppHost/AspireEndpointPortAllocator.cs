@@ -77,7 +77,7 @@ internal static class AspireEndpointPortAllocator
 
             if (addresses.Count > 0 && hasSupportedScheme && hasValidPort)
             {
-                return new EndpointContext(endpointUri, addresses, requiresUpdate: false);
+                return new EndpointContext(endpointUri, addresses, RequiresUpdate: false);
             }
 
             if (definition is null)
@@ -90,7 +90,7 @@ internal static class AspireEndpointPortAllocator
                 ? endpointUri
                 : definition.CreateFallbackUri();
 
-            return new EndpointContext(fallbackUri, fallbackAddresses, requiresUpdate: true);
+            return new EndpointContext(fallbackUri, fallbackAddresses, RequiresUpdate: true);
         }
 
         if (definition is null)
@@ -98,7 +98,7 @@ internal static class AspireEndpointPortAllocator
             return null;
         }
 
-        return new EndpointContext(definition.CreateFallbackUri(), definition.Addresses, requiresUpdate: true);
+        return new EndpointContext(definition.CreateFallbackUri(), definition.Addresses, RequiresUpdate: true);
     }
 
     private static bool IsSupportedScheme(string scheme)
