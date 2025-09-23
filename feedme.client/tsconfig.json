@@ -5,10 +5,11 @@
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
-      // если вы захотите делать алиасы, например:
-      "@app/*": [ "src/app/*" ]
+      "@app/*": ["src/app/*"]
     },
-    // остальные настройки…
     "skipLibCheck": true
-  }
+  },
+  "files": [],
+  "include": [],
+  "exclude": ["node_modules", "dist", "obj", "bin"]
 }
