@@ -1,4 +1,5 @@
 using feedme.Server;
+using feedme.Server.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -13,8 +14,8 @@ internal sealed class FeedmeApplicationFactory : WebApplicationFactory<Program>
         {
             configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Database:Provider"] = "InMemory",
-                ["Database:InMemoryName"] = $"feedme-tests-{Guid.NewGuid():N}"
+                [$"{DatabaseOptions.SectionName}:{nameof(DatabaseOptions.Provider)}"] = DatabaseProvider.InMemory.ToString(),
+                [$"{DatabaseOptions.SectionName}:{nameof(DatabaseOptions.InMemoryName)}"] = $"feedme-tests-{Guid.NewGuid():N}"
             });
         });
     }

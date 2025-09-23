@@ -6,6 +6,9 @@ using feedme.Server.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace feedme.Server;
 
@@ -19,22 +22,43 @@ public class Program
         // Add services to the container.
 
         builder.Services.AddControllers();
+        builder.Services
+            .AddOptions<DatabaseOptions>()
+            .Bind(builder.Configuration.GetSection(DatabaseOptions.SectionName));
+
         builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-            var databaseProvider = configuration["Database:Provider"];
+            var hostEnvironment = serviceProvider.GetRequiredService<IHostEnvironment>();
+            var databaseOptions = serviceProvider.GetRequiredService<IOptions<DatabaseOptions>>().Value;
 
-            if (string.Equals(databaseProvider, "InMemory", StringComparison.OrdinalIgnoreCase))
+            var fallbackProvider = DatabaseProvider.InMemory;
+            var resolvedProvider = databaseOptions.ResolveProvider(fallbackProvider);
+
+            if (!hostEnvironment.IsDevelopment() && string.IsNullOrWhiteSpace(databaseOptions.Provider))
             {
-                ConfigureInMemoryDatabase(options, configuration);
-                return;
+                var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+                logger.LogWarning(
+                    "Database provider is not configured. Falling back to the in-memory provider in the '{Environment}' environment.",
+                    hostEnvironment.EnvironmentName);
             }
 
-            var connectionString = PostgresConnectionStringFactory.Create(
-                configuration,
-                AppDbContext.ConnectionStringName);
+            switch (resolvedProvider)
+            {
+                case DatabaseProvider.InMemory:
+                    ConfigureInMemoryDatabase(options, databaseOptions);
+                    return;
+                case DatabaseProvider.Postgres:
+                    var connectionString = PostgresConnectionStringFactory.Create(
+                        configuration,
+                        AppDbContext.ConnectionStringName);
 
-            options.UseNpgsql(connectionString);
+                    options.UseNpgsql(connectionString);
+                    return;
+                default:
+                    throw new InvalidOperationException(
+                        $"Unsupported database provider '{databaseOptions.Provider}'.");
+            }
         });
         builder.Services.AddScoped<ICatalogRepository, PostgresCatalogRepository>();
         builder.Services.AddScoped<IReceiptRepository, PostgresReceiptRepository>();
@@ -77,10 +101,10 @@ public class Program
         await app.RunAsync();
     }
 
-    private static void ConfigureInMemoryDatabase(DbContextOptionsBuilder options, IConfiguration configuration)
+    private static void ConfigureInMemoryDatabase(DbContextOptionsBuilder options, DatabaseOptions databaseOptions)
     {
         const string providerAssemblyName = "Microsoft.EntityFrameworkCore.InMemory";
-        var databaseName = configuration["Database:InMemoryName"] ?? "feedme-tests";
+        var databaseName = databaseOptions.ResolveInMemoryDatabaseName();
 
         var providerAssembly = ResolveAssembly(providerAssemblyName);
         var extensionType = providerAssembly.GetType("Microsoft.EntityFrameworkCore.InMemoryDbContextOptionsExtensions")
