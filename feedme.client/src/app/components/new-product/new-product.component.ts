@@ -15,8 +15,8 @@ export class NewProductComponent {
 
   productName = '';
   category = '';
-  stock = '';
-  unitPrice = '';
+  stock: number | null = null;
+  unitPrice: number | null = null;
   expiryDate = '';
   responsible = '';
   supplier = '';
@@ -25,6 +25,10 @@ export class NewProductComponent {
 
   // Логика отправки формы — не удаляем
   handleSubmit() {
+    if (this.stock === null || this.unitPrice === null) {
+      return;
+    }
+
     const formData = {
       productName: this.productName,
       category: this.category,
@@ -34,6 +38,7 @@ export class NewProductComponent {
       responsible: this.responsible,
       supplier: this.supplier
     };
+
     this.onSubmit.emit(formData);
     this.resetForm();
   }
@@ -42,8 +47,8 @@ export class NewProductComponent {
   resetForm() {
     this.productName = '';
     this.category = '';
-    this.stock = '';
-    this.unitPrice = '';
+    this.stock = null;
+    this.unitPrice = null;
     this.expiryDate = '';
     this.responsible = '';
     this.supplier = '';

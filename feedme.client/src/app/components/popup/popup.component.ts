@@ -1,6 +1,8 @@
 import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CatalogItem } from '../../models/catalog-item.model';
+import { normalizeCatalogItem, sanitizeNumericValue } from '../../utils/catalog.utils';
 
 @Component({
   selector: 'app-popup',
@@ -16,19 +18,21 @@ export class PopupComponent implements OnInit {
   name = '';
   category = '';
   expiryDate = '';
-  unitPrice = '';
-  totalCost = '';
-  stock = '';
+  unitPrice: number | null = null;
+  totalCost: number | null = null;
+  stock: number | null = null;
   supplyDate = '';
   isSuggestionSelected = false;
 
-  suggestedNames: any[] = [];
-  catalogData: any[] = [];
+  suggestedNames: CatalogItem[] = [];
+  catalogData: CatalogItem[] = [];
   categories = ['Заготовка', 'Готовое блюдо', 'Добавка', 'Товар'];
 
   ngOnInit() {
     const savedData = localStorage.getItem('catalogData');
-    this.catalogData = savedData ? JSON.parse(savedData) : [];
+    this.catalogData = savedData
+      ? JSON.parse(savedData).map((item: any) => normalizeCatalogItem(item))
+      : [];
   }
 
   updateSuggestions() {
@@ -42,19 +46,38 @@ export class PopupComponent implements OnInit {
     }
   }
 
-  handleSuggestionSelect(suggestion: any) {
+  handleSuggestionSelect(suggestion: CatalogItem) {
     this.name = suggestion.name;
     this.category = suggestion.category;
-    this.stock = suggestion.stock || '';
-    this.unitPrice = suggestion.price || '';
+    const sanitizedStock = sanitizeNumericValue(suggestion.stockQuantity);
+    const sanitizedUnitPrice = sanitizeNumericValue(suggestion.unitPrice);
+
+    this.stock = sanitizedStock ?? suggestion.stockQuantity ?? null;
+    this.unitPrice = sanitizedUnitPrice ?? suggestion.unitPrice ?? null;
     this.expiryDate = suggestion.expiryDate || '';
-    this.supplyDate = suggestion.supplyDate || '';
-    this.totalCost = suggestion.totalCost || '';
+    this.supplyDate = (suggestion as any).supplyDate || '';
+
+    const normalizedTotalCost = sanitizeNumericValue(
+      suggestion.totalCost ?? (suggestion as any).totalCost
+    );
+
+    if (normalizedTotalCost !== null) {
+      this.totalCost = normalizedTotalCost;
+    } else if (this.stock !== null && this.unitPrice !== null) {
+      this.totalCost = Number((this.stock * this.unitPrice).toFixed(2));
+    } else {
+      this.totalCost = null;
+    }
+
     this.suggestedNames = [];
     this.isSuggestionSelected = true;
   }
 
   handleSubmit() {
+    if (this.stock === null || this.unitPrice === null || this.totalCost === null) {
+      return;
+    }
+
     const id = Date.now().toString();
 
     const newItem = {
@@ -75,12 +98,13 @@ export class PopupComponent implements OnInit {
   resetForm() {
     this.name = '';
     this.category = '';
-    this.stock = '';
-    this.unitPrice = '';
+    this.stock = null;
+    this.unitPrice = null;
     this.expiryDate = '';
     this.supplyDate = '';
-    this.totalCost = '';
+    this.totalCost = null;
     this.suggestedNames = [];
+    this.isSuggestionSelected = false;
   }
 
   closePopup() {
