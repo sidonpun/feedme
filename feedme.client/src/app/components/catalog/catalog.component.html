@@ -26,10 +26,10 @@
         <div>{{ item.id }}</div>
         <div>{{ item.category }}</div>
         <div>{{ item.name }}</div>
-        <div>{{ item.stock }}</div>
-        <div>{{ item.price }}</div>
+        <div>{{ item.stockQuantity | number:'1.0-2' }}{{ item.stockUnit }}</div>
+        <div>{{ item.unitPrice | currency:'USD':'symbol-narrow':'1.2-2' }}</div>
         <div>{{ item.warehouse }}</div>
-        <div>{{ item.expiryDate }}</div>
+        <div>{{ item.expiryDate | date:'dd/MM/yyyy' }}</div>
         <div>{{ item.supplier }}</div>
       </div>
     </div>
