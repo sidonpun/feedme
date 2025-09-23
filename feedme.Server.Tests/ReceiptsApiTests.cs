@@ -1,7 +1,9 @@
+using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
-using System.Linq;
 using feedme.Server.Models;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace feedme.Server.Tests;
@@ -82,5 +84,34 @@ public class ReceiptsApiTests
 
         var response = await client.GetAsync($"/api/receipts/{Guid.NewGuid()}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task PostReceipt_WithNullItem_ReturnsBadRequest()
+    {
+        await using var factory = new FeedmeApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var request = new
+        {
+            number = "RCPT-2003",
+            supplier = "Sunrise Produce",
+            warehouse = "East Warehouse",
+            receivedAt = DateTime.UtcNow,
+            items = new object?[]
+            {
+                new { catalogItemId = "CAT-020", itemName = "Artichokes", quantity = 3.5m, unit = "kg", unitPrice = 4.80m },
+                null
+            }
+        };
+
+        var response = await client.PostAsJsonAsync("/api/receipts", request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var problemDetails = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.NotNull(problemDetails);
+        Assert.True(problemDetails!.Errors.TryGetValue(nameof(Receipt.Items), out var errors));
+        Assert.Contains(errors, error => error.Contains("Receipt items cannot contain null entries.", StringComparison.Ordinal));
     }
 }

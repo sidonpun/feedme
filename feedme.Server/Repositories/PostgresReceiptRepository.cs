@@ -45,6 +45,13 @@ public class PostgresReceiptRepository(AppDbContext context) : IReceiptRepositor
             throw new ArgumentNullException(nameof(receipt));
         }
 
+        var items = receipt.Items ?? new List<ReceiptLine>();
+
+        if (items.Any(item => item is null))
+        {
+            throw new ArgumentException("Receipt items cannot contain null entries.", nameof(Receipt.Items));
+        }
+
         var normalized = new Receipt
         {
             Id = NormalizeIdentifier(receipt.Id),
@@ -52,7 +59,7 @@ public class PostgresReceiptRepository(AppDbContext context) : IReceiptRepositor
             Supplier = Sanitize(receipt.Supplier),
             Warehouse = Sanitize(receipt.Warehouse),
             ReceivedAt = NormalizeTimestamp(receipt.ReceivedAt),
-            Items = (receipt.Items ?? new List<ReceiptLine>())
+            Items = items
                 .Select(NormalizeItem)
                 .ToList()
         };
@@ -62,6 +69,11 @@ public class PostgresReceiptRepository(AppDbContext context) : IReceiptRepositor
 
     private static ReceiptLine NormalizeItem(ReceiptLine item)
     {
+        if (item is null)
+        {
+            throw new ArgumentNullException(nameof(item), "Receipt item cannot be null.");
+        }
+
         return new ReceiptLine
         {
             CatalogItemId = Sanitize(item.CatalogItemId),
@@ -90,5 +102,5 @@ public class PostgresReceiptRepository(AppDbContext context) : IReceiptRepositor
         };
     }
 
-    private static string Sanitize(string value) => value?.Trim() ?? string.Empty;
+    private static string Sanitize(string? value) => value?.Trim() ?? string.Empty;
 }

@@ -23,5 +23,7 @@ public class Receipt
     [MinLength(1, ErrorMessage = "A receipt must contain at least one item.")]
     public List<ReceiptLine> Items { get; set; } = new();
 
-    public decimal TotalAmount => Items.Sum(item => item.TotalCost);
+    public decimal TotalAmount => Items?
+        .Where(item => item is not null)
+        .Sum(item => item.TotalCost) ?? 0m;
 }

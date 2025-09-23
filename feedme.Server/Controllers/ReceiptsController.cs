@@ -1,6 +1,7 @@
 using feedme.Server.Models;
 using feedme.Server.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace feedme.Server.Controllers;
 
@@ -32,7 +33,18 @@ public class ReceiptsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Receipt>> Create([FromBody] Receipt receipt)
     {
-        var created = await _repository.AddAsync(receipt);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        try
+        {
+            var created = await _repository.AddAsync(receipt);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        }
+        catch (ArgumentException ex)
+        {
+            var modelState = new ModelStateDictionary();
+            var key = string.IsNullOrWhiteSpace(ex.ParamName) ? string.Empty : ex.ParamName!;
+            modelState.AddModelError(key, ex.Message);
+
+            return ValidationProblem(modelState);
+        }
     }
 }
