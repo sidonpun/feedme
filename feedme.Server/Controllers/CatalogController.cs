@@ -33,15 +33,17 @@ public class CatalogController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(string id)
+    [HttpDelete("{id?}")]
+    public async Task<IActionResult> Delete(string? id)
     {
-        if (string.IsNullOrWhiteSpace(id))
+        var normalizedId = id?.Trim();
+
+        if (string.IsNullOrWhiteSpace(normalizedId))
         {
             return NotFound();
         }
 
-        var deleted = await _repository.DeleteAsync(id);
+        var deleted = await _repository.DeleteAsync(normalizedId!);
         return deleted ? NoContent() : NotFound();
     }
 }
