@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "prebuild": "node ./scripts/prepare-build-folders.mjs",
     "pretest": "npm ci || npm i",
     "start": "npx ng serve --open",
     "build": "npx ng build",

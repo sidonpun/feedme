@@ -4,6 +4,7 @@
 /dist
 /tmp
 /out-tsc
+/obj
 /bazel-out
 
 # Node
