@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ContentComponent } from './components/content/content.component';
 import { CatalogComponent } from './components/catalog/catalog.component';
+import { ContentComponent } from './components/content/content.component';
 
-const routes: Routes = [
+export const appRoutes: Routes = [
   { path: '', component: ContentComponent },
   { path: 'catalog', component: CatalogComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(appRoutes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
