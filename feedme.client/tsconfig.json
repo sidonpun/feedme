@@ -1,7 +1,9 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "target": "es2020",
-    "module": "es2020",
+    "target": "ES2022",
+    "module": "ES2022",
+    "useDefineForClassFields": false,
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
@@ -11,5 +13,7 @@
   },
   "files": [],
   "include": [],
-  "exclude": ["node_modules", "dist", "obj", "bin"]
+
+  "exclude": ["dist", "node_modules", "tmp", "obj", "out-tsc"]
+
 }
