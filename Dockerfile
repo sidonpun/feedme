@@ -5,7 +5,8 @@ WORKDIR /build
 COPY package.json package-lock.json ./
 COPY feedme.client ./feedme.client
 RUN npm ci --no-audit --no-fund
-RUN npm exec --workspace feedme.client -- ng build --configuration=production --output-path=dist
+WORKDIR /build/feedme.client
+RUN npm run build -- --configuration=production --output-path=dist
 
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS server-build
