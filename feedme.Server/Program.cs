@@ -6,6 +6,7 @@ using feedme.Server.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace feedme.Server;
 
@@ -22,19 +23,26 @@ public class Program
         builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-            var databaseProvider = configuration["Database:Provider"];
+            var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
+            var databaseProvider = DatabaseProviderResolver.Resolve(configuration, environment);
 
-            if (string.Equals(databaseProvider, "InMemory", StringComparison.OrdinalIgnoreCase))
+            switch (databaseProvider)
             {
-                ConfigureInMemoryDatabase(options, configuration);
-                return;
+                case DatabaseProvider.InMemory:
+                    ConfigureInMemoryDatabase(options, configuration);
+                    return;
+
+                case DatabaseProvider.Postgres:
+                    var connectionString = PostgresConnectionStringFactory.Create(
+                        configuration,
+                        AppDbContext.ConnectionStringName);
+
+                    options.UseNpgsql(connectionString);
+                    return;
+
+                default:
+                    throw new InvalidOperationException($"Unsupported database provider '{databaseProvider}'.");
             }
-
-            var connectionString = PostgresConnectionStringFactory.Create(
-                configuration,
-                AppDbContext.ConnectionStringName);
-
-            options.UseNpgsql(connectionString);
         });
         builder.Services.AddScoped<ICatalogRepository, PostgresCatalogRepository>();
         builder.Services.AddScoped<IReceiptRepository, PostgresReceiptRepository>();
