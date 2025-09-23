@@ -8,6 +8,16 @@
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5016"
     },
+    "inmemory": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Database__Provider": "InMemory",
+        "Database__InMemoryName": "feedme-dev"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5016"
+    },
     "https": {
       "commandName": "Project",
       "environmentVariables": {
