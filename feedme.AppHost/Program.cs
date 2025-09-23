@@ -12,6 +12,7 @@ var postgres = builder.AddPostgres("postgres")
 var warehouseDb = postgres.AddDatabase("WarehouseDb");
 
 builder.AddProject<Projects.feedme_Server>("feedme-server")
-    .WithReference(warehouseDb);
+    .WithReference(warehouseDb)
+    .WithEnvironment("Database__Provider", "Postgres");
 
 builder.Build().Run();
