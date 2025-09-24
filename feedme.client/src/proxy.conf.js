@@ -1,10 +1,30 @@
 const { env } = require('process');
 
-const httpsTarget = env['services__feedme-server__https__0'];
-const httpTarget = env['services__feedme-server__http__0'];
+const target = resolvePreferredEndpoint([
+  'services__feedme-server__http__0',
+  'services__feedme-server__https__0',
+]) ?? 'http://localhost:5016';
 
-// Prefer the HTTP endpoint to avoid TLS issues when no certificates are configured
-const target = httpTarget ?? httpsTarget ?? 'http://localhost:5016';
+/**
+ * Resolves the first available endpoint from the provided environment variable names.
+ *
+ * The .NET Aspire host emits environment variables using uppercase names, while the
+ * local development experience can rely on lowercase names. The development server
+ * needs to be case-insensitive so that it functions regardless of how the process
+ * exposes the variables.
+ */
+function resolvePreferredEndpoint(variableNames) {
+  return variableNames
+    .map((name) => getEnvironmentValue(name))
+    .find((value) => Boolean(value));
+}
+
+function getEnvironmentValue(variableName) {
+  const normalizedVariableName = variableName.toLowerCase();
+  const matchingEntry = Object.entries(env).find(([key]) => key.toLowerCase() === normalizedVariableName);
+
+  return matchingEntry?.[1]?.trim() || undefined;
+}
 
 /**
  * Proxy configuration for the development server.
