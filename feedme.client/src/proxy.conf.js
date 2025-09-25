@@ -1,3 +1,5 @@
+const net = require('node:net');
+const { URL } = require('node:url');
 const { env } = require('process');
 
 const FALLBACK_ENDPOINTS = [
@@ -8,19 +10,49 @@ const FALLBACK_ENDPOINTS = [
   'http://localhost:5016'
 ];
 
-const target = [
-  resolvePreferredEndpoint([
+const target = resolveFirstReachableEndpoint([
+  () => resolvePreferredEndpoint([
     'services__feedme-server__https__0',
     'services__feedme-server__http__0'
   ]),
-  resolveFromUrlsVariable('ASPNETCORE_URLS'),
-  resolveFromPorts('ASPNETCORE_HTTPS_PORTS', 'https'),
-  resolveFromPorts('ASPNETCORE_HTTP_PORTS', 'http'),
-  ...FALLBACK_ENDPOINTS.map((endpoint) => normalizeUrl(endpoint))
-].find(Boolean);
+  () => resolveFromUrlsVariable('ASPNETCORE_URLS'),
+  () => resolveFromPorts('ASPNETCORE_HTTPS_PORTS', 'https'),
+  () => resolveFromPorts('ASPNETCORE_HTTP_PORTS', 'http'),
+  ...FALLBACK_ENDPOINTS.map((endpoint) => () => normalizeUrl(endpoint))
+]);
 
 if (!target) {
   throw new Error('Unable to determine the backend endpoint for the development proxy.');
+}
+
+function resolveFirstReachableEndpoint(resolvers) {
+  for (const resolveCandidate of resolvers) {
+    const value = resolveCandidate();
+
+    if (!value) {
+      continue;
+    }
+
+    const candidates = Array.isArray(value) ? value : [value];
+
+    for (const candidate of candidates) {
+      if (!candidate) {
+        continue;
+      }
+
+      const normalized = normalizeUrl(candidate);
+
+      if (!normalized) {
+        continue;
+      }
+
+      if (isEndpointReachable(normalized)) {
+        return normalized;
+      }
+    }
+  }
+
+  return undefined;
 }
 
 /**
@@ -53,7 +85,7 @@ function resolveFromUrlsVariable(variableName) {
   return raw
     .split(/[;,\s]+/)
     .map((segment) => normalizeUrl(segment))
-    .find(Boolean);
+    .filter(Boolean);
 }
 
 function resolveFromPorts(variableName, scheme) {
@@ -66,7 +98,7 @@ function resolveFromPorts(variableName, scheme) {
   return raw
     .split(/[;,\s]+/)
     .map((segment) => normalizeUrl(segment, scheme))
-    .find(Boolean);
+    .filter(Boolean);
 }
 
 function normalizeUrl(value, schemeHint) {
@@ -96,6 +128,81 @@ function getEnvironmentValue(variableName) {
   const matchingEntry = Object.entries(env).find(([key]) => key.toLowerCase() === normalizedVariableName);
 
   return matchingEntry?.[1]?.trim() || undefined;
+}
+
+const CONNECTION_TIMEOUT = 300;
+
+function isEndpointReachable(endpoint) {
+  try {
+    const url = new URL(endpoint);
+    const port = Number(url.port || (url.protocol === 'https:' ? 443 : 80));
+
+    if (!Number.isFinite(port)) {
+      return false;
+    }
+
+    const syncResult = createSynchronousResult();
+
+    const socket = net.createConnection({
+      host: url.hostname,
+      port
+    });
+
+    socket.setTimeout(CONNECTION_TIMEOUT);
+
+    socket.once('connect', () => {
+      syncResult.set(true);
+      socket.end();
+    });
+
+    socket.once('timeout', () => {
+      syncResult.set(false);
+      socket.destroy();
+    });
+
+    socket.once('error', () => {
+      syncResult.set(false);
+    });
+
+    socket.once('close', () => {
+      syncResult.notify();
+    });
+
+    const result = syncResult.wait(CONNECTION_TIMEOUT * 2);
+
+    socket.destroy();
+
+    return result === true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function createSynchronousResult() {
+  const buffer = new SharedArrayBuffer(4);
+  const view = new Int32Array(buffer);
+  let settled = false;
+  let value;
+
+  return {
+    set(result) {
+      if (!settled) {
+        value = result;
+        settled = true;
+      }
+    },
+    notify() {
+      Atomics.store(view, 0, 1);
+      Atomics.notify(view, 0);
+    },
+    wait(timeout) {
+      Atomics.wait(view, 0, 0, timeout);
+      return value;
+    },
+    get value() {
+      return value;
+    }
+  };
 }
 
 /**
