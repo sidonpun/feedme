@@ -1,5 +1,6 @@
-import { InjectionToken } from '@angular/core';
+import { inject, InjectionToken } from '@angular/core';
 import { environment } from '../../environments/environment';
+import { RUNTIME_ENVIRONMENT } from './runtime-environment.token';
 
 /**
  * Токен с базовым адресом API. Значение берётся из Angular environment
@@ -8,10 +9,17 @@ import { environment } from '../../environments/environment';
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL', {
   providedIn: 'root',
   factory: () => {
+    const runtimeConfig = inject(RUNTIME_ENVIRONMENT);
+    const runtimeBaseUrl = runtimeConfig.apiBaseUrl?.trim();
+
+    if (runtimeBaseUrl) {
+      return trimTrailingSlashes(runtimeBaseUrl);
+    }
+
     const raw = environment.apiBaseUrl?.trim();
 
     if (raw) {
-      return raw.replace(/\/+$/, '');
+      return trimTrailingSlashes(raw);
     }
 
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
@@ -20,6 +28,10 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL', {
       throw new Error('API base URL is not configured.');
     }
 
-    return origin.replace(/\/+$/, '');
+    return trimTrailingSlashes(origin);
   }
 });
+
+function trimTrailingSlashes(value: string): string {
+  return value.replace(/\/+$/, '');
+}
