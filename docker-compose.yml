@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: feedme-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: feedme
+      POSTGRES_USER: feedme
+      POSTGRES_PASSWORD: feedme
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U feedme"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: .
+    container_name: feedme-server
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Database__Provider: Postgres
+      Database__Host: postgres
+      Database__Port: '5432'
+      Database__Name: feedme
+      Database__Username: feedme
+      Database__Password: feedme
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
