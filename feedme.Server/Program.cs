@@ -1,3 +1,6 @@
+using System.IO;
+using System.Reflection;
+using System.Runtime.Loader;
 using feedme.Server.Configuration;
 using feedme.Server.Data;
 using feedme.Server.Extensions;
@@ -102,8 +105,33 @@ public class Program
 
     private static void ConfigureInMemoryDatabase(DbContextOptionsBuilder options, DatabaseOptions databaseOptions)
     {
+        EnsureAssemblyLoaded("Microsoft.EntityFrameworkCore.InMemory");
+
         var databaseName = databaseOptions.ResolveInMemoryDatabaseName();
 
         options.UseInMemoryDatabase(databaseName);
+    }
+
+    private static void EnsureAssemblyLoaded(string assemblyName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(assemblyName);
+
+        try
+        {
+            Assembly.Load(assemblyName);
+            return;
+        }
+        catch (FileNotFoundException)
+        {
+            var assemblyFilePath = Path.Combine(AppContext.BaseDirectory, $"{assemblyName}.dll");
+
+            if (!File.Exists(assemblyFilePath))
+            {
+                throw new InvalidOperationException(
+                    $"Unable to load the Entity Framework Core in-memory provider '{assemblyName}'. Ensure the '{assemblyName}' package is referenced by the application.");
+            }
+
+            AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFilePath);
+        }
     }
 }
