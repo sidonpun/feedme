@@ -1,6 +1,12 @@
 const { env } = require('process');
 
-const FALLBACK_ENDPOINTS = ['https://localhost:7221', 'http://localhost:5016'];
+const FALLBACK_ENDPOINTS = [
+  // HTTPS ports are listed first so that secure endpoints take precedence.
+  'https://localhost:8081',
+  'https://localhost:7221',
+  'http://localhost:8080',
+  'http://localhost:5016'
+];
 
 const target = [
   resolvePreferredEndpoint([
