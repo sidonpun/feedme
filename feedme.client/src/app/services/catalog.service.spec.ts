@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { CatalogService } from './catalog.service';
 import { ApiUrlService } from './api-url.service';
@@ -27,6 +27,73 @@ describe('CatalogService', () => {
 
   afterEach(() => {
     http.verify();
+  });
+
+  it('retries loading catalog data when the backend is temporarily unavailable', fakeAsync(() => {
+    let response: unknown;
+    let errorResponse: unknown;
+
+    service.getAll().subscribe({
+      next: data => (response = data),
+      error: error => (errorResponse = error)
+    });
+
+    const firstAttempt = http.expectOne('https://api.test/api/catalog');
+    firstAttempt.error(new ProgressEvent('connection-refused'), { status: 0, statusText: 'Unknown Error' });
+
+    tick(250);
+
+    const secondAttempt = http.expectOne('https://api.test/api/catalog');
+    secondAttempt.error(new ProgressEvent('connection-refused'), { status: 0, statusText: 'Unknown Error' });
+
+    tick(500);
+
+    const thirdAttempt = http.expectOne('https://api.test/api/catalog');
+    const payload = [
+      {
+        id: 'CAT-1',
+        name: 'Test Item',
+        type: 'Ingredient',
+        code: '001',
+        category: 'Test',
+        unit: 'kg',
+        weight: 1,
+        writeoffMethod: 'auto',
+        allergens: 'none',
+        packagingRequired: false,
+        spoilsAfterOpening: false,
+        supplier: 'Test Supplier',
+        deliveryTime: 1,
+        costEstimate: 10,
+        taxRate: '0%',
+        unitPrice: 12,
+        salePrice: 15,
+        tnved: '123',
+        isMarked: false,
+        isAlcohol: false,
+        alcoholCode: '',
+        alcoholStrength: 0,
+        alcoholVolume: 0
+      }
+    ];
+    thirdAttempt.flush(payload);
+
+    expect(response).toEqual(payload);
+    expect(errorResponse).toBeUndefined();
+  }));
+
+  it('does not retry when the backend returns a client error', () => {
+    let receivedError: unknown;
+
+    service.getAll().subscribe({
+      next: fail,
+      error: error => (receivedError = error)
+    });
+
+    const request = http.expectOne('https://api.test/api/catalog');
+    request.flush({ message: 'Bad request' }, { status: 400, statusText: 'Bad Request' });
+
+    expect(receivedError).toBeTruthy();
   });
 
   it('issues a DELETE request with the normalized identifier', () => {
