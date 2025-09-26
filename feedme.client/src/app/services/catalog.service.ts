@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { MonoTypeOperatorFunction, Observable, throwError, retry, timer } from 'rxjs';
 import { ApiUrlService } from './api-url.service';
 
 export interface CatalogItem {
@@ -34,13 +34,20 @@ export class CatalogService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(ApiUrlService);
   private readonly baseUrl = this.apiUrl.build('/api/catalog');
+  private static readonly retryAttempts = 3;
+  private static readonly retryBaseDelayMs = 250;
+  private static readonly retryMaxDelayMs = 2000;
 
   getAll(): Observable<CatalogItem[]> {
-    return this.http.get<CatalogItem[]>(this.baseUrl);
+    return this.http
+      .get<CatalogItem[]>(this.baseUrl)
+      .pipe(this.retryOnTransientNetworkFailure());
   }
 
   getById(id: string): Observable<CatalogItem> {
-    return this.http.get<CatalogItem>(`${this.baseUrl}/${id}`);
+    return this.http
+      .get<CatalogItem>(`${this.baseUrl}/${id}`)
+      .pipe(this.retryOnTransientNetworkFailure());
   }
 
   create(item: Omit<CatalogItem, 'id'>): Observable<CatalogItem> {
@@ -56,5 +63,28 @@ export class CatalogService {
 
     const targetUrl = `${this.baseUrl}/${encodeURIComponent(normalizedId)}`;
     return this.http.delete<void>(targetUrl);
+  }
+
+  private retryOnTransientNetworkFailure<T>(): MonoTypeOperatorFunction<T> {
+    return retry({
+      count: CatalogService.retryAttempts,
+      delay: (error, retryIndex) => {
+        if (!this.isTransientNetworkError(error)) {
+          throw error;
+        }
+
+        return timer(
+          Math.min(
+            CatalogService.retryBaseDelayMs * 2 ** Math.max(retryIndex - 1, 0),
+            CatalogService.retryMaxDelayMs
+          )
+        );
+      },
+      resetOnSuccess: true
+    });
+  }
+
+  private isTransientNetworkError(error: unknown): error is HttpErrorResponse {
+    return error instanceof HttpErrorResponse && error.status === 0;
   }
 }
