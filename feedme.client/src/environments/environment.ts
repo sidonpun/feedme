@@ -1,12 +1,12 @@
 // src/environments/environment.ts
 //
-// В режиме разработки API-сервер запускается отдельно от Angular Dev Server,
-// поэтому явно указываем его базовый адрес. Это устраняет обращения к
-// несуществующему эндпоинту `http://localhost:4200/api` и направляет запросы
-// напрямую на ASP.NET Core backend.
+// Для локальной разработки мы полагаемся на прокси-конфигурацию Angular,
+// которая перенаправляет запросы с origin дев-сервера (`http://localhost:4200`)
+// на актуальный backend, независимо от того, запускается ли он через `dotnet`
+// или внутри Docker. Поэтому базовый адрес API здесь не задаём — токен
+// `API_BASE_URL` автоматически возьмёт origin окна браузера.
 import type { EnvironmentConfig } from './environment.model';
 
 export const environment: EnvironmentConfig = {
-  production: false,
-  apiBaseUrl: 'http://localhost:5016'
+  production: false
 };
