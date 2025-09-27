@@ -26,6 +26,8 @@ if (!target) {
 }
 
 function resolveFirstReachableEndpoint(resolvers) {
+  let fallbackCandidate;
+
   for (const resolveCandidate of resolvers) {
     const value = resolveCandidate();
 
@@ -46,13 +48,17 @@ function resolveFirstReachableEndpoint(resolvers) {
         continue;
       }
 
+      if (!fallbackCandidate) {
+        fallbackCandidate = normalized;
+      }
+
       if (isEndpointReachable(normalized)) {
         return normalized;
       }
     }
   }
 
-  return undefined;
+  return fallbackCandidate;
 }
 
 /**
@@ -143,10 +149,7 @@ function isEndpointReachable(endpoint) {
 
     const syncResult = createSynchronousResult();
 
-    const socket = net.createConnection({
-      host: url.hostname,
-      port
-    });
+    const socket = new net.Socket();
 
     socket.setTimeout(CONNECTION_TIMEOUT);
 
@@ -162,10 +165,16 @@ function isEndpointReachable(endpoint) {
 
     socket.once('error', () => {
       syncResult.set(false);
+      socket.destroy();
     });
 
     socket.once('close', () => {
       syncResult.notify();
+    });
+
+    socket.connect({
+      host: url.hostname,
+      port
     });
 
     const result = syncResult.wait(CONNECTION_TIMEOUT * 2);
