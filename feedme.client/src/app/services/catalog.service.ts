@@ -37,6 +37,7 @@ export class CatalogService {
   private static readonly retryAttempts = 3;
   private static readonly retryBaseDelayMs = 250;
   private static readonly retryMaxDelayMs = 2000;
+  private static readonly transientStatuses = new Set([0, 502, 503, 504]);
 
   getAll(): Observable<CatalogItem[]> {
     return this.http
@@ -85,6 +86,6 @@ export class CatalogService {
   }
 
   private isTransientNetworkError(error: unknown): error is HttpErrorResponse {
-    return error instanceof HttpErrorResponse && error.status === 0;
+    return error instanceof HttpErrorResponse && CatalogService.transientStatuses.has(error.status);
   }
 }

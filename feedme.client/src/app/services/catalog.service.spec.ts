@@ -82,6 +82,30 @@ describe('CatalogService', () => {
     expect(errorResponse).toBeUndefined();
   }));
 
+  it('retries when the backend responds with a gateway timeout', fakeAsync(() => {
+    let response: unknown;
+    let errorResponse: unknown;
+
+    service.getAll().subscribe({
+      next: data => (response = data),
+      error: error => (errorResponse = error)
+    });
+
+    const initialAttempt = http.expectOne('https://api.test/api/catalog');
+    initialAttempt.flush(
+      { message: 'Upstream timeout' },
+      { status: 504, statusText: 'Gateway Timeout' }
+    );
+
+    tick(250);
+
+    const retryAttempt = http.expectOne('https://api.test/api/catalog');
+    retryAttempt.flush([], { status: 200, statusText: 'OK' });
+
+    expect(response).toEqual([]);
+    expect(errorResponse).toBeUndefined();
+  }));
+
   it('does not retry when the backend returns a client error', () => {
     let receivedError: unknown;
 
