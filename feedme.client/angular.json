@@ -43,7 +43,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "buildTarget": "feedme:build"
+            "buildTarget": "feedme:build",
+            "proxyConfig": "src/proxy.conf.js"
           },
           "configurations": {
             "production": {
