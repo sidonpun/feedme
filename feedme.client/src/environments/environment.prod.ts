@@ -1,9 +1,11 @@
 // src/environments/environment.prod.ts
 //
-// Продакшен-сборка использует тот же origin, что и фронт. При необходимости
-// можно задать `apiBaseUrl` и направить запросы на внешний backend.
+// Продакшен-сборка сразу направляет запросы на внешний backend без прокси.
+// Это гарантирует, что опубликованный фронтенд и backend взаимодействуют
+// через один и тот же домен 185.251.90.40:8080.
 import type { EnvironmentConfig } from './environment.model';
 
 export const environment: EnvironmentConfig = {
-  production: true
+  production: true,
+  apiBaseUrl: 'http://185.251.90.40:8080'
 };
