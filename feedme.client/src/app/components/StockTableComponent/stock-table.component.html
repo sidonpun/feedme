@@ -8,14 +8,16 @@
 
 <div class="table-container">
   <table class="stock-table">
-    <thead>
+    <thead class="stock-table__head sticky top-0 bg-background/90 backdrop-blur border-b shadow-[inset_0_-1px_0_0_var(--border)]">
       <tr class="h-11 align-middle">
         <th
           *ngFor="let column of columns"
+          scope="col"
           class="text-sm font-medium"
           [ngClass]="{
-            'text-right': column.field === 'unitPrice' || column.field === 'totalCost' || column.field === 'stock',
-            'text-center': column.field === 'expiryDate'
+            'text-right': column.field === 'unitPrice' || column.field === 'totalCost' || column.field === 'stock' || column.label === 'Кол-во',
+            'text-center': column.field === 'expiryDate' || column.label === 'Дата',
+            'font-mono text-xs': column.label === 'SKU'
           }"
           [attr.aria-sort]="getAriaSort(column.field)"
           [class.sorted]="sortKey === column.field"
@@ -31,44 +33,41 @@
             </span>
           </button>
         </th>
-        <th class="text-sm font-medium text-center">Действие</th>
+        <th scope="col" class="text-sm font-medium w-[44px]"></th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of paginatedData" class="h-11 align-middle hover:bg-muted/40 odd:bg-muted/10">
+      <tr *ngFor="let item of paginatedData" class="stock-table__row h-11 align-middle hover:bg-muted/40 odd:bg-muted/10">
         <td
           *ngFor="let column of columns"
           [ngClass]="{
-            'text-right': column.field === 'unitPrice' || column.field === 'totalCost' || column.field === 'stock',
-            'text-center': column.field === 'expiryDate'
+            'text-right': column.field === 'unitPrice' || column.field === 'totalCost' || column.field === 'stock' || column.label === 'Кол-во',
+            'text-center': column.field === 'expiryDate' || column.label === 'Дата',
+            'font-mono text-xs': column.label === 'SKU'
           }"
         >
-          <ng-container [ngSwitch]="column.field">
-            <span
-              *ngSwitchCase="'name'"
-              class="truncate"
-              [title]="formatValue(item, column) ?? ''"
-            >
-              {{ formatValue(item, column) }}
-            </span>
-            <span
-              *ngSwitchCase="'category'"
-              class="truncate"
-              [title]="formatValue(item, column) ?? ''"
-            >
-              {{ formatValue(item, column) }}
-            </span>
-            <span *ngSwitchDefault>
+          <ng-container *ngIf="column.label === 'Название' || column.label === 'Поставщик'; else plainCell">
+            <span class="truncate" [title]="formatValue(item, column) ?? ''">
               {{ formatValue(item, column) }}
             </span>
           </ng-container>
+          <ng-template #plainCell>
+            <span>{{ formatValue(item, column) }}</span>
+          </ng-template>
         </td>
-        <td class="actions-cell text-center">
-          <button (click)="onSettingsClick.emit(item)" class="btn-action" aria-label="Открыть настройки">⚙️</button>
+        <td class="stock-table__actions-cell text-center">
+          <button
+            type="button"
+            class="stock-table__action-button"
+            (click)="onSettingsClick.emit(item)"
+            aria-label="Открыть меню действий"
+          >
+            ⋯
+          </button>
         </td>
       </tr>
       <tr *ngIf="paginatedData.length === 0">
-        <td colspan="7" class="no-data">Нет данных</td>
+        <td [attr.colspan]="columns.length + 1" class="no-data">Нет данных</td>
       </tr>
     </tbody>
   </table>
