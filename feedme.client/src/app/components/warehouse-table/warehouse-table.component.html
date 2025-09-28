@@ -1,34 +1,40 @@
-<div class="custom-table">
-  <div class="table-header">
-    <div>Дата поставки</div>
-    <div>Название</div>
-    <div>Стоимость</div>
-    <div>Цена за ед.</div>
-    <div>Остаток товара</div>
-    <div>Кол-во товара в поставке</div>
-    <div>Срок годности</div>
-    <div>Действия</div>
-  </div>
-
-  <div class="table-body">
-    <div class="table-row" *ngFor="let item of data; let i = index">
-      <div>{{ item.supplyDate }}</div>
-      <div class="name-cell">
-        <img [src]="getCategoryIcon(item.category)" [alt]="item.category" class="name-icon">
-        <span>{{ item.name }}</span>
-      </div>
-      <div>{{ item.totalCost }}</div>
-      <div>{{ item.unitPrice }}</div>
-      <div>{{ item.stock }}</div>
-      <div>{{ item.stock }}</div>
-      <div>{{ item.expiryDate }}</div>
-      <div class="actions">
-        <div class="icons-container">
-          <img src="assets/plus.svg" alt="Добавить" class="action-icon">
-          <img src="assets/minus.svg" alt="Редактировать остаток" class="action-icon" (click)="handleEditStockClick(i, item.stock)">
-          <img src="assets/settings.svg" alt="Настройки" class="action-icon" (click)="handleSettingsClick(item, $event)">
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="table-wrapper square no-shadow">
+  <table class="custom-table tbl-compact">
+    <thead>
+      <tr>
+        <th>Дата поставки</th>
+        <th>Название</th>
+        <th>Стоимость</th>
+        <th>Цена за ед.</th>
+        <th>Остаток товара</th>
+        <th>Кол-во товара в поставке</th>
+        <th>Срок годности</th>
+        <th style="width:44px"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of data; let i = index">
+        <td>{{ item.supplyDate }}</td>
+        <td>
+          <div class="name-cell">
+            <img [src]="getCategoryIcon(item.category)"
+                 [alt]="item.category"
+                 class="name-icon" />
+            <span>{{ item.name }}</span>
+          </div>
+        </td>
+        <td>{{ item.totalCost }}</td>
+        <td>{{ item.unitPrice }}</td>
+        <td>{{ item.stock }}</td>
+        <td>{{ item.stock }}</td>
+        <td>{{ item.expiryDate }}</td>
+        <td class="text-right" style="width:44px">
+          <button class="icon-btn"
+                  type="button"
+                  aria-label="Меню"
+                  (click)="handleSettingsClick(item, $event)">⋯</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

@@ -1,5 +1,5 @@
-<div class="content">
-  <div class="container" *ngIf="!showNewProductForm" style="justify-content: space-between; padding: 0 20px;">
+<div class="content square no-shadow">
+  <div class="actions-row" *ngIf="!showNewProductForm">
     <button class="primary-action-btn" (click)="handleAddNewItemClick()">
       + Новый товар
     </button>
@@ -10,28 +10,36 @@
                    (onSubmit)="handleSubmitNewProduct($event)">
   </app-new-product>
 
-  <div class="custom-table" *ngIf="!showNewProductForm">
-    <div class="table-header">
-      <div>Номер</div>
-      <div>Категория</div>
-      <div>Название</div>
-      <div>Остаток</div>
-      <div>Сумма</div>
-      <div>Склад</div>
-      <div>Срок годности</div>
-      <div>Поставщик</div>
-    </div>
-    <div class="table-body">
-      <div class="table-row" *ngFor="let item of catalogData">
-        <div>{{ item.id }}</div>
-        <div>{{ item.category }}</div>
-        <div>{{ item.name }}</div>
-        <div>{{ item.stockQuantity | number:'1.0-2' }}{{ item.stockUnit }}</div>
-        <div>{{ item.unitPrice | currency:'USD':'symbol-narrow':'1.2-2' }}</div>
-        <div>{{ item.warehouse }}</div>
-        <div>{{ item.expiryDate | date:'dd/MM/yyyy' }}</div>
-        <div>{{ item.supplier }}</div>
-      </div>
-    </div>
+  <div class="table-wrapper square no-shadow" *ngIf="!showNewProductForm">
+    <table class="custom-table tbl-compact">
+      <thead>
+        <tr>
+          <th>Номер</th>
+          <th>Категория</th>
+          <th>Название</th>
+          <th>Остаток</th>
+          <th>Сумма</th>
+          <th>Склад</th>
+          <th>Срок годности</th>
+          <th>Поставщик</th>
+          <th style="width:44px"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of catalogData">
+          <td>{{ item.id }}</td>
+          <td>{{ item.category }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.stockQuantity | number:'1.0-2' }}{{ item.stockUnit }}</td>
+          <td>{{ item.unitPrice | currency:'USD':'symbol-narrow':'1.2-2' }}</td>
+          <td>{{ item.warehouse }}</td>
+          <td>{{ item.expiryDate | date:'dd/MM/yyyy' }}</td>
+          <td>{{ item.supplier }}</td>
+          <td class="text-right" style="width:44px">
+            <button class="icon-btn" type="button" aria-label="Меню">⋯</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
