@@ -53,7 +53,7 @@ class InMemoryWarehouseService {
       price: 28,
       expiry: '2025-10-15',
       supplier: 'ОвощБаза',
-      status: 'ok',
+      status: 'draft',
     },
     {
       id: 4,
@@ -70,6 +70,22 @@ class InMemoryWarehouseService {
       expiry: '2025-10-01',
       supplier: 'МолКомбинат',
       status: 'danger',
+    },
+    {
+      id: 5,
+      docNo: 'PO-000855',
+      arrivalDate: '2025-09-29',
+      warehouse: 'Главный склад',
+      responsible: 'Кириллов К.',
+      sku: 'BEV-021',
+      name: 'Сок яблочный',
+      category: 'Напитки',
+      qty: 48,
+      unit: 'л',
+      price: 75,
+      expiry: '2025-10-20',
+      supplier: 'Fresh Drinks',
+      status: 'transit',
     },
   ];
 
@@ -149,6 +165,27 @@ describe('WarehousePageComponent', () => {
     const rows = getTableRows(fixture.nativeElement);
     expect(rows.length).toBe(1);
     expect(rows[0].textContent).toContain('Скоро срок');
+  });
+
+  it('supports draft and transit statuses', () => {
+    const selects = fixture.nativeElement.querySelectorAll('select') as NodeListOf<HTMLSelectElement>;
+    const statusSelect = selects[0];
+
+    statusSelect.value = 'draft';
+    statusSelect.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+
+    let rows = getTableRows(fixture.nativeElement);
+    expect(rows.length).toBe(1);
+    expect(rows[0].textContent).toContain('Черновик');
+
+    statusSelect.value = 'transit';
+    statusSelect.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+
+    rows = getTableRows(fixture.nativeElement);
+    expect(rows.length).toBe(1);
+    expect(rows[0].textContent).toContain('В пути');
   });
 
   it('filters rows by warehouse', () => {

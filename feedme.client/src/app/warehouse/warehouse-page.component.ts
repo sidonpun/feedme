@@ -16,18 +16,26 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { SupplyRow, SupplyStatus } from './models';
+import { SUPPLY_STATUSES, SupplyRow, SupplyStatus, isSupplyStatus } from './models';
 import { WarehouseService } from './warehouse.service';
 import { EmptyStateComponent } from './ui/empty-state.component';
 import { FieldComponent } from './ui/field.component';
-import { MetricComponent } from './ui/metric.component';
 import { StatusBadgeClassPipe } from '../pipes/status-badge-class.pipe';
+import { StatusBadgeLabelPipe } from '../pipes/status-badge-label.pipe';
 
 const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
   currency: 'RUB',
   maximumFractionDigits: 0,
 });
+
+type EditDialogTab = 'details' | 'items' | 'history';
+
+type SupplyHistoryEntry = {
+  date: string;
+  operation: 'Приход' | 'Списание' | 'Перемещение';
+  quantity: string;
+};
 
 @Component({
   standalone: true,
@@ -37,10 +45,10 @@ const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
     NgIf,
     NgClass,
     ReactiveFormsModule,
-    MetricComponent,
     FieldComponent,
     EmptyStateComponent,
     StatusBadgeClassPipe,
+    StatusBadgeLabelPipe,
   ],
   templateUrl: './warehouse-page.component.html',
   styleUrl: './warehouse-page.component.css',
@@ -55,6 +63,7 @@ export class WarehousePageComponent {
   readonly activeTab = signal<'supplies' | 'stock' | 'catalog' | 'inventory'>('supplies');
   readonly query = signal('');
   readonly status = signal<SupplyStatus | ''>('');
+  readonly statuses = SUPPLY_STATUSES;
   readonly supplier = signal('');
   readonly warehouseFilter = signal('');
   readonly dateFrom = signal('');
@@ -67,8 +76,24 @@ export class WarehousePageComponent {
   readonly editingRowId = signal<number | null>(null);
   readonly deleteTargetIds = signal<number[]>([]);
   readonly menuRowId = signal<number | null>(null);
+  readonly editDialogTab = signal<EditDialogTab>('details');
 
   readonly rows = this.warehouseService.list();
+
+
+  readonly editDialogTabs: ReadonlyArray<{ key: EditDialogTab; label: string }> = [
+    { key: 'details', label: 'Документ' },
+    { key: 'items', label: 'Позиции' },
+    { key: 'history', label: 'История' },
+  ];
+
+  readonly editDialogHistory: ReadonlyArray<SupplyHistoryEntry> = [
+    { date: '12.03.2025 14:20', operation: 'Приход', quantity: '+24 кг' },
+    { date: '14.03.2025 09:10', operation: 'Перемещение', quantity: '−6 кг' },
+    { date: '15.03.2025 18:45', operation: 'Списание', quantity: '−2 кг' },
+    { date: '18.03.2025 11:05', operation: 'Приход', quantity: '+18 кг' },
+  ];
+
 
   readonly suppliers = computed(() =>
     Array.from(new Set(this.rows().map((row) => row.supplier))).sort((a, b) =>
@@ -194,6 +219,12 @@ export class WarehousePageComponent {
   }
 
   trackByRow = (_: number, row: SupplyRow) => row.id;
+  trackByEditDialogTab = (_: number, tab: { key: EditDialogTab }) => tab.key;
+  trackByHistoryEntry = (_: number, entry: SupplyHistoryEntry) => `${entry.date}-${entry.operation}-${entry.quantity}`;
+
+  selectEditDialogTab(tab: EditDialogTab): void {
+    this.editDialogTab.set(tab);
+  }
 
   selectTab(tab: 'supplies' | 'stock' | 'catalog' | 'inventory'): void {
     this.activeTab.set(tab);
@@ -204,7 +235,7 @@ export class WarehousePageComponent {
   }
 
   updateStatus(value: string): void {
-    if (value === 'ok' || value === 'warning' || value === 'danger') {
+    if (isSupplyStatus(value)) {
       this.status.set(value);
       return;
     }
@@ -301,6 +332,7 @@ export class WarehousePageComponent {
     this.editingRowId.set(null);
     this.editDialogOpen.set(true);
     this.menuRowId.set(null);
+    this.editDialogTab.set('details');
   }
 
   startEdit(row: SupplyRow): void {
@@ -309,6 +341,7 @@ export class WarehousePageComponent {
     this.editingRowId.set(row.id);
     this.editDialogOpen.set(true);
     this.menuRowId.set(null);
+    this.editDialogTab.set('details');
   }
 
   closeEditDialog(): void {
@@ -330,6 +363,7 @@ export class WarehousePageComponent {
       status: 'ok' as SupplyStatus,
     });
     this.clearDateOrderError();
+    this.editDialogTab.set('details');
   }
 
   submitEdit(): void {

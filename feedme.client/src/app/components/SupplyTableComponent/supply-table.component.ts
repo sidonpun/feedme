@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TableControlsComponent } from '../table-controls/table-controls.component';
 import { EmptyStateComponent } from '../../warehouse/ui/empty-state.component';
 import { StatusBadgeClassPipe } from '../../pipes/status-badge-class.pipe';
+import { StatusBadgeLabelPipe } from '../../pipes/status-badge-label.pipe';
 
 type SortDirection = 'asc' | 'desc';
 type SortType = 'string' | 'number' | 'date';
@@ -22,7 +23,14 @@ interface FilterOptions {
 @Component({
   selector: 'app-supply-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableControlsComponent, EmptyStateComponent, StatusBadgeClassPipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TableControlsComponent,
+    EmptyStateComponent,
+    StatusBadgeClassPipe,
+    StatusBadgeLabelPipe,
+  ],
   templateUrl: './supply-table.component.html',
   styleUrls: ['./supply-table.component.css']
 })
@@ -33,6 +41,12 @@ export class SupplyTableComponent implements OnChanges {
   @Output() onAddSupply = new EventEmitter<void>();
   /** Сообщаем, что пользователь хочет открыть настройки конкретной поставки */
   @Output() onSettingsClick = new EventEmitter<any>();
+  /** Сообщаем, что пользователь хочет списать поставку */
+  @Output() writeOff = new EventEmitter<any>();
+  /** Сообщаем, что пользователь хочет переместить поставку */
+  @Output() move = new EventEmitter<any>();
+  /** Сообщаем, что пользователь хочет распечатать документы поставки */
+  @Output() print = new EventEmitter<any>();
 
   // фильтр и пагинация
   searchQuery = '';

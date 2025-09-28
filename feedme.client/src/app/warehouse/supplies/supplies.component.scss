@@ -64,6 +64,18 @@
   color: #b91c1c;
 }
 
+.chip--draft {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #4b5563;
+}
+
+.chip--transit {
+  background: #e0f2fe;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
 .chip--ghost {
   border: 1px dashed var(--brand-600);
   color: var(--brand-600);
@@ -135,6 +147,18 @@
 
 .btn--secondary:hover:not(:disabled) {
   background: var(--supplies-secondary-hover);
+}
+
+.btn-brand-outline {
+  background: transparent;
+  color: var(--supplies-primary);
+  border-color: var(--supplies-primary);
+}
+
+.btn-brand-outline:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--supplies-primary) 12%, #ffffff);
+  color: var(--supplies-outline-text);
+  border-color: var(--supplies-primary-hover);
 }
 
 .btn--outline {

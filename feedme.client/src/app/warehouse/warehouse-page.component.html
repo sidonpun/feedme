@@ -22,6 +22,7 @@
   </aside>
 
   <main class="warehouse-page__content">
+
     <header class="warehouse-page__top-bar">
       <div class="warehouse-page__breadcrumbs">
         Главный склад / <span class="warehouse-page__breadcrumb-current">Поставки</span>
@@ -51,15 +52,37 @@
           <button type="button" class="btn btn-ghost">Ещё</button>
         </div>
       </div>
+
     </header>
 
     <section class="warehouse-page__body">
-      <div class="warehouse-page__metrics">
-        <app-metric title="Позиций на складе" value="1 248" hint="активные SKU"></app-metric>
-        <app-metric title="Просрочено" value="2" hint="требует списания" variant="danger"></app-metric>
-        <app-metric title="Скоро срок" value="7" hint="≤ 14 дней" variant="warn"></app-metric>
-        <app-metric title="Ниже минимума" value="5" hint="> авто-заказ" variant="warn"></app-metric>
-      </div>
+      <section
+        *ngIf="metrics() as snapshot"
+        class="warehouse-page__snapshot"
+        aria-label="Ключевые показатели склада"
+      >
+        <article class="square warehouse-page__metric-card" aria-live="polite">
+          <p class="warehouse-page__metric-label">Поставок за 7 дней</p>
+          <p class="warehouse-page__metric-value">{{ snapshot.suppliesLastWeek }}</p>
+        </article>
+
+        <article class="square warehouse-page__metric-card" aria-live="polite">
+          <p class="warehouse-page__metric-label">Сумма закупок / 7 дн.</p>
+          <p class="warehouse-page__metric-value warehouse-page__metric-value--currency">0 ₽</p>
+        </article>
+
+        <article class="square warehouse-page__metric-card" aria-live="polite">
+          <p class="warehouse-page__metric-label">Позиций на складе</p>
+          <p class="warehouse-page__metric-value">{{ snapshot.positions }}</p>
+        </article>
+
+        <article class="square warehouse-page__metric-card warehouse-page__metric-card--expired" aria-live="polite">
+          <p class="warehouse-page__metric-label">Просрочено</p>
+          <p class="warehouse-page__metric-value">
+            <span class="warehouse-page__metric-badge">{{ snapshot.expired }}</span>
+          </p>
+        </article>
+      </section>
 
       <nav class="warehouse-page__tabs tabs" role="tablist">
         <button
@@ -107,9 +130,9 @@
                   aria-label="Фильтр по статусу"
                 >
                   <option value="">Все статусы</option>
-                  <option value="ok">Ок</option>
-                  <option value="warning">Скоро срок</option>
-                  <option value="danger">Просрочено</option>
+                  <option *ngFor="let statusOption of statuses" [value]="statusOption">
+                    {{ statusOption | statusBadgeLabel }}
+                  </option>
                 </select>
               </label>
             </div>
@@ -174,6 +197,7 @@
               </label>
             </div>
             <button type="button" class="btn btn-outline" (click)="clearFilters()">Сброс</button>
+            <button type="button" class="btn btn-brand-outline">Импорт</button>
             <button type="button" class="btn btn-secondary">Экспорт</button>
             <button type="button" class="btn ml-auto" (click)="openCreateDialog()">+ Новая поставка</button>
           </form>
@@ -211,7 +235,11 @@
                       aria-label="Выбрать все"
                     />
                   </th>
-                  <th scope="col" class="warehouse-page__cell text-sm font-medium font-mono text-xs">
+                  <th
+                    scope="col"
+                    class="warehouse-page__cell text-sm font-medium font-mono text-xs"
+                    title="Номер приходного документа"
+                  >
                     № док.
                   </th>
                   <th
@@ -229,12 +257,14 @@
                   <th
                     scope="col"
                     class="warehouse-page__cell warehouse-page__cell--numeric text-sm font-medium text-right"
+                    title="Количество в базовой ед. изм."
                   >
                     Кол-во
                   </th>
                   <th
                     scope="col"
                     class="warehouse-page__cell warehouse-page__cell--center text-sm font-medium text-center"
+                    title="Дата, после которой товар списывается"
                   >
                     Срок годности
                   </th>
@@ -293,7 +323,7 @@
                       class="badge min-w-[112px] justify-center"
                       [ngClass]="row.status | statusBadgeClass"
                     >
-                      {{ row.status === 'ok' ? 'Ок' : row.status === 'warning' ? 'Скоро срок' : 'Просрочено' }}
+                      {{ row.status | statusBadgeLabel }}
                     </span>
                   </td>
                   <td class="warehouse-page__cell warehouse-page__cell--icon">
@@ -362,7 +392,7 @@
           <div class="warehouse-page__drawer-meta">SKU {{ row.sku }}</div>
         </div>
         <span class="badge" [ngClass]="row.status | statusBadgeClass">
-          {{ row.status === 'ok' ? 'Ок' : row.status === 'warning' ? 'Скоро срок' : 'Просрочено' }}
+          {{ row.status | statusBadgeLabel }}
         </span>
       </header>
       <div class="warehouse-page__drawer-grid">
@@ -393,6 +423,7 @@
         {{ editingRowId() ? 'Редактирование поставки' : 'Новая поставка' }}
       </header>
       <form class="warehouse-page__dialog-form" [formGroup]="editForm" (ngSubmit)="submitEdit()">
+
         <div class="warehouse-page__dialog-grid">
           <label class="warehouse-page__dialog-field">
             <span class="warehouse-page__dialog-label">№ документа</span>
@@ -448,12 +479,13 @@
           <label class="warehouse-page__dialog-field">
             <span class="warehouse-page__dialog-label">Статус</span>
             <select class="select" formControlName="status">
-              <option value="ok">Ок</option>
-              <option value="warning">Скоро срок</option>
-              <option value="danger">Просрочено</option>
+              <option *ngFor="let statusOption of statuses" [value]="statusOption">
+                {{ statusOption | statusBadgeLabel }}
+              </option>
             </select>
           </label>
         </div>
+
         <footer class="warehouse-page__dialog-actions">
           <button type="button" class="btn btn-outline" (click)="closeEditDialog()">Отмена</button>
           <button type="submit" class="btn" [disabled]="editForm.invalid">Сохранить</button>

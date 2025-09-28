@@ -37,10 +37,13 @@
         <span class="chip">Ок</span>
         <span class="chip chip--secondary">Скоро срок</span>
         <span class="chip chip--destructive">Просрочено</span>
+        <span class="chip chip--muted">Черновик</span>
+        <span class="chip chip--info">В пути</span>
       </div>
     </div>
 
     <button type="button" class="btn btn-outline">Сброс</button>
+    <button type="button" class="btn btn-brand-outline">Импорт</button>
     <button type="button" class="btn btn-secondary">Экспорт</button>
     <button type="button" class="btn btn-primary ml-auto" (click)="addSupply()">+ Новая поставка</button>
   </div>
@@ -53,17 +56,19 @@
         <th class="w-[40px]" scope="col">
           <input type="checkbox" class="checkbox" aria-label="Выбрать все поставки" />
         </th>
-        <th scope="col" class="text-sm font-medium">№ док.</th>
+        <th scope="col" class="text-sm font-medium" title="Номер приходного документа">№ док.</th>
         <th scope="col" class="text-sm font-medium">Дата прихода</th>
         <th scope="col" class="text-sm font-medium">Склад</th>
         <th scope="col" class="text-sm font-medium">Ответственный</th>
         <th scope="col" class="text-sm font-medium">SKU</th>
         <th scope="col" class="text-sm font-medium">Название</th>
-        <th scope="col" class="text-sm font-medium text-right">Кол-во</th>
-        <th scope="col" class="text-sm font-medium text-center">Срок годности</th>
+        <th scope="col" class="text-sm font-medium text-right" title="Количество в базовой ед. изм.">Кол-во</th>
+        <th scope="col" class="text-sm font-medium text-center" title="Дата, после которой товар списывается">Срок годности</th>
         <th scope="col" class="text-sm font-medium">Поставщик</th>
         <th scope="col" class="text-sm font-medium">Статус</th>
-        <th scope="col" class="w-[44px]"></th>
+        <th scope="col" class="w-[176px] text-right">
+          <span class="sr-only">Быстрые действия</span>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -112,14 +117,40 @@
               class="badge min-w-[88px] justify-center"
               [ngClass]="status | statusBadgeClass"
             >
-              {{ status }}
+              {{ status | statusBadgeLabel }}
             </span>
           </ng-container>
         </td>
-        <td class="w-[44px] text-right">
-          <button type="button" class="icon-btn" aria-label="Меню" (click)="onSettingsClick.emit(item)">
-            ⋯
-          </button>
+        <td class="w-[176px] text-right">
+          <div class="row-actions" role="group" aria-label="Быстрые действия">
+            <button
+              type="button"
+              class="row-action"
+              aria-label="Списать поставку"
+              (click)="writeOff.emit(item)"
+            >
+              <span aria-hidden="true">🗑</span>
+            </button>
+            <button
+              type="button"
+              class="row-action"
+              aria-label="Переместить поставку"
+              (click)="move.emit(item)"
+            >
+              <span aria-hidden="true">⇄</span>
+            </button>
+            <button
+              type="button"
+              class="row-action"
+              aria-label="Распечатать поставку"
+              (click)="print.emit(item)"
+            >
+              <span aria-hidden="true">🖨</span>
+            </button>
+            <button type="button" class="icon-btn" aria-label="Меню" (click)="onSettingsClick.emit(item)">
+              ⋯
+            </button>
+          </div>
         </td>
       </tr>
       <tr *ngIf="paginatedData.length === 0">
@@ -138,8 +169,11 @@
 ></app-empty>
 
 <div class="table-footer flex items-center p-3 border-t text-sm bg-muted/40 shadow-sm">
-  <div class="table-footer__summary text-muted-foreground">
-    Показано {{ paginatedData.length }} поставок · Страница {{ currentPage }} из {{ totalPages }}
+  <div class="table-footer__summary">
+    <span class="table-footer__summary-text text-muted-foreground">
+      Показано {{ paginatedData.length }} поставок · Страница {{ currentPage }} из {{ totalPages }}
+    </span>
+    <span class="table-footer__total font-medium">Итог по сумме: 0 ₽</span>
   </div>
   <div class="ml-auto flex gap-2">
     <button type="button" class="btn btn-outline btn-sm" (click)="prevPage()" [disabled]="currentPage === 1">
