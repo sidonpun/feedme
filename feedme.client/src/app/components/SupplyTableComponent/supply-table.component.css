@@ -171,6 +171,18 @@
   background-color: #f1f5f9;
 }
 
+.btn-brand-outline {
+  background-color: transparent;
+  color: var(--brand-600);
+  border: 1px solid var(--brand-600);
+  box-shadow: none;
+}
+
+.btn-brand-outline:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--brand-600) 12%, #ffffff);
+  border-color: color-mix(in srgb, var(--brand-600) 90%, #000000 10%);
+}
+
 .btn-secondary {
   background-color: #e2e8f0;
   color: #0f172a;
