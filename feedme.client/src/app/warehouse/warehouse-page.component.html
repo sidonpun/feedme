@@ -56,79 +56,40 @@
 
       <section *ngIf="activeTab() === 'supplies'" class="warehouse-page__tab-panel">
         <form class="warehouse-page__filters" (submit)="$event.preventDefault()">
-          <label class="warehouse-page__filter">
-            <span class="warehouse-page__filter-label">Поиск</span>
+          <div class="warehouse-page__filters-control warehouse-page__filters-control--search">
             <input
               #searchInput
               class="input"
               type="search"
-              placeholder="№ документа, название или SKU (/)"
+              placeholder="Поиск по номеру, SKU или названию"
+              aria-label="Поиск по поставкам"
               [value]="query()"
               (input)="updateQuery(searchInput.value)"
             />
-          </label>
-          <label class="warehouse-page__filter">
-            <span class="warehouse-page__filter-label">Статус</span>
-            <select
-              #statusSelect
-              class="select"
-              [value]="status()"
-              (change)="updateStatus(statusSelect.value)"
-            >
-              <option value="">Все</option>
-              <option value="ok">Ок</option>
-              <option value="warning">Скоро срок</option>
-              <option value="danger">Просрочено</option>
-            </select>
-          </label>
-          <label class="warehouse-page__filter">
-            <span class="warehouse-page__filter-label">Поставщик</span>
-            <select
-              #supplierSelect
-              class="select"
-              [value]="supplier()"
-              (change)="updateSupplier(supplierSelect.value)"
-            >
-              <option value="">Все поставщики</option>
-              <option *ngFor="let option of suppliers()" [value]="option">{{ option }}</option>
-            </select>
-          </label>
-          <label class="warehouse-page__filter">
-            <span class="warehouse-page__filter-label">Склад</span>
-            <select
-              #warehouseSelect
-              class="select"
-              [value]="warehouseFilter()"
-              (change)="updateWarehouse(warehouseSelect.value)"
-            >
-              <option value="">Все склады</option>
-              <option *ngFor="let option of warehouses()" [value]="option">{{ option }}</option>
-            </select>
-          </label>
-          <label class="warehouse-page__filter warehouse-page__filter--date">
-            <span class="warehouse-page__filter-label">Дата прихода от</span>
+          </div>
+          <div class="warehouse-page__filters-control warehouse-page__filters-control--date">
             <input
               #dateFromInput
               class="input"
               type="date"
+              aria-label="Дата прихода от"
               [value]="dateFrom()"
               (change)="updateDateFrom(dateFromInput.value)"
             />
-          </label>
-          <label class="warehouse-page__filter warehouse-page__filter--date">
-            <span class="warehouse-page__filter-label">Дата прихода до</span>
+          </div>
+          <div class="warehouse-page__filters-control warehouse-page__filters-control--date">
             <input
               #dateToInput
               class="input"
               type="date"
+              aria-label="Дата прихода до"
               [value]="dateTo()"
               (change)="updateDateTo(dateToInput.value)"
             />
-          </label>
-          <div class="warehouse-page__filters-actions">
-            <button type="button" class="btn btn-outline" (click)="clearFilters()">Сброс</button>
-            <button type="button" class="btn btn-secondary">Экспорт</button>
           </div>
+          <button type="button" class="btn btn-outline" (click)="clearFilters()">Сброс</button>
+          <button type="button" class="btn btn-secondary">Экспорт</button>
+          <button type="button" class="btn ml-auto" (click)="openCreateDialog()">+ Новая поставка</button>
         </form>
 
         <section class="warehouse-page__bulk" *ngIf="hasSelection(); else bulkHint" aria-live="polite">
