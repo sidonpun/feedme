@@ -22,14 +22,27 @@
   </aside>
 
   <main class="warehouse-page__content">
-    <header class="warehouse-page__top-bar">
-      <div class="warehouse-page__breadcrumbs">
-        Главный склад / <span class="warehouse-page__breadcrumb-current">Поставки</span>
-      </div>
-      <div class="warehouse-page__actions">
-        <button type="button" class="btn btn-outline" (click)="openCreateDialog()">+ Новая поставка</button>
-        <button type="button" class="btn btn-ghost">Ещё</button>
-      </div>
+    <header class="warehouse-page__top-bar" aria-label="Контекст склада">
+      <nav class="warehouse-page__breadcrumbs" aria-label="Хлебные крошки">
+        <span class="warehouse-page__breadcrumb">Главный склад</span>
+        <span class="warehouse-page__breadcrumb-separator" aria-hidden="true">/</span>
+        <span class="warehouse-page__breadcrumb warehouse-page__breadcrumb--current">Поставки</span>
+      </nav>
+
+      <label class="warehouse-page__warehouse-switch" for="warehouse-selector">
+        <span class="warehouse-page__warehouse-label">Склад</span>
+        <span class="warehouse-page__select-wrapper">
+          <select
+            id="warehouse-selector"
+            class="warehouse-page__warehouse-select"
+            aria-label="Выбор склада"
+          >
+            <option value="main">Главный склад</option>
+            <option value="kitchen">Кухня</option>
+            <option value="bar">Бар</option>
+          </select>
+        </span>
+      </label>
     </header>
 
     <section class="warehouse-page__body">
