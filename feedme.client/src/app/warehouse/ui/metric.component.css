@@ -1,0 +1,39 @@
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(14, 116, 144, 0.08), rgba(14, 116, 144, 0.02));
+  border: 1px solid rgba(14, 116, 144, 0.18);
+  color: #0f172a;
+}
+
+.metric--warn {
+  background: linear-gradient(180deg, rgba(234, 179, 8, 0.12), rgba(234, 179, 8, 0.04));
+  border-color: rgba(234, 179, 8, 0.3);
+}
+
+.metric--danger {
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.12), rgba(239, 68, 68, 0.04));
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.metric__title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #0f172a;
+  opacity: 0.7;
+}
+
+.metric__value {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.metric__hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #475569;
+}

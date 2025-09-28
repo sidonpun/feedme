@@ -1,0 +1,252 @@
+<div class="warehouse-page">
+  <aside class="warehouse-page__sidebar">
+    <div class="warehouse-page__brand">Rest.Name</div>
+
+    <nav class="warehouse-page__primary-nav">
+      <span class="warehouse-page__primary-link warehouse-page__primary-link--active">Склад</span>
+      <a class="warehouse-page__primary-link" href="javascript:void(0)">Заказы</a>
+      <a class="warehouse-page__primary-link" href="javascript:void(0)">Касса</a>
+      <a class="warehouse-page__primary-link" href="javascript:void(0)">Аналитика</a>
+      <a class="warehouse-page__primary-link" href="javascript:void(0)">Настройки</a>
+    </nav>
+
+    <div class="warehouse-page__divider" aria-hidden="true"></div>
+
+    <section class="warehouse-page__locations">
+      <h2 class="warehouse-page__locations-title">Склады</h2>
+      <span class="warehouse-page__location warehouse-page__location--active">Главный склад</span>
+      <a class="warehouse-page__location" href="javascript:void(0)">Кухня</a>
+      <a class="warehouse-page__location" href="javascript:void(0)">Бар</a>
+      <a class="warehouse-page__location" href="javascript:void(0)">Холодильник</a>
+    </section>
+  </aside>
+
+  <main class="warehouse-page__content">
+    <header class="warehouse-page__top-bar">
+      <div class="warehouse-page__breadcrumbs">
+        Главный склад / <span class="warehouse-page__breadcrumb-current">Поставки</span>
+      </div>
+      <div class="warehouse-page__actions">
+        <button type="button" class="btn btn-outline" (click)="openDialog()">+ Новая поставка</button>
+        <button type="button" class="btn btn-ghost">Ещё</button>
+      </div>
+    </header>
+
+    <section class="warehouse-page__body">
+      <div class="warehouse-page__metrics">
+        <app-metric title="Позиций на складе" value="1 248" hint="активные SKU"></app-metric>
+        <app-metric title="Просрочено" value="2" hint="требует списания" variant="danger"></app-metric>
+        <app-metric title="Скоро срок" value="7" hint="≤ 14 дней" variant="warn"></app-metric>
+        <app-metric title="Ниже минимума" value="5" hint="> авто-заказ" variant="warn"></app-metric>
+      </div>
+
+      <nav class="warehouse-page__tabs" role="tablist">
+        <button
+          type="button"
+          *ngFor="let entry of tabKeys"
+          class="warehouse-page__tab"
+          [class.warehouse-page__tab--active]="activeTab() === entry"
+          (click)="selectTab(entry)"
+          role="tab"
+          [attr.aria-selected]="activeTab() === entry"
+        >
+          {{ tabLabels[entry] }}
+        </button>
+      </nav>
+
+      <section *ngIf="activeTab() === 'supplies'" class="warehouse-page__tab-panel">
+        <form class="warehouse-page__filters" (submit)="$event.preventDefault()">
+          <label class="warehouse-page__filter">
+            <span class="warehouse-page__filter-label">Поиск</span>
+            <input
+              class="input"
+              type="search"
+              placeholder="Название или SKU (/)"
+              [value]="query()"
+              (input)="handleSearchChange($event)"
+            />
+          </label>
+          <label class="warehouse-page__filter">
+            <span class="warehouse-page__filter-label">Статус</span>
+            <select
+              class="select"
+              [value]="status()"
+              (change)="handleStatusChange($event)"
+            >
+              <option value="">Все</option>
+              <option value="ok">Ок</option>
+              <option value="warning">Скоро срок</option>
+              <option value="danger">Просрочено</option>
+            </select>
+          </label>
+          <label class="warehouse-page__filter">
+            <span class="warehouse-page__filter-label">Поставщик</span>
+            <select
+              class="select"
+              [value]="supplier()"
+              (change)="handleSupplierChange($event)"
+            >
+              <option value="">Все поставщики</option>
+              <option *ngFor="let option of suppliers()" [value]="option">{{ option }}</option>
+            </select>
+          </label>
+          <div class="warehouse-page__filters-actions">
+            <button type="button" class="btn btn-outline" (click)="clearFilters()">Сброс</button>
+            <button type="button" class="btn btn-secondary">Экспорт</button>
+          </div>
+        </form>
+
+        <section class="warehouse-page__bulk" aria-live="polite">
+          <ng-container *ngIf="hasSelection(); else selectionHint">
+            <span class="warehouse-page__bulk-count">Выбрано: {{ selectedRows().length }}</span>
+            <div class="warehouse-page__bulk-actions">
+              <button type="button" class="btn btn-outline btn-sm">Списать</button>
+              <button type="button" class="btn btn-outline btn-sm">Переместить</button>
+              <button type="button" class="btn btn-outline btn-sm">Печать</button>
+              <button type="button" class="btn btn-danger btn-sm">Удалить</button>
+            </div>
+          </ng-container>
+          <ng-template #selectionHint>
+            <span class="warehouse-page__bulk-hint">Подсказка: выделите строки для массовых действий</span>
+          </ng-template>
+        </section>
+
+        <section class="warehouse-page__table-card">
+          <header class="warehouse-page__table-header">Последние поставки</header>
+          <div class="warehouse-page__table-wrapper">
+            <table class="warehouse-page__table">
+              <thead>
+                <tr>
+                  <th class="warehouse-page__cell warehouse-page__cell--checkbox">
+                    <input
+                      type="checkbox"
+                      [checked]="allRowsChecked()"
+                      (change)="toggleAllFromEvent($event)"
+                      aria-label="Выбрать все"
+                    />
+                  </th>
+                  <th class="warehouse-page__cell">SKU</th>
+                  <th class="warehouse-page__cell">Название</th>
+                  <th class="warehouse-page__cell">Категория</th>
+                  <th class="warehouse-page__cell warehouse-page__cell--numeric">Кол-во</th>
+                  <th class="warehouse-page__cell warehouse-page__cell--numeric">Цена</th>
+                  <th class="warehouse-page__cell warehouse-page__cell--center">Срок годн.</th>
+                  <th class="warehouse-page__cell">Поставщик</th>
+                  <th class="warehouse-page__cell">Статус</th>
+                  <th class="warehouse-page__cell warehouse-page__cell--icon" aria-hidden="true"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of filteredRows(); trackBy: trackByRow">
+                  <td class="warehouse-page__cell warehouse-page__cell--checkbox">
+                    <input
+                      type="checkbox"
+                      [checked]="selectedRows().includes(row.id)"
+                      (change)="handleRowSelection(row.id, $event)"
+                      [attr.aria-label]="'Строка ' + row.sku"
+                    />
+                  </td>
+                  <td class="warehouse-page__cell warehouse-page__cell--mono">{{ row.sku }}</td>
+                  <td class="warehouse-page__cell warehouse-page__cell--link">
+                    <button type="button" (click)="openDrawer(row)">{{ row.name }}</button>
+                  </td>
+                  <td class="warehouse-page__cell">{{ row.category }}</td>
+                  <td class="warehouse-page__cell warehouse-page__cell--numeric">{{ row.qty }} {{ row.unit }}</td>
+                  <td class="warehouse-page__cell warehouse-page__cell--numeric">{{ row.price | number:'1.0-0' }} ₽</td>
+                  <td class="warehouse-page__cell warehouse-page__cell--center">{{ row.expiry }}</td>
+                  <td class="warehouse-page__cell">{{ row.supplier }}</td>
+                  <td class="warehouse-page__cell">
+                    <span *ngIf="row.status === 'ok'" class="badge">Ок</span>
+                    <span *ngIf="row.status === 'warning'" class="badge badge-soft">Скоро срок</span>
+                    <span *ngIf="row.status === 'danger'" class="badge badge-danger">Просрочено</span>
+                  </td>
+                  <td class="warehouse-page__cell warehouse-page__cell--icon">⋯</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <footer class="warehouse-page__table-footer">
+            <span>Показано {{ filteredRows().length }} из {{ rows().length }}</span>
+            <div class="warehouse-page__pagination">
+              <button type="button" class="btn btn-outline btn-sm">Назад</button>
+              <button type="button" class="btn btn-outline btn-sm">Далее</button>
+            </div>
+          </footer>
+        </section>
+      </section>
+
+      <section *ngIf="activeTab() === 'stock'" class="warehouse-page__empty">
+        <app-empty title="Остатки" subtitle="Выберите склад и примените фильтры"></app-empty>
+      </section>
+      <section *ngIf="activeTab() === 'catalog'" class="warehouse-page__empty">
+        <app-empty title="Каталог" subtitle="Импортируйте CSV или создайте первую позицию"></app-empty>
+      </section>
+      <section *ngIf="activeTab() === 'inventory'" class="warehouse-page__empty">
+        <app-empty title="Инвентаризация" subtitle="Создайте обход или запустите экспресс-пересчёт"></app-empty>
+      </section>
+    </section>
+  </main>
+
+  <aside class="warehouse-page__drawer" *ngIf="drawerOpen()">
+    <section class="warehouse-page__drawer-content" *ngIf="selectedRow() as row">
+      <header class="warehouse-page__drawer-header">
+        <div>
+          <div class="warehouse-page__drawer-sku">SKU {{ row.sku }}</div>
+          <div class="warehouse-page__drawer-title">{{ row.name }}</div>
+        </div>
+        <span *ngIf="row.status === 'warning'" class="badge badge-soft">Скоро срок</span>
+        <span *ngIf="row.status === 'danger'" class="badge badge-danger">Просрочено</span>
+      </header>
+      <div class="warehouse-page__drawer-grid">
+        <app-field label="Категория" [value]="row.category"></app-field>
+        <app-field label="Поставщик" [value]="row.supplier"></app-field>
+        <app-field label="Количество" [value]="row.qty + ' ' + row.unit"></app-field>
+        <app-field label="Цена закупки" [value]="row.price + ' ₽'"></app-field>
+        <app-field label="Срок годности" [value]="row.expiry"></app-field>
+      </div>
+      <footer class="warehouse-page__drawer-actions">
+        <button type="button" class="btn btn-outline btn-sm">Списать</button>
+        <button type="button" class="btn btn-outline btn-sm">Переместить</button>
+        <button type="button" class="btn btn-sm">Печать ярлыков</button>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="closeDrawer()">Закрыть</button>
+      </footer>
+    </section>
+  </aside>
+
+  <div class="warehouse-page__dialog-backdrop" *ngIf="dialogOpen()">
+    <section class="warehouse-page__dialog" role="dialog" aria-modal="true" aria-labelledby="new-supply-title">
+      <header class="warehouse-page__dialog-header" id="new-supply-title">Новая поставка</header>
+      <div class="warehouse-page__dialog-grid">
+        <label class="warehouse-page__dialog-field">
+          <span class="warehouse-page__dialog-label">Поставщик</span>
+          <select class="select">
+            <option>Выберите поставщика</option>
+            <option *ngFor="let option of suppliers()">{{ option }}</option>
+          </select>
+        </label>
+        <label class="warehouse-page__dialog-field">
+          <span class="warehouse-page__dialog-label">Склад</span>
+          <select class="select">
+            <option>Главный склад</option>
+            <option>Кухня</option>
+            <option>Бар</option>
+          </select>
+        </label>
+      </div>
+      <section class="warehouse-page__dialog-table">
+        <header>Позиции</header>
+        <div class="warehouse-page__dialog-body">
+          <div class="warehouse-page__dialog-input-row">
+            <input class="input" placeholder="Сканируйте штрих-код или введите SKU" />
+            <button type="button" class="btn btn-secondary">Добавить</button>
+          </div>
+          <p class="warehouse-page__dialog-empty">Пока пусто. Добавьте первую позицию.</p>
+        </div>
+      </section>
+      <footer class="warehouse-page__dialog-actions">
+        <button type="button" class="btn btn-outline" (click)="closeDialog()">Отмена</button>
+        <button type="button" class="btn" disabled>Создать приход</button>
+      </footer>
+    </section>
+  </div>
+</div>
