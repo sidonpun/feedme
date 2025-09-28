@@ -57,7 +57,7 @@ export default function WarehouseDesign() {
                 <CardHeader className="py-3"><CardTitle className="text-base">Последние поставки</CardTitle></CardHeader>
                 <CardContent className="p-0">
                   <Table>
-                    <TableHeader className="sticky top-0 bg-background z-[1] border-b">
+                    <TableHeader className="sticky top-0 bg-background/90 backdrop-blur border-b shadow-[inset_0_-1px_0_0_var(--border)]">
                       <TableRow>
                         <TableHead className="w-[40px]"><Checkbox /></TableHead>
                         <TableHead>№ док.</TableHead>
@@ -73,24 +73,24 @@ export default function WarehouseDesign() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow>
+                      <TableRow className="hover:bg-muted/40 odd:bg-muted/10 h-11 align-middle">
                         <TableCell><Checkbox /></TableCell>
-                        <TableCell>PR-000984</TableCell>
+                        <TableCell className="font-mono text-xs">PR-000984</TableCell>
                         <TableCell>2025-09-26</TableCell>
                         <TableCell>Главный склад</TableCell>
                         <TableCell>Иванов И.</TableCell>
-                        <TableCell>MEAT-001</TableCell>
-                        <TableCell>Курица охлажд.</TableCell>
+                        <TableCell className="font-mono text-xs">MEAT-001</TableCell>
+                        <TableCell className="truncate" title="Курица охлажд.">Курица охлажд.</TableCell>
                         <TableCell className="text-right">120</TableCell>
                         <TableCell className="text-center">2025-10-03</TableCell>
-                        <TableCell>ООО Куры Дуры</TableCell>
+                        <TableCell className="truncate" title="ООО Куры Дуры">ООО Куры Дуры</TableCell>
                         <TableCell><Badge>Ок</Badge></TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
-                  <div className="flex items-center justify-between p-3 border-t text-sm">
+                  <div className="flex items-center p-3 border-t text-sm bg-muted/40 shadow-sm">
                     <div className="text-muted-foreground">Показано 1 поставка</div>
-                    <div className="flex items-center gap-2">
+                    <div className="ml-auto flex items-center gap-2">
                       <Button variant="outline" size="sm">Назад</Button>
                       <Button variant="outline" size="sm">Далее</Button>
                     </div>
@@ -112,7 +112,7 @@ export default function WarehouseDesign() {
                 <CardHeader className="py-3"><CardTitle className="text-base">Остатки по складам</CardTitle></CardHeader>
                 <CardContent className="p-0">
                   <Table>
-                    <TableHeader className="sticky top-0 bg-background z-[1] border-b">
+                    <TableHeader className="sticky top-0 bg-background/90 backdrop-blur border-b shadow-[inset_0_-1px_0_0_var(--border)]">
                       <TableRow>
                         <TableHead>SKU</TableHead>
                         <TableHead>Название</TableHead>
@@ -125,8 +125,8 @@ export default function WarehouseDesign() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow>
-                        <TableCell>VEG-011</TableCell>
+                      <TableRow className="hover:bg-muted/40 odd:bg-muted/10 h-11 align-middle">
+                        <TableCell className="font-mono text-xs">VEG-011</TableCell>
                         <TableCell>Лук репчатый</TableCell>
                         <TableCell>Овощи</TableCell>
                         <TableCell>Главный склад</TableCell>
@@ -137,9 +137,9 @@ export default function WarehouseDesign() {
                       </TableRow>
                     </TableBody>
                   </Table>
-                  <div className="flex items-center justify-between p-3 border-t text-sm">
+                  <div className="flex items-center p-3 border-t text-sm bg-muted/40 shadow-sm">
                     <div className="text-muted-foreground">Показано 1 строка</div>
-                    <div className="flex items-center gap-2">
+                    <div className="ml-auto flex items-center gap-2">
                       <Button variant="outline" size="sm">Назад</Button>
                       <Button variant="outline" size="sm">Далее</Button>
                     </div>
@@ -161,7 +161,7 @@ export default function WarehouseDesign() {
                 <CardHeader className="py-3"><CardTitle className="text-base">Каталог товаров</CardTitle></CardHeader>
                 <CardContent className="p-0">
                   <Table>
-                    <TableHeader className="sticky top-0 bg-background z-[1] border-b">
+                    <TableHeader className="sticky top-0 bg-background/90 backdrop-blur border-b shadow-[inset_0_-1px_0_0_var(--border)]">
                       <TableRow>
                         <TableHead>Название</TableHead>
                         <TableHead>Тип</TableHead>
