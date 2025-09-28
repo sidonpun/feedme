@@ -111,34 +111,37 @@ table.supply-table {
     width: 80px;
   }
 
-/* 10. пагинация */
-.pagination-controls {
+/* 10. футер таблицы */
+.pagination-footer {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 1rem;
-  margin: 1rem 0;
-}
-.pagination-controls button {
-  background-color: #fa4b00;
-  color: #ffffff;
-  border: none;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  border-radius: 0.25rem;
-  transition: background-color 0.4s ease-in;
+  margin: 1.5rem 0 0;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  background: rgba(148, 163, 184, 0.12);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.22);
 }
 
-.pagination-controls button:hover:not(:disabled) {
-  background-color: #d94300;
-  cursor: pointer;
+.pagination-footer__info {
+  font-size: 0.875rem;
+  color: #64748b;
 }
 
-.pagination-controls button:disabled {
+.pagination-footer__actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pagination-footer__button {
+  min-width: 92px;
+  font-weight: 600;
+}
+
+.pagination-footer__button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-.pagination-controls span {
-  font-size: 1rem;
 }
