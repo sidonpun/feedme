@@ -86,9 +86,9 @@
                   aria-label="Фильтр по статусу"
                 >
                   <option value="">Все статусы</option>
-                  <option value="ok">Ок</option>
-                  <option value="warning">Скоро срок</option>
-                  <option value="danger">Просрочено</option>
+                  <option *ngFor="let statusOption of statuses" [value]="statusOption">
+                    {{ statusOption | statusBadgeLabel }}
+                  </option>
                 </select>
               </label>
             </div>
@@ -272,7 +272,7 @@
                       class="badge min-w-[112px] justify-center"
                       [ngClass]="row.status | statusBadgeClass"
                     >
-                      {{ row.status === 'ok' ? 'Ок' : row.status === 'warning' ? 'Скоро срок' : 'Просрочено' }}
+                      {{ row.status | statusBadgeLabel }}
                     </span>
                   </td>
                   <td class="warehouse-page__cell warehouse-page__cell--icon">
@@ -341,7 +341,7 @@
           <div class="warehouse-page__drawer-meta">SKU {{ row.sku }}</div>
         </div>
         <span class="badge" [ngClass]="row.status | statusBadgeClass">
-          {{ row.status === 'ok' ? 'Ок' : row.status === 'warning' ? 'Скоро срок' : 'Просрочено' }}
+          {{ row.status | statusBadgeLabel }}
         </span>
       </header>
       <div class="warehouse-page__drawer-grid">
@@ -427,9 +427,9 @@
           <label class="warehouse-page__dialog-field">
             <span class="warehouse-page__dialog-label">Статус</span>
             <select class="select" formControlName="status">
-              <option value="ok">Ок</option>
-              <option value="warning">Скоро срок</option>
-              <option value="danger">Просрочено</option>
+              <option *ngFor="let statusOption of statuses" [value]="statusOption">
+                {{ statusOption | statusBadgeLabel }}
+              </option>
             </select>
           </label>
         </div>

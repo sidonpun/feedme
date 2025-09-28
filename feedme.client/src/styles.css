@@ -222,7 +222,7 @@ button:hover:not(:disabled) {
 
   gap: 0.25rem;
   padding: 0.125rem 0.5rem;
-  border-radius: var(--radius, 0.5rem);
+  border-radius: 0.375rem;
   border: 1px solid transparent;
   font-size: 0.8125rem;
 
@@ -248,4 +248,16 @@ button:hover:not(:disabled) {
   background-color: #fee2e2;
   color: #b91c1c;
   border-color: #fecaca;
+}
+
+.badge--draft {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border-color: #d1d5db;
+}
+
+.badge--transit {
+  background-color: #e0f2fe;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
 }

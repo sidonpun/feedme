@@ -16,12 +16,13 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { SupplyRow, SupplyStatus } from './models';
+import { SUPPLY_STATUSES, SupplyRow, SupplyStatus, isSupplyStatus } from './models';
 import { WarehouseService } from './warehouse.service';
 import { EmptyStateComponent } from './ui/empty-state.component';
 import { FieldComponent } from './ui/field.component';
 import { MetricComponent } from './ui/metric.component';
 import { StatusBadgeClassPipe } from '../pipes/status-badge-class.pipe';
+import { StatusBadgeLabelPipe } from '../pipes/status-badge-label.pipe';
 
 const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
@@ -41,6 +42,7 @@ const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
     FieldComponent,
     EmptyStateComponent,
     StatusBadgeClassPipe,
+    StatusBadgeLabelPipe,
   ],
   templateUrl: './warehouse-page.component.html',
   styleUrl: './warehouse-page.component.css',
@@ -55,6 +57,7 @@ export class WarehousePageComponent {
   readonly activeTab = signal<'supplies' | 'stock' | 'catalog' | 'inventory'>('supplies');
   readonly query = signal('');
   readonly status = signal<SupplyStatus | ''>('');
+  readonly statuses = SUPPLY_STATUSES;
   readonly supplier = signal('');
   readonly warehouseFilter = signal('');
   readonly dateFrom = signal('');
@@ -204,7 +207,7 @@ export class WarehousePageComponent {
   }
 
   updateStatus(value: string): void {
-    if (value === 'ok' || value === 'warning' || value === 'danger') {
+    if (isSupplyStatus(value)) {
       this.status.set(value);
       return;
     }

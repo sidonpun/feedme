@@ -132,6 +132,16 @@
   color: #b91c1c;
 }
 
+.chip--muted {
+  background-color: rgba(148, 163, 184, 0.16);
+  color: #475569;
+}
+
+.chip--info {
+  background-color: rgba(59, 130, 246, 0.16);
+  color: #1d4ed8;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
