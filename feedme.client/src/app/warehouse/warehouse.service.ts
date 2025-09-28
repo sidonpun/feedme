@@ -1,6 +1,13 @@
-import { Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 
 import { SupplyRow } from './models';
+
+export type WarehouseMetrics = {
+  suppliesLastWeek: number;
+  purchaseAmountLastWeek: number;
+  positions: number;
+  expired: number;
+};
 
 @Injectable({ providedIn: 'root' })
 export class WarehouseService {
@@ -89,6 +96,44 @@ export class WarehouseService {
 
   readonly list = () => this.rowsSignal.asReadonly();
 
+  private readonly metricsSignal = computed<WarehouseMetrics>(() => {
+    const rows = this.rowsSignal();
+    const skuSet = new Set<string>();
+
+    const today = new Date();
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const sevenDaysAgo = new Date(startOfToday);
+    sevenDaysAgo.setDate(startOfToday.getDate() - 6);
+
+    let suppliesLastWeek = 0;
+    let purchaseAmountLastWeek = 0;
+    let expired = 0;
+
+    for (const row of rows) {
+      skuSet.add(row.sku);
+
+      const arrivalDate = this.parseDate(row.arrivalDate);
+      if (!Number.isNaN(arrivalDate.getTime()) && arrivalDate >= sevenDaysAgo) {
+        suppliesLastWeek += 1;
+        purchaseAmountLastWeek += row.qty * row.price;
+      }
+
+      const expiryDate = this.parseDate(row.expiry);
+      if (!Number.isNaN(expiryDate.getTime()) && expiryDate < startOfToday) {
+        expired += 1;
+      }
+    }
+
+    return {
+      suppliesLastWeek,
+      purchaseAmountLastWeek,
+      positions: skuSet.size,
+      expired,
+    } satisfies WarehouseMetrics;
+  });
+
+  readonly metrics = () => this.metricsSignal;
+
   addRow(row: Omit<SupplyRow, 'id'>): void {
     this.rowsSignal.update((rows) => {
       const nextId = rows.reduce((max, current) => Math.max(max, current.id), 0) + 1;
@@ -105,5 +150,14 @@ export class WarehouseService {
   removeRowsById(ids: readonly number[]): void {
     const idSet = new Set(ids);
     this.rowsSignal.update((rows) => rows.filter((row) => !idSet.has(row.id)));
+  }
+
+  private parseDate(value: string): Date {
+    if (!value) {
+      return new Date(NaN);
+    }
+
+    const [year, month, day] = value.split('-').map(Number);
+    return new Date(year, month - 1, day);
   }
 }
