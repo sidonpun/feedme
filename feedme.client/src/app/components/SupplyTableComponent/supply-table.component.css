@@ -1,14 +1,19 @@
 :host {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 0;
 }
 
 .card {
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 0;
   background-color: #ffffff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  box-shadow: none;
+}
+
+.supplies-filters {
+  margin: 0;
+  border-bottom: 0;
 }
 
 .card__content {
@@ -208,11 +213,12 @@
 }
 
 .table-container {
-  overflow-x: auto;
-  border-radius: 12px;
+  overflow-x: hidden;
+  border-radius: 0;
   border: 1px solid #e2e8f0;
+  border-top: 0;
   background-color: #ffffff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  box-shadow: none;
 }
 
 .supplies-table {
@@ -327,10 +333,11 @@
 }
 
 .table-footer {
-  border-radius: 12px;
+  border-radius: 0;
   border: 1px solid rgba(148, 163, 184, 0.35);
+  border-top: 0;
   background-color: rgba(226, 232, 240, 0.4);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  box-shadow: none;
 }
 
 .text-muted-foreground {

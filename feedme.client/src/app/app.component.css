@@ -26,7 +26,6 @@
 
 .content-wrapper {
   flex: 1;
-  overflow-y: auto;
   background: #f9f9f9;
   padding: 16px;
 }
@@ -43,5 +42,5 @@
   flex: 1; /* занять всё оставшееся пространство */
   display: flex;
   flex-direction: column; /* чтобы header был над content */
-  overflow: auto; /* если контента больше области */
+  overflow: hidden; /* исключаем прокрутку внутри основного контейнера */
 }
