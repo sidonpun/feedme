@@ -26,6 +26,7 @@
             type="button"
             class="sort-button"
             (click)="changeSort(column.field)"
+            [attr.title]="getColumnTooltip(column.label)"
           >
             <span class="truncate" [title]="column.label">{{ column.label }}</span>
             <span class="sort-indicator" *ngIf="sortKey === column.field">

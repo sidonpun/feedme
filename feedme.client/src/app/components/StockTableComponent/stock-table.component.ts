@@ -56,6 +56,12 @@ export class StockTableComponent implements OnChanges {
     { label: 'Остаток', field: 'stock' },
   ];
 
+  private readonly columnTooltips: Record<string, string> = {
+    '№ док.': 'Номер приходного документа',
+    'Кол-во': 'Количество в базовой ед. изм.',
+    'Срок годности': 'Дата, после которой товар списывается',
+  };
+
   sortKey: keyof StockTableItem | null = null;
   sortDirection: SortDirection = 'asc';
 
@@ -115,6 +121,10 @@ export class StockTableComponent implements OnChanges {
 
   formatValue(item: StockTableItem, column: StockColumn): unknown {
     return this.getColumnValue(item, column) ?? '';
+  }
+
+  getColumnTooltip(label: string): string | null {
+    return this.columnTooltips[label] ?? null;
   }
 
   get paginatedData(): StockTableItem[] {
