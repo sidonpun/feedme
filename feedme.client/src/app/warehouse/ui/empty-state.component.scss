@@ -1,6 +1,6 @@
 .empty {
   border: 1px dashed var(--border, #e5e7eb);
-  border-radius: .75rem;
+  border-radius: var(--radius);
   padding: 2rem;
   text-align: center;
   background: color-mix(in srgb, #f6f7f9 30%, transparent);
