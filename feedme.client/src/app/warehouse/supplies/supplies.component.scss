@@ -1,3 +1,54 @@
+:host {
+  display: block;
+}
+
+.supplies__filters-card {
+  margin-bottom: 1rem;
+}
+
+.supplies__filters-control {
+  display: flex;
+}
+
+.supplies__filters-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.supplies__filters-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: #374151;
+}
+
+.chip--filled {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #4338ca;
+}
+
+.chip--danger {
+  background: #fee2e2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
 .bulkbar {
   display: flex;
   align-items: center;
