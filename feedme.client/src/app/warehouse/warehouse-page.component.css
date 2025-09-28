@@ -112,10 +112,68 @@
   gap: 32px;
 }
 
-.warehouse-page__metrics {
+.warehouse-page__snapshot {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.square {
+  border-radius: 0;
+}
+
+.warehouse-page__metric-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid var(--border, #e5e7eb);
+  background-color: #ffffff;
+  aspect-ratio: 1 / 1;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.warehouse-page__metric-label {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--muted-foreground, #6b7280);
+}
+
+.warehouse-page__metric-value {
+  font-size: 1.5rem;
+  line-height: 1.25;
+  font-weight: 600;
+  color: var(--brand, #fa4b00);
+}
+
+.warehouse-page__metric-value--currency {
+  font-variant-numeric: tabular-nums;
+}
+
+.warehouse-page__metric-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.warehouse-page__metric-card--expired .warehouse-page__metric-value {
+  color: #b91c1c;
+}
+
+@media (max-width: 1024px) {
+  .warehouse-page__snapshot {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .warehouse-page__tabs {
@@ -297,6 +355,18 @@
 .warehouse-page__filters .btn {
   height: 44px;
   white-space: nowrap;
+}
+
+.warehouse-page__filters .btn-brand-outline {
+  background: transparent;
+  color: var(--brand-600);
+  border: 1px solid var(--brand-600);
+  box-shadow: none;
+}
+
+.warehouse-page__filters .btn-brand-outline:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--brand-600) 12%, #ffffff);
+  border-color: color-mix(in srgb, var(--brand-600) 90%, #000000 10%);
 }
 
 .ml-auto {
@@ -681,6 +751,44 @@
   gap: 24px;
 }
 
+.warehouse-page__dialog-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background-color: #f8fafc;
+}
+
+.warehouse-page__dialog-tab {
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.warehouse-page__dialog-tab:hover {
+  color: #0f172a;
+  background-color: rgba(148, 163, 184, 0.16);
+}
+
+.warehouse-page__dialog-tab:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.warehouse-page__dialog-tab--active {
+  color: #0f172a;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+}
+
 .warehouse-page__dialog-header {
   font-size: 1.25rem;
   font-weight: 600;
@@ -708,6 +816,12 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #94a3b8;
+}
+
+.warehouse-page__dialog-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .warehouse-page__dialog-table {
@@ -744,6 +858,61 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+}
+
+.warehouse-page__history-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.warehouse-page__history-card-header {
+  padding: 16px 20px;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.warehouse-page__history-table {
+  overflow-x: auto;
+}
+
+.warehouse-page__history-table thead tr {
+  background-color: #f8fafc;
+}
+
+.warehouse-page__history-row {
+  transition: background-color 0.2s ease;
+}
+
+.warehouse-page__history-row:nth-child(odd) {
+  background-color: rgba(148, 163, 184, 0.12);
+}
+
+.warehouse-page__history-row:hover {
+  background-color: rgba(148, 163, 184, 0.28);
+}
+
+.warehouse-page__history-qty {
+  display: inline-flex;
+  justify-content: flex-end;
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.warehouse-page__history-qty--in {
+  color: #15803d;
+}
+
+.warehouse-page__history-qty--out {
+  color: #dc2626;
+}
+
+.warehouse-page__history-qty--transfer {
+  color: #2563eb;
 }
 
 .warehouse-page__dialog-content {

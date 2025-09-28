@@ -34,7 +34,7 @@ describe('SupplyTableComponent', () => {
 
     spyOn(component.onSettingsClick, 'emit');
 
-    const settingsButton = fixture.debugElement.query(By.css('tbody button'));
+    const settingsButton = fixture.debugElement.query(By.css('button[aria-label="Меню"]'));
     settingsButton.nativeElement.click();
 
     expect(component.onSettingsClick.emit).toHaveBeenCalledWith(supply);
