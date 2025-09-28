@@ -1,7 +1,11 @@
-export type StockStatus = 'ok' | 'warning' | 'danger';
+export type SupplyStatus = 'ok' | 'warning' | 'danger';
 
 export interface SupplyRow {
   readonly id: number;
+  readonly docNo: string;
+  readonly arrivalDate: string;
+  readonly warehouse: string;
+  readonly responsible: string;
   readonly sku: string;
   readonly name: string;
   readonly category: string;
@@ -10,5 +14,5 @@ export interface SupplyRow {
   readonly price: number;
   readonly expiry: string;
   readonly supplier: string;
-  readonly status: StockStatus;
+  readonly status: SupplyStatus;
 }
