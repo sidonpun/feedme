@@ -2,6 +2,14 @@
   display: block;
 }
 
+.card,
+.input,
+.select,
+.table,
+.dialog {
+  border-radius: var(--radius);
+}
+
 .supplies__filters-card {
   margin-bottom: 1rem;
 }
@@ -30,7 +38,7 @@
 
 .chip {
   padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
+  border-radius: var(--radius);
   font-size: 0.75rem;
   border: 1px solid var(--border);
   background: #fff;
@@ -55,7 +63,7 @@
   gap: 0.75rem;
   background: color-mix(in srgb, #f6f7f9 40%, transparent);
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   padding: 0.5rem 0.75rem;
 }
 
