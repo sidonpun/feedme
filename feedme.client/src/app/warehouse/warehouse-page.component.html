@@ -158,24 +158,28 @@
                       aria-label="Выбрать все"
                     />
                   </th>
-                  <th class="warehouse-page__cell">№ док.</th>
-                  <th class="warehouse-page__cell warehouse-page__cell--center">Дата прихода</th>
+                  <th class="warehouse-page__cell font-mono text-xs">№ док.</th>
+                  <th class="warehouse-page__cell warehouse-page__cell--center text-center">Дата прихода</th>
                   <th class="warehouse-page__cell">Склад</th>
                   <th class="warehouse-page__cell">Ответственный</th>
-                  <th class="warehouse-page__cell">SKU</th>
+                  <th class="warehouse-page__cell font-mono text-xs">SKU</th>
                   <th class="warehouse-page__cell">Название</th>
                   <th class="warehouse-page__cell">Категория</th>
-                  <th class="warehouse-page__cell warehouse-page__cell--numeric">Кол-во</th>
-                  <th class="warehouse-page__cell warehouse-page__cell--numeric">Цена</th>
-                  <th class="warehouse-page__cell warehouse-page__cell--numeric">Сумма</th>
-                  <th class="warehouse-page__cell warehouse-page__cell--center">Срок годности</th>
+                  <th class="warehouse-page__cell warehouse-page__cell--numeric text-right">Кол-во</th>
+                  <th class="warehouse-page__cell warehouse-page__cell--numeric text-right">Цена</th>
+                  <th class="warehouse-page__cell warehouse-page__cell--numeric text-right">Сумма</th>
+                  <th class="warehouse-page__cell warehouse-page__cell--center text-center">Срок годности</th>
                   <th class="warehouse-page__cell">Поставщик</th>
                   <th class="warehouse-page__cell warehouse-page__cell--status">Статус</th>
                   <th class="warehouse-page__cell warehouse-page__cell--icon" aria-hidden="true"></th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let row of filteredRows(); trackBy: trackByRow" (dblclick)="openDrawer(row)">
+                <tr
+                  *ngFor="let row of filteredRows(); trackBy: trackByRow"
+                  class="warehouse-page__row hover:bg-muted/40 odd:bg-muted/10 h-11 align-middle"
+                  (dblclick)="openDrawer(row)"
+                >
                   <td class="warehouse-page__cell warehouse-page__cell--checkbox">
                     <input
                       type="checkbox"
@@ -184,29 +188,38 @@
                       [attr.aria-label]="'Строка ' + row.docNo"
                     />
                   </td>
-                  <td class="warehouse-page__cell warehouse-page__cell--mono">{{ row.docNo }}</td>
-                  <td class="warehouse-page__cell warehouse-page__cell--center">{{ row.arrivalDate | date: 'dd.MM.yyyy' }}</td>
+                  <td class="warehouse-page__cell warehouse-page__cell--mono font-mono text-xs">{{ row.docNo }}</td>
+                  <td class="warehouse-page__cell warehouse-page__cell--center text-center">{{ row.arrivalDate | date: 'dd.MM.yyyy' }}</td>
                   <td class="warehouse-page__cell">{{ row.warehouse }}</td>
                   <td class="warehouse-page__cell">{{ row.responsible }}</td>
-                  <td class="warehouse-page__cell warehouse-page__cell--mono">{{ row.sku }}</td>
-                  <td class="warehouse-page__cell warehouse-page__cell--link">
-                    <button type="button" (click)="openDrawer(row)">{{ row.name }}</button>
+                  <td class="warehouse-page__cell warehouse-page__cell--mono font-mono text-xs">{{ row.sku }}</td>
+                  <td class="warehouse-page__cell warehouse-page__cell--name">
+                    <button
+                      type="button"
+                      class="warehouse-page__product-name font-medium truncate cursor-default"
+                      (click)="openDrawer(row)"
+                      [attr.title]="row.name"
+                    >
+                      {{ row.name }}
+                    </button>
                   </td>
                   <td class="warehouse-page__cell">{{ row.category }}</td>
-                  <td class="warehouse-page__cell warehouse-page__cell--numeric">
+                  <td class="warehouse-page__cell warehouse-page__cell--numeric text-right">
                     {{ row.qty | number: '1.0-3' }} {{ row.unit }}
                   </td>
-                  <td class="warehouse-page__cell warehouse-page__cell--numeric">
+                  <td class="warehouse-page__cell warehouse-page__cell--numeric text-right">
                     {{ formatCurrency(row.price) }}
                   </td>
-                  <td class="warehouse-page__cell warehouse-page__cell--numeric">
+                  <td class="warehouse-page__cell warehouse-page__cell--numeric text-right">
                     {{ formatCurrency(rowTotal(row)) }}
                   </td>
-                  <td class="warehouse-page__cell warehouse-page__cell--center">{{ row.expiry | date: 'dd.MM.yyyy' }}</td>
-                  <td class="warehouse-page__cell">{{ row.supplier }}</td>
+                  <td class="warehouse-page__cell warehouse-page__cell--center text-center">{{ row.expiry | date: 'dd.MM.yyyy' }}</td>
+                  <td class="warehouse-page__cell warehouse-page__cell--supplier">
+                    <span class="truncate" [attr.title]="row.supplier">{{ row.supplier }}</span>
+                  </td>
                   <td class="warehouse-page__cell warehouse-page__cell--status">
                     <span
-                      class="badge"
+                      class="badge min-w-[88px] text-center"
                       [ngClass]="{
                         'badge-soft': row.status === 'warning',
                         'badge-danger': row.status === 'danger'
