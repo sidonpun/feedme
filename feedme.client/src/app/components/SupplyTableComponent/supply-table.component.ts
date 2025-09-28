@@ -41,6 +41,12 @@ export class SupplyTableComponent implements OnChanges {
   @Output() onAddSupply = new EventEmitter<void>();
   /** Сообщаем, что пользователь хочет открыть настройки конкретной поставки */
   @Output() onSettingsClick = new EventEmitter<any>();
+  /** Сообщаем, что пользователь хочет списать поставку */
+  @Output() writeOff = new EventEmitter<any>();
+  /** Сообщаем, что пользователь хочет переместить поставку */
+  @Output() move = new EventEmitter<any>();
+  /** Сообщаем, что пользователь хочет распечатать документы поставки */
+  @Output() print = new EventEmitter<any>();
 
   // фильтр и пагинация
   searchQuery = '';
