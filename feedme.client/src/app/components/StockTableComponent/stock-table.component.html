@@ -22,14 +22,22 @@
             </span>
           </button>
         </th>
-        <th>Действие</th>
+        <th style="width:44px"></th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let item of paginatedData">
         <td *ngFor="let column of columns">{{ formatValue(item, column) }}</td>
-        <td class="actions-cell">
-          <button (click)="onSettingsClick.emit(item)">⚙️</button>
+        <td class="cell-menu">
+          <button
+            type="button"
+            class="icon-btn"
+            aria-label="Меню"
+            (click)="onSettingsClick.emit(item)"
+          >
+            ⋯
+          </button>
+          <!-- TODO: dropdown UI позже отдельной задачей -->
         </td>
       </tr>
       <tr *ngIf="paginatedData.length === 0">

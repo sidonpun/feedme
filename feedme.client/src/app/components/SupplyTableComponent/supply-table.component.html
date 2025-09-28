@@ -62,7 +62,7 @@
         <th scope="col" class="text-sm font-medium text-center">Срок годности</th>
         <th scope="col" class="text-sm font-medium">Поставщик</th>
         <th scope="col" class="text-sm font-medium">Статус</th>
-        <th scope="col" class="w-[44px]"></th>
+        <th scope="col" style="width:44px"></th>
       </tr>
     </thead>
     <tbody>
@@ -116,30 +116,16 @@
             {{ item.status || item.state || 'Ок' }}
           </span>
         </td>
-        <td class="w-[44px]">
-          <div class="menu">
-            <button
-              type="button"
-              class="btn btn-ghost btn-icon"
-              aria-haspopup="true"
-              aria-expanded="false"
-              aria-label="Открыть меню"
-            >
-              ⋯
-            </button>
-            <div class="menu__panel" role="menu">
-              <button type="button" class="menu__item" role="menuitem" (click)="onSettingsClick.emit(item)">
-                Открыть
-              </button>
-              <button type="button" class="menu__item" role="menuitem">
-                Редактировать
-              </button>
-              <div class="menu__separator" role="separator"></div>
-              <button type="button" class="menu__item menu__item--destructive" role="menuitem">
-                Удалить
-              </button>
-            </div>
-          </div>
+        <td class="cell-menu">
+          <button
+            type="button"
+            class="icon-btn"
+            aria-label="Меню"
+            (click)="onSettingsClick.emit(item)"
+          >
+            ⋯
+          </button>
+          <!-- TODO: dropdown UI позже отдельной задачей -->
         </td>
       </tr>
       <tr *ngIf="paginatedData.length === 0">

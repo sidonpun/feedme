@@ -193,14 +193,6 @@
   outline: none;
 }
 
-.btn-icon {
-  width: 36px;
-  height: 36px;
-  font-size: 24px;
-  line-height: 1;
-  padding: 0;
-}
-
 .btn-sm {
   padding: 8px 12px;
   font-size: 0.8125rem;
@@ -339,64 +331,21 @@
   outline-offset: 2px;
 }
 
-.menu {
-  position: relative;
-  display: inline-flex;
+.cell-menu {
+  width: 44px;
+  text-align: right;
 }
 
-.menu__panel {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  display: none;
-  flex-direction: column;
-  min-width: 160px;
-  padding: 8px 0;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
-  background-color: #ffffff;
-  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.15);
-  z-index: 10;
-}
-
-.menu:focus-within .menu__panel,
-.menu:hover .menu__panel {
-  display: flex;
-}
-
-.menu__item {
-  width: 100%;
-  text-align: left;
-  padding: 10px 16px;
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 0.5rem;
+  border: 0;
   background: transparent;
-  border: none;
-  font-size: 0.875rem;
-  color: #0f172a;
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.menu__item:hover,
-.menu__item:focus-visible {
-  background-color: #f1f5f9;
-  color: #111827;
-  outline: none;
-}
-
-.menu__item--destructive {
-  color: #b91c1c;
-}
-
-.menu__item--destructive:hover,
-.menu__item--destructive:focus-visible {
-  background-color: rgba(248, 113, 113, 0.12);
-  color: #991b1b;
-}
-
-.menu__separator {
-  height: 1px;
-  margin: 4px 0;
-  background-color: #e2e8f0;
+.icon-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
 }
 
 .no-data {
