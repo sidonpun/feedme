@@ -57,35 +57,95 @@
       <section *ngIf="activeTab() === 'supplies'" class="warehouse-page__tab-panel">
         <form class="warehouse-page__filters" (submit)="$event.preventDefault()">
           <div class="warehouse-page__filters-control warehouse-page__filters-control--search">
-            <input
-              #searchInput
-              class="input"
-              type="search"
-              placeholder="Поиск по номеру, SKU или названию"
-              aria-label="Поиск по поставкам"
-              [value]="query()"
-              (input)="updateQuery(searchInput.value)"
-            />
+            <label class="warehouse-page__filters-field">
+              <span class="warehouse-page__filters-label">Поиск</span>
+              <input
+                #searchInput
+                class="input"
+                type="search"
+                placeholder="Поиск по номеру, SKU или названию"
+                aria-label="Поиск по поставкам"
+                [value]="query()"
+                (input)="updateQuery(searchInput.value)"
+              />
+            </label>
+          </div>
+          <div class="warehouse-page__filters-control warehouse-page__filters-control--select">
+            <label class="warehouse-page__filters-field">
+              <span class="warehouse-page__filters-label">Статус</span>
+              <select
+                #statusSelect
+                class="select"
+                [value]="status()"
+                (change)="updateStatus(statusSelect.value)"
+                aria-label="Фильтр по статусу"
+              >
+                <option value="">Все статусы</option>
+                <option value="ok">Ок</option>
+                <option value="warning">Скоро срок</option>
+                <option value="danger">Просрочено</option>
+              </select>
+            </label>
+          </div>
+          <div class="warehouse-page__filters-control warehouse-page__filters-control--select">
+            <label class="warehouse-page__filters-field">
+              <span class="warehouse-page__filters-label">Поставщик</span>
+              <select
+                #supplierSelect
+                class="select"
+                [value]="supplier()"
+                (change)="updateSupplier(supplierSelect.value)"
+                aria-label="Фильтр по поставщику"
+              >
+                <option value="">Все поставщики</option>
+                <option *ngFor="let supplierName of suppliers()" [value]="supplierName">
+                  {{ supplierName }}
+                </option>
+              </select>
+            </label>
+          </div>
+          <div class="warehouse-page__filters-control warehouse-page__filters-control--select">
+            <label class="warehouse-page__filters-field">
+              <span class="warehouse-page__filters-label">Склад</span>
+              <select
+                #warehouseSelect
+                class="select"
+                [value]="warehouseFilter()"
+                (change)="updateWarehouse(warehouseSelect.value)"
+                aria-label="Фильтр по складу"
+              >
+                <option value="">Все склады</option>
+                <option *ngFor="let warehouseName of warehouses()" [value]="warehouseName">
+                  {{ warehouseName }}
+                </option>
+              </select>
+            </label>
           </div>
           <div class="warehouse-page__filters-control warehouse-page__filters-control--date">
-            <input
-              #dateFromInput
-              class="input"
-              type="date"
-              aria-label="Дата прихода от"
-              [value]="dateFrom()"
-              (change)="updateDateFrom(dateFromInput.value)"
-            />
+            <label class="warehouse-page__filters-field">
+              <span class="warehouse-page__filters-label">Приход от</span>
+              <input
+                #dateFromInput
+                class="input"
+                type="date"
+                aria-label="Дата прихода от"
+                [value]="dateFrom()"
+                (change)="updateDateFrom(dateFromInput.value)"
+              />
+            </label>
           </div>
           <div class="warehouse-page__filters-control warehouse-page__filters-control--date">
-            <input
-              #dateToInput
-              class="input"
-              type="date"
-              aria-label="Дата прихода до"
-              [value]="dateTo()"
-              (change)="updateDateTo(dateToInput.value)"
-            />
+            <label class="warehouse-page__filters-field">
+              <span class="warehouse-page__filters-label">Приход до</span>
+              <input
+                #dateToInput
+                class="input"
+                type="date"
+                aria-label="Дата прихода до"
+                [value]="dateTo()"
+                (change)="updateDateTo(dateToInput.value)"
+              />
+            </label>
           </div>
           <button type="button" class="btn btn-outline" (click)="clearFilters()">Сброс</button>
           <button type="button" class="btn btn-secondary">Экспорт</button>
