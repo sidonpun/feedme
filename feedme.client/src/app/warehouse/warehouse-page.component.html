@@ -68,7 +68,9 @@
 
         <article class="square warehouse-page__metric-card" aria-live="polite">
           <p class="warehouse-page__metric-label">Сумма закупок / 7 дн.</p>
-          <p class="warehouse-page__metric-value warehouse-page__metric-value--currency">0 ₽</p>
+          <p class="warehouse-page__metric-value warehouse-page__metric-value--currency">
+            {{ formatCurrency(snapshot.purchaseAmountLastWeek) }}
+          </p>
         </article>
 
         <article class="square warehouse-page__metric-card" aria-live="polite">
