@@ -74,6 +74,14 @@
   </table>
 </div>
 
+<!-- TODO: toggle by data -->
+<app-empty
+  class="mt-6 block"
+  title="Нет остатков"
+  subtitle="Добавьте товары или обновите их остатки, чтобы увидеть список."
+  ctaText="+ Новый товар"
+></app-empty>
+
 <div class="pagination-controls">
   <button (click)="prevPage()" [disabled]="currentPage === 1">Назад</button>
   <span>Страница {{ currentPage }} из {{ totalPages }}</span>

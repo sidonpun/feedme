@@ -150,6 +150,14 @@
   </table>
 </div>
 
+<!-- TODO: toggle by data -->
+<app-empty
+  class="mt-6 block"
+  title="Нет поставок"
+  subtitle="Создайте первую поставку, чтобы увидеть её в списке."
+  ctaText="+ Новая поставка"
+></app-empty>
+
 <div class="table-footer flex items-center p-3 border-t text-sm bg-muted/40 shadow-sm">
   <div class="table-footer__summary text-muted-foreground">
     Показано {{ paginatedData.length }} поставок · Страница {{ currentPage }} из {{ totalPages }}

@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableControlsComponent } from '../table-controls/table-controls.component';
+import { EmptyStateComponent } from '../../warehouse/ui/empty-state.component';
 
 type SortDirection = 'asc' | 'desc';
 type SortType = 'string' | 'number' | 'date';
@@ -20,7 +21,7 @@ interface FilterOptions {
 @Component({
   selector: 'app-supply-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableControlsComponent],
+  imports: [CommonModule, FormsModule, TableControlsComponent, EmptyStateComponent],
   templateUrl: './supply-table.component.html',
   styleUrls: ['./supply-table.component.css']
 })
