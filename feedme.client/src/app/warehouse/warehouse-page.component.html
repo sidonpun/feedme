@@ -148,7 +148,7 @@
                   </td>
                   <td class="warehouse-page__cell warehouse-page__cell--mono">{{ row.sku }}</td>
                   <td class="warehouse-page__cell warehouse-page__cell--link">
-                    <button type="button" (click)="openDrawer(row)">{{ row.name }}</button>
+                    <button type="button" (click)="openSupplyDrawer(row)">{{ row.name }}</button>
                   </td>
                   <td class="warehouse-page__cell">{{ row.category }}</td>
                   <td class="warehouse-page__cell warehouse-page__cell--numeric">{{ row.qty }} {{ row.unit }}</td>
@@ -175,9 +175,114 @@
         </section>
       </section>
 
-      <section *ngIf="activeTab() === 'stock'" class="warehouse-page__empty">
-        <app-empty title="Остатки" subtitle="Выберите склад и примените фильтры"></app-empty>
+      <section *ngIf="activeTab() === 'stock'" class="warehouse-page__tab-panel">
+        <form class="warehouse-page__filters" (submit)="$event.preventDefault()">
+          <label class="warehouse-page__filter">
+            <span class="warehouse-page__filter-label">Поиск</span>
+            <input
+              class="input"
+              type="search"
+              placeholder="SKU, название или категория"
+              [value]="stockQuery()"
+              (input)="handleStockSearchChange($event)"
+            />
+          </label>
+          <label class="warehouse-page__filter">
+            <span class="warehouse-page__filter-label">Склад</span>
+            <select
+              class="select"
+              [value]="stockWarehouse()"
+              (change)="handleStockWarehouseChange($event)"
+            >
+              <option value="">Все склады</option>
+              <option *ngFor="let location of stockWarehouses" [value]="location">{{ location }}</option>
+            </select>
+          </label>
+          <label class="warehouse-page__filter">
+            <span class="warehouse-page__filter-label">Срок годности</span>
+            <select
+              class="select"
+              [value]="stockExpiryFilter()"
+              (change)="handleStockExpiryChange($event)"
+            >
+              <option *ngFor="let option of stockExpiryOptions" [value]="option.value">{{ option.label }}</option>
+            </select>
+          </label>
+          <div class="warehouse-page__filters-actions">
+            <button type="button" class="btn btn-outline" (click)="clearStockFilters()">Сброс</button>
+            <button type="button" class="btn btn-secondary" (click)="exportStock()">Экспорт</button>
+          </div>
+        </form>
+
+        <section class="warehouse-page__table-card">
+          <header class="warehouse-page__table-header">Остатки по складам</header>
+          <ng-container *ngIf="hasStockRows(); else stockEmpty">
+            <div class="warehouse-page__table-wrapper">
+              <table class="warehouse-page__table">
+                <thead>
+                  <tr>
+                    <th class="warehouse-page__cell">SKU</th>
+                    <th class="warehouse-page__cell">Название</th>
+                    <th class="warehouse-page__cell">Категория</th>
+                    <th class="warehouse-page__cell">Склад</th>
+                    <th class="warehouse-page__cell warehouse-page__cell--numeric">Кол-во</th>
+                    <th class="warehouse-page__cell">Срок годности</th>
+                    <th class="warehouse-page__cell">Поставщик (осн.)</th>
+                    <th class="warehouse-page__cell">Статус срока годности</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="let row of filteredStockRows(); trackBy: trackByStockRow"
+                    class="warehouse-page__stock-row"
+                    [class.warehouse-page__stock-row--ok]="row.expiryStatus === 'ok'"
+                    [class.warehouse-page__stock-row--warning]="row.expiryStatus === 'warning'"
+                    [class.warehouse-page__stock-row--danger]="row.expiryStatus === 'danger'"
+                    (dblclick)="openStockDrawer(row)"
+                    (keydown)="handleStockRowKeydown(row, $event)"
+                    tabindex="0"
+                  >
+                    <td class="warehouse-page__cell warehouse-page__cell--mono">{{ row.sku }}</td>
+                    <td class="warehouse-page__cell warehouse-page__cell--strong">{{ row.name }}</td>
+                    <td class="warehouse-page__cell">{{ row.category }}</td>
+                    <td class="warehouse-page__cell">{{ row.warehouse }}</td>
+                    <td class="warehouse-page__cell warehouse-page__cell--numeric">{{ row.quantity | number:'1.0-2' }} {{ row.unit }}</td>
+                    <td class="warehouse-page__cell">
+                      <span class="warehouse-page__expiry-date">{{ row.expiryDate }}</span>
+                      <span class="warehouse-page__expiry-hint">
+                        <ng-container *ngIf="row.daysToExpiry >= 0; else expiredHint">
+                          Осталось {{ row.daysToExpiry }} д.
+                        </ng-container>
+                        <ng-template #expiredHint>Просрочено на {{ (row.daysToExpiry * -1) }} д.</ng-template>
+                      </span>
+                    </td>
+                    <td class="warehouse-page__cell">{{ row.primarySupplier }}</td>
+                    <td class="warehouse-page__cell">
+                      <span *ngIf="row.expiryStatus === 'ok'" class="badge">В норме</span>
+                      <span *ngIf="row.expiryStatus === 'warning'" class="badge badge-soft">Скоро срок</span>
+                      <span *ngIf="row.expiryStatus === 'danger'" class="badge badge-danger">Просрочено</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </ng-container>
+          <footer class="warehouse-page__table-footer">
+            <span>Показано {{ filteredStockRows().length }} строк. Общий остаток: {{ stockQuantityTotal() | number:'1.0-2' }} ед.</span>
+            <div class="warehouse-page__pagination">
+              <button type="button" class="btn btn-outline btn-sm">Назад</button>
+              <button type="button" class="btn btn-outline btn-sm">Далее</button>
+            </div>
+          </footer>
+        </section>
       </section>
+
+      <ng-template #stockEmpty>
+        <div class="warehouse-page__empty-card">
+          <app-empty title="Нет данных" subtitle="Попробуйте изменить фильтры или добавьте новый остаток"></app-empty>
+          <button type="button" class="btn" (click)="handleAddStock()">Добавить остаток</button>
+        </div>
+      </ng-template>
       <section *ngIf="activeTab() === 'catalog'" class="warehouse-page__empty">
         <app-empty title="Каталог" subtitle="Импортируйте CSV или создайте первую позицию"></app-empty>
       </section>
@@ -187,35 +292,70 @@
     </section>
   </main>
 
-  <aside class="warehouse-page__drawer" *ngIf="drawerOpen()">
-    <section class="warehouse-page__drawer-content" *ngIf="selectedRow() as row">
-      <header class="warehouse-page__drawer-header">
-        <div>
-          <div class="warehouse-page__drawer-sku">SKU {{ row.sku }}</div>
-          <div class="warehouse-page__drawer-title">{{ row.name }}</div>
-        </div>
-        <span *ngIf="row.status === 'warning'" class="badge badge-soft">Скоро срок</span>
-        <span *ngIf="row.status === 'danger'" class="badge badge-danger">Просрочено</span>
-      </header>
-      <div class="warehouse-page__drawer-grid">
-        <app-field label="Категория" [value]="row.category"></app-field>
-        <app-field label="Поставщик" [value]="row.supplier"></app-field>
-        <app-field label="Количество" [value]="row.qty + ' ' + row.unit"></app-field>
-        <app-field label="Цена закупки" [value]="row.price + ' ₽'"></app-field>
-        <app-field label="Срок годности" [value]="row.expiry"></app-field>
-      </div>
-      <footer class="warehouse-page__drawer-actions">
-        <button type="button" class="btn btn-outline btn-sm">Списать</button>
-        <button type="button" class="btn btn-outline btn-sm">Переместить</button>
-        <button type="button" class="btn btn-sm">Печать ярлыков</button>
-        <button type="button" class="btn btn-ghost btn-sm" (click)="closeDrawer()">Закрыть</button>
-      </footer>
+  <aside class="warehouse-page__drawer" *ngIf="drawerEntry() as entry">
+    <section class="warehouse-page__drawer-content">
+      <ng-container [ngSwitch]="entry.kind">
+        <ng-container *ngSwitchCase="'supply'" [ngTemplateOutlet]="supplyDrawer" [ngTemplateOutletContext]="{ $implicit: entry.record }"></ng-container>
+        <ng-container *ngSwitchCase="'stock'" [ngTemplateOutlet]="stockDrawer" [ngTemplateOutletContext]="{ $implicit: entry.record }"></ng-container>
+      </ng-container>
     </section>
   </aside>
 
+  <ng-template #supplyDrawer let-row>
+    <header class="warehouse-page__drawer-header">
+      <div>
+        <div class="warehouse-page__drawer-sku">SKU {{ row.sku }}</div>
+        <div class="warehouse-page__drawer-title">{{ row.name }}</div>
+      </div>
+      <span *ngIf="row.status === 'warning'" class="badge badge-soft">Скоро срок</span>
+      <span *ngIf="row.status === 'danger'" class="badge badge-danger">Просрочено</span>
+    </header>
+    <div class="warehouse-page__drawer-grid">
+      <app-field label="Категория" [value]="row.category"></app-field>
+      <app-field label="Поставщик" [value]="row.supplier"></app-field>
+      <app-field label="Количество" [value]="row.qty + ' ' + row.unit"></app-field>
+      <app-field label="Цена закупки" [value]="row.price + ' ₽'"></app-field>
+      <app-field label="Срок годности" [value]="row.expiry"></app-field>
+    </div>
+    <footer class="warehouse-page__drawer-actions">
+      <button type="button" class="btn btn-outline btn-sm">Списать</button>
+      <button type="button" class="btn btn-outline btn-sm">Переместить</button>
+      <button type="button" class="btn btn-sm">Печать ярлыков</button>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="closeDrawer()">Закрыть</button>
+    </footer>
+  </ng-template>
+
+  <ng-template #stockDrawer let-row>
+    <header class="warehouse-page__drawer-header">
+      <div>
+        <div class="warehouse-page__drawer-sku">SKU {{ row.sku }}</div>
+        <div class="warehouse-page__drawer-title">{{ row.name }}</div>
+      </div>
+      <span *ngIf="row.expiryStatus === 'ok'" class="badge">В норме</span>
+      <span *ngIf="row.expiryStatus === 'warning'" class="badge badge-soft">Скоро срок</span>
+      <span *ngIf="row.expiryStatus === 'danger'" class="badge badge-danger">Просрочено</span>
+    </header>
+    <div class="warehouse-page__drawer-grid">
+      <app-field label="Категория" [value]="row.category"></app-field>
+      <app-field label="Склад" [value]="row.warehouse"></app-field>
+      <app-field label="Количество" [value]="row.quantity + ' ' + row.unit"></app-field>
+      <app-field label="Срок годности" [value]="row.expiryDate + ' (' + row.daysToExpiry + ' д.)'"></app-field>
+      <app-field label="Поставщик (осн.)" [value]="row.primarySupplier"></app-field>
+      <app-field label="Комментарии" [value]="row.comments"></app-field>
+    </div>
+    <footer class="warehouse-page__drawer-actions">
+      <button type="button" class="btn btn-outline btn-sm">Списать</button>
+      <button type="button" class="btn btn-outline btn-sm">Переместить</button>
+      <button type="button" class="btn btn-sm">Редактировать</button>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="closeDrawer()">Закрыть</button>
+    </footer>
+  </ng-template>
+
   <div class="warehouse-page__dialog-backdrop" *ngIf="dialogOpen()">
-    <section class="warehouse-page__dialog" role="dialog" aria-modal="true" aria-labelledby="new-supply-title">
-      <header class="warehouse-page__dialog-header" id="new-supply-title">Новая поставка</header>
+    <section class="warehouse-page__dialog" role="dialog" aria-modal="true" aria-labelledby="warehouse-dialog-title">
+      <header class="warehouse-page__dialog-header" id="warehouse-dialog-title">
+        {{ dialogContext() === 'supply' ? 'Новая поставка' : 'Новый остаток' }}
+      </header>
       <div class="warehouse-page__dialog-grid">
         <label class="warehouse-page__dialog-field">
           <span class="warehouse-page__dialog-label">Поставщик</span>

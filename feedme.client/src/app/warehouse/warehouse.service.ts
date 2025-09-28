@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-import { SupplyRow } from './models';
+import { StockRow, SupplyRow } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class WarehouseService {
@@ -56,4 +56,93 @@ export class WarehouseService {
   ]);
 
   readonly list = () => this.rowsSignal.asReadonly();
+
+  private readonly stockRowsSignal = signal<StockRow[]>([
+    {
+      id: 101,
+      sku: 'VEG-011',
+      name: 'Лук репчатый',
+      category: 'Овощи',
+      warehouse: 'Главный склад',
+      quantity: 35,
+      unit: 'кг',
+      expiryDate: '2025-10-15',
+      primarySupplier: 'АгроФреш',
+      comments: 'Хранить в темноте при +4°C.',
+    },
+    {
+      id: 102,
+      sku: 'DAIRY-004',
+      name: 'Сливки 33%',
+      category: 'Молочные продукты',
+      warehouse: 'Бар',
+      quantity: 12.1,
+      unit: 'л',
+      expiryDate: '2025-10-01',
+      primarySupplier: 'МолКомбинат',
+      comments: 'Партия для капучино, следить за охлаждением.',
+    },
+    {
+      id: 103,
+      sku: 'MEAT-002',
+      name: 'Говядина мраморная',
+      category: 'Мясо',
+      warehouse: 'Кухня',
+      quantity: 9,
+      unit: 'кг',
+      expiryDate: '2025-09-28',
+      primarySupplier: 'Ферма №5',
+      comments: 'Для стейков, проверить температуру камеры №2.',
+    },
+    {
+      id: 104,
+      sku: 'SEA-021',
+      name: 'Креветка крупная',
+      category: 'Морепродукты',
+      warehouse: 'Холодильник',
+      quantity: 6.5,
+      unit: 'кг',
+      expiryDate: '2025-09-20',
+      primarySupplier: 'Морская волна',
+      comments: 'Поставить на разморозку перед банкетом 18.09.',
+    },
+    {
+      id: 105,
+      sku: 'BAK-008',
+      name: 'Хлеб чиабатта',
+      category: 'Выпечка',
+      warehouse: 'Главный склад',
+      quantity: 24,
+      unit: 'шт',
+      expiryDate: '2025-09-14',
+      primarySupplier: 'БулкоФабрика',
+      comments: 'Использовать в первую очередь на завтраке.',
+    },
+    {
+      id: 106,
+      sku: 'DRY-015',
+      name: 'Макароны Пенне',
+      category: 'Бакалея',
+      warehouse: 'Кухня',
+      quantity: 48,
+      unit: 'кг',
+      expiryDate: '2026-02-11',
+      primarySupplier: 'Итальяно',
+      comments: 'Основной гарнир, остаток проверять еженедельно.',
+    },
+    {
+      id: 107,
+      sku: 'BAR-031',
+      name: 'Сироп ванильный',
+      category: 'Бар',
+      warehouse: 'Бар',
+      quantity: 8,
+      unit: 'л',
+      expiryDate: '2025-12-05',
+      primarySupplier: 'SweetBar',
+      comments: 'Открытые бутылки хранить не более 30 дней.',
+    },
+  ]);
+
+  readonly listStock = () => this.stockRowsSignal.asReadonly();
 }

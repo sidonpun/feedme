@@ -280,8 +280,59 @@
   text-decoration: underline;
 }
 
-.warehouse-page__table tbody tr:hover {
+.warehouse-page__cell--strong {
+  font-weight: 600;
+  color: #111827;
+}
+
+.warehouse-page__table tbody tr:not(.warehouse-page__stock-row):hover {
   background-color: #f8fafc;
+}
+
+.warehouse-page__stock-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.warehouse-page__stock-row:focus,
+.warehouse-page__stock-row:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
+}
+
+.warehouse-page__stock-row--ok {
+  background-color: #f0fdf4;
+  box-shadow: inset 4px 0 0 #22c55e;
+}
+
+.warehouse-page__stock-row--warning {
+  background-color: #fffbeb;
+  box-shadow: inset 4px 0 0 #facc15;
+}
+
+.warehouse-page__stock-row--danger {
+  background-color: #fef2f2;
+  box-shadow: inset 4px 0 0 #ef4444;
+}
+
+.warehouse-page__stock-row--ok:hover,
+.warehouse-page__stock-row--warning:hover,
+.warehouse-page__stock-row--danger:hover {
+  filter: brightness(0.97);
+}
+
+.warehouse-page__expiry-date {
+  display: block;
+}
+
+.warehouse-page__expiry-hint {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background-color: #e2e8f0;
+  color: #475569;
 }
 
 .warehouse-page__table-footer {
@@ -304,6 +355,14 @@
   justify-content: center;
   align-items: center;
   padding: 48px 0;
+}
+
+.warehouse-page__empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 0;
 }
 
 .warehouse-page__drawer {
