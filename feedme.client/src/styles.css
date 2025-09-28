@@ -2,8 +2,15 @@
 :root {
   --accent-color: #fa4b00;
   --accent-hover-color: #d94300;
+  --brand-600: #fa4b00;
+  --ring: var(--brand-600);
   --cancel-color: #ccc;
   --cancel-hover-color: #b3b3b3;
+}
+
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring);
 }
 
 html, body {
