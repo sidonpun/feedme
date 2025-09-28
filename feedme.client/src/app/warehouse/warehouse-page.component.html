@@ -27,8 +27,29 @@
         Главный склад / <span class="warehouse-page__breadcrumb-current">Поставки</span>
       </div>
       <div class="warehouse-page__actions">
-        <button type="button" class="btn btn-outline" (click)="openCreateDialog()">+ Новая поставка</button>
-        <button type="button" class="btn btn-ghost">Ещё</button>
+        <div class="density-switch" role="group" aria-label="Плотность строк">
+          <button
+            type="button"
+            class="density-switch__btn density-switch__btn--active"
+            aria-pressed="true"
+          >
+            <span aria-hidden="true" class="density-switch__icon density-switch__icon--compact"></span>
+            <span class="sr-only">Compact</span>
+          </button>
+          <button type="button" class="density-switch__btn" aria-pressed="false">
+            <span
+              aria-hidden="true"
+              class="density-switch__icon density-switch__icon--comfortable"
+            ></span>
+            <span class="sr-only">Comfortable</span>
+          </button>
+        </div>
+        <div class="warehouse-page__actions-buttons">
+          <button type="button" class="btn btn-outline" (click)="openCreateDialog()">
+            + Новая поставка
+          </button>
+          <button type="button" class="btn btn-ghost">Ещё</button>
+        </div>
       </div>
     </header>
 
@@ -174,7 +195,7 @@
         <section class="warehouse-page__table-card">
           <header class="warehouse-page__table-header">Последние поставки</header>
           <div class="warehouse-page__table-wrapper">
-            <table class="warehouse-page__table">
+            <table class="warehouse-page__table tbl-compact">
               <thead
                 class="sticky top-0 bg-background/90 backdrop-blur border-b shadow-[inset_0_-1px_0_0_var(--border)]"
               >
