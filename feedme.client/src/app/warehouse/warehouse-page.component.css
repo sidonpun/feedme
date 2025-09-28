@@ -156,36 +156,44 @@
 .warehouse-page__filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  padding: 20px;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   background-color: #ffffff;
-  align-items: flex-end;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
 }
 
-.warehouse-page__filter {
+.warehouse-page__filters-control {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  min-width: 200px;
 }
 
-.warehouse-page__filter--date {
-  min-width: 180px;
+.warehouse-page__filters-control--search {
+  flex: 1 1 320px;
+  min-width: 240px;
 }
 
-.warehouse-page__filter-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #94a3b8;
+.warehouse-page__filters-control--search .input {
+  width: 100%;
 }
 
-.warehouse-page__filters-actions {
+.warehouse-page__filters-control--date {
+  flex: 0 0 auto;
+}
+
+.warehouse-page__filters-control--date .input {
+  width: 160px;
+}
+
+.warehouse-page__filters .btn {
+  height: 44px;
+  white-space: nowrap;
+}
+
+.ml-auto {
   margin-left: auto;
-  display: flex;
-  gap: 12px;
 }
 
 .warehouse-page__bulk {
