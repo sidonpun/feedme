@@ -119,32 +119,95 @@
 }
 
 .warehouse-page__tabs {
+  width: 100%;
+}
+
+/* Контейнер табов */
+.tabs {
   display: inline-flex;
   align-items: center;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  background-color: #ffffff;
-  overflow: hidden;
+  width: 100%;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, #f6f7f9 30%, transparent);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
 }
 
-.warehouse-page__tab {
-  padding: 10px 16px;
+/* Кнопки вкладок */
+.tabs__btn {
+  scroll-snap-align: start;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
   font-size: 0.875rem;
-  color: #4b5563;
-  background: none;
-  border: none;
+  line-height: 1;
+  font-weight: 600;
+  color: #6b7280;
+  white-space: nowrap;
+  background: transparent;
+  border: 0;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.warehouse-page__tab:hover {
-  background-color: #f1f5f9;
+.tabs__btn:hover {
+  color: #111827;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.tabs__btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #90cdf4;
+}
+
+/* Активная вкладка */
+.tabs__btn--active,
+.tabs__btn.active {
+  color: #111827;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.tabs__btn--active::after,
+.tabs__btn.active::after {
+  content: "";
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: -2px;
+  height: 2px;
+  border-radius: 9999px;
+  background: currentColor;
 }
 
 .warehouse-page__tab--active {
-  background-color: #e2e8f0;
-  color: #111827;
   font-weight: 600;
+}
+
+/* Тёмная тема */
+@media (prefers-color-scheme: dark) {
+  .tabs {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .tabs__btn {
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  .tabs__btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .tabs__btn--active,
+  .tabs__btn.active {
+    background: rgba(255, 255, 255, 0.06);
+  }
 }
 
 .warehouse-page__tab-panel {

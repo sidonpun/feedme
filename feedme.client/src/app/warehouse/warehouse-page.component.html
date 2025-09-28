@@ -40,15 +40,16 @@
         <app-metric title="Ниже минимума" value="5" hint="> авто-заказ" variant="warn"></app-metric>
       </div>
 
-      <nav class="warehouse-page__tabs" role="tablist">
+      <nav class="warehouse-page__tabs tabs" role="tablist">
         <button
           type="button"
           *ngFor="let entry of tabKeys"
-          class="warehouse-page__tab"
+          class="warehouse-page__tab tabs__btn"
           [class.warehouse-page__tab--active]="activeTab() === entry"
+          [class.tabs__btn--active]="activeTab() === entry"
           (click)="selectTab(entry)"
           role="tab"
-          [attr.aria-selected]="activeTab() === entry"
+          [attr.aria-selected]="activeTab() === entry ? 'true' : 'false'"
         >
           {{ tabLabels[entry] }}
         </button>
