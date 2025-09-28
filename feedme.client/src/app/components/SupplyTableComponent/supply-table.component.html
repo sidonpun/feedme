@@ -116,22 +116,24 @@
 
 <!-- Пагинация -->
 
-<div class="table-footer">
-  <span class="table-footer__info">Показано {{ paginatedData.length }} поставок</span>
-  <div class="table-footer__actions">
+<div class="table-footer flex items-center p-3 border-t text-sm bg-muted/40 shadow-sm">
+  <div class="table-footer__summary">
+    <span class="text-sm text-muted-foreground">Показано {{ paginatedData.length }} поставок</span>
+    <span class="table-footer__page text-muted-foreground">Страница {{ currentPage }} из {{ totalPages }}</span>
+  </div>
+  <div class="ml-auto flex gap-2">
     <button type="button"
-            class="table-footer__button"
+            class="btn btn-outline btn-sm"
             (click)="prevPage()"
             [disabled]="currentPage === 1">
       Назад
     </button>
     <button type="button"
-            class="table-footer__button"
+            class="btn btn-outline btn-sm"
             (click)="nextPage()"
             [disabled]="currentPage === totalPages">
       Далее
     </button>
   </div>
-  <span class="table-footer__page">Страница {{ currentPage }} из {{ totalPages }}</span>
 </div>
 
