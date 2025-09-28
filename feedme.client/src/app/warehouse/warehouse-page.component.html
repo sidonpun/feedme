@@ -86,13 +86,13 @@
         </article>
       </section>
 
-      <nav class="warehouse-page__tabs tabs" role="tablist">
+      <nav class="warehouse-page__tabs tabs-underline" role="tablist">
         <button
           type="button"
           *ngFor="let entry of tabKeys"
-          class="warehouse-page__tab tabs__btn"
+          class="warehouse-page__tab tabs-underline__btn"
           [class.warehouse-page__tab--active]="activeTab() === entry"
-          [class.tabs__btn--active]="activeTab() === entry"
+          [class.is-active]="activeTab() === entry"
           (click)="selectTab(entry)"
           role="tab"
           [attr.aria-selected]="activeTab() === entry ? 'true' : 'false'"
