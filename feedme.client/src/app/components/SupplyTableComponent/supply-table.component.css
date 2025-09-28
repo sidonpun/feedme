@@ -398,6 +398,17 @@
   box-shadow: none;
 }
 
+.table-footer__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.table-footer__total {
+  color: #0f172a;
+}
+
 .text-muted-foreground {
   color: #64748b;
 }
