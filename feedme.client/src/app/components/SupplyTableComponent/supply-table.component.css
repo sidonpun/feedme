@@ -1,14 +1,19 @@
 :host {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 0;
 }
 
 .card {
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 0;
   background-color: #ffffff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  box-shadow: none;
+}
+
+.supplies-filters {
+  margin: 0;
+  border-bottom: 0;
 }
 
 .card__content {
@@ -56,6 +61,10 @@
 
 .w-\[44px\] {
   width: 44px;
+}
+
+.w-\[176px\] {
+  width: 176px;
 }
 
 .input {
@@ -162,6 +171,18 @@
   background-color: #f1f5f9;
 }
 
+.btn-brand-outline {
+  background-color: transparent;
+  color: var(--brand-600);
+  border: 1px solid var(--brand-600);
+  box-shadow: none;
+}
+
+.btn-brand-outline:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--brand-600) 12%, #ffffff);
+  border-color: color-mix(in srgb, var(--brand-600) 90%, #000000 10%);
+}
+
 .btn-secondary {
   background-color: #e2e8f0;
   color: #0f172a;
@@ -202,17 +223,60 @@
   outline: none;
 }
 
+.row-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+.row-action {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.row-action:hover,
+.row-action:focus-visible {
+  background: rgba(17, 24, 39, 0.06);
+  outline: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .btn-sm {
   padding: 8px 12px;
   font-size: 0.8125rem;
 }
 
 .table-container {
-  overflow-x: auto;
-  border-radius: 12px;
+  overflow-x: hidden;
+  border-radius: 0;
   border: 1px solid #e2e8f0;
+  border-top: 0;
   background-color: #ffffff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  box-shadow: none;
 }
 
 .supplies-table {
@@ -327,10 +391,11 @@
 }
 
 .table-footer {
-  border-radius: 12px;
+  border-radius: 0;
   border: 1px solid rgba(148, 163, 184, 0.35);
+  border-top: 0;
   background-color: rgba(226, 232, 240, 0.4);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  box-shadow: none;
 }
 
 .text-muted-foreground {

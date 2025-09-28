@@ -20,7 +20,6 @@ import { SupplyRow, SupplyStatus } from './models';
 import { WarehouseService } from './warehouse.service';
 import { EmptyStateComponent } from './ui/empty-state.component';
 import { FieldComponent } from './ui/field.component';
-import { MetricComponent } from './ui/metric.component';
 import { StatusBadgeClassPipe } from '../pipes/status-badge-class.pipe';
 
 const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
@@ -45,7 +44,6 @@ type SupplyHistoryEntry = {
     NgIf,
     NgClass,
     ReactiveFormsModule,
-    MetricComponent,
     FieldComponent,
     EmptyStateComponent,
     StatusBadgeClassPipe,
@@ -79,6 +77,7 @@ export class WarehousePageComponent {
 
   readonly rows = this.warehouseService.list();
 
+
   readonly editDialogTabs: ReadonlyArray<{ key: EditDialogTab; label: string }> = [
     { key: 'details', label: 'Документ' },
     { key: 'items', label: 'Позиции' },
@@ -91,6 +90,7 @@ export class WarehousePageComponent {
     { date: '15.03.2025 18:45', operation: 'Списание', quantity: '−2 кг' },
     { date: '18.03.2025 11:05', operation: 'Приход', quantity: '+18 кг' },
   ];
+
 
   readonly suppliers = computed(() =>
     Array.from(new Set(this.rows().map((row) => row.supplier))).sort((a, b) =>
