@@ -361,12 +361,14 @@
   font-size: 0.875rem;
 }
 
-.warehouse-page__table thead tr {
+.warehouse-page__table thead {
   position: sticky;
   top: 0;
-  background-color: #ffffff;
-  box-shadow: inset 0 -1px 0 #e2e8f0;
-  z-index: 1;
+  z-index: 5;
+}
+
+.warehouse-page__table thead tr {
+  background: transparent;
 }
 
 .warehouse-page__cell {
@@ -378,7 +380,7 @@
 }
 
 .warehouse-page__cell--checkbox {
-  width: 48px;
+  width: 40px;
 }
 
 .warehouse-page__cell--numeric {
@@ -397,6 +399,7 @@
 
 .warehouse-page__cell--status {
   white-space: nowrap;
+  min-width: 112px;
 }
 
 .warehouse-page__empty-row {

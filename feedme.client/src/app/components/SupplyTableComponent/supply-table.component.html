@@ -117,30 +117,10 @@
             {{ item.status || item.state || 'Ок' }}
           </span>
         </td>
-        <td class="w-[44px]">
-          <div class="menu">
-            <button
-              type="button"
-              class="btn btn-ghost btn-icon"
-              aria-haspopup="true"
-              aria-expanded="false"
-              aria-label="Открыть меню"
-            >
-              ⋯
-            </button>
-            <div class="menu__panel" role="menu">
-              <button type="button" class="menu__item" role="menuitem" (click)="onSettingsClick.emit(item)">
-                Открыть
-              </button>
-              <button type="button" class="menu__item" role="menuitem">
-                Редактировать
-              </button>
-              <div class="menu__separator" role="separator"></div>
-              <button type="button" class="menu__item menu__item--destructive" role="menuitem">
-                Удалить
-              </button>
-            </div>
-          </div>
+        <td class="w-[44px] text-right">
+          <button type="button" class="icon-btn" aria-label="Меню" (click)="onSettingsClick.emit(item)">
+            ⋯
+          </button>
         </td>
       </tr>
       <tr *ngIf="paginatedData.length === 0">
@@ -149,6 +129,7 @@
     </tbody>
   </table>
 </div>
+
 
 <div class="tbl-footer">
   <div class="tbl-footer__text">Показано {{ paginatedData.length }} строк</div>
@@ -159,6 +140,7 @@
       (click)="prevPage()"
       [disabled]="currentPage === 1"
     >
+
       Назад
     </button>
     <button
