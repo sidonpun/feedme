@@ -3,6 +3,10 @@
   color: #111827;
 }
 
+:root {
+  --brand: #ff6a00;
+}
+
 .warehouse-page {
   display: grid;
   grid-template-columns: 260px 1fr;
@@ -276,66 +280,53 @@
   width: 100%;
 }
 
-/* Контейнер табов */
-.tabs {
-  display: inline-flex;
+
+.tabs-underline {
+  display: flex;
+  gap: 1.25rem;
   align-items: center;
-  width: 100%;
-  gap: 0.25rem;
-  padding: 0.25rem;
-  border: 1px solid var(--border, #e5e7eb);
-  border-radius: 0.5rem;
-  background: color-mix(in srgb, #f6f7f9 30%, transparent);
+  border-bottom: 1px solid #e5e7eb;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
 }
 
-/* Кнопки вкладок */
-.tabs__btn {
-  scroll-snap-align: start;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  line-height: 1;
-  font-weight: 600;
-  color: #6b7280;
-  white-space: nowrap;
+.tabs-underline__btn {
+  padding: 0.5rem 0;
   background: transparent;
   border: 0;
+  border-radius: 0;
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  white-space: nowrap;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  transition: color 0.2s ease;
 }
 
-.tabs__btn:hover {
+.tabs-underline__btn:hover {
   color: #111827;
-  background: rgba(0, 0, 0, 0.04);
 }
 
-.tabs__btn:focus-visible {
+.tabs-underline__btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #90cdf4;
+  color: #111827;
 }
 
-/* Активная вкладка */
-.tabs__btn--active,
-.tabs__btn.active {
+.tabs-underline__btn.is-active,
+.tabs-underline__btn.active {
   color: #111827;
-  background: #ffffff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
   position: relative;
 }
 
-.tabs__btn--active::after,
-.tabs__btn.active::after {
+.tabs-underline__btn.is-active::after,
+.tabs-underline__btn.active::after {
   content: "";
   position: absolute;
-  left: 0.5rem;
-  right: 0.5rem;
-  bottom: -2px;
+  left: 0;
+  right: 0;
+  bottom: -1px;
   height: 2px;
-  border-radius: 9999px;
-  background: currentColor;
+  background: var(--brand);
 }
 
 .warehouse-page__tab--active {
@@ -344,23 +335,19 @@
 
 /* Тёмная тема */
 @media (prefers-color-scheme: dark) {
-  .tabs {
-    border-color: rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.04);
+  .tabs-underline {
+    border-bottom-color: rgba(255, 255, 255, 0.12);
   }
 
-  .tabs__btn {
+  .tabs-underline__btn {
     color: rgba(255, 255, 255, 0.65);
   }
 
-  .tabs__btn:hover {
+  .tabs-underline__btn:hover,
+  .tabs-underline__btn:focus-visible,
+  .tabs-underline__btn.is-active,
+  .tabs-underline__btn.active {
     color: #ffffff;
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  .tabs__btn--active,
-  .tabs__btn.active {
-    background: rgba(255, 255, 255, 0.06);
   }
 }
 
