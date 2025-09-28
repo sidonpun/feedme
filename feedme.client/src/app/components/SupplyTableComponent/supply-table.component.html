@@ -14,7 +14,7 @@
   <table class="supply-table">
     <thead class="table-head">
       <tr>
-        <th class="header-cell" [attr.aria-sort]="getAriaSort('productName')">
+        <th class="header-cell header-cell--sortable" [attr.aria-sort]="getAriaSort('productName')">
           <button type="button"
                   class="sort-button"
                   (click)="toggleSort('productName')"
@@ -25,7 +25,7 @@
             </span>
           </button>
         </th>
-        <th class="header-cell" [attr.aria-sort]="getAriaSort('category')">
+        <th class="header-cell header-cell--sortable" [attr.aria-sort]="getAriaSort('category')">
           <button type="button"
                   class="sort-button"
                   (click)="toggleSort('category')"
@@ -36,7 +36,7 @@
             </span>
           </button>
         </th>
-        <th class="header-cell" [attr.aria-sort]="getAriaSort('stock')">
+        <th class="header-cell header-cell--sortable" [attr.aria-sort]="getAriaSort('stock')">
           <button type="button"
                   class="sort-button"
                   (click)="toggleSort('stock')"
@@ -47,7 +47,7 @@
             </span>
           </button>
         </th>
-        <th class="header-cell" [attr.aria-sort]="getAriaSort('unitPrice')">
+        <th class="header-cell header-cell--sortable" [attr.aria-sort]="getAriaSort('unitPrice')">
           <button type="button"
                   class="sort-button"
                   (click)="toggleSort('unitPrice')"
@@ -58,7 +58,7 @@
             </span>
           </button>
         </th>
-        <th class="header-cell" [attr.aria-sort]="getAriaSort('expiryDate')">
+        <th class="header-cell header-cell--sortable" [attr.aria-sort]="getAriaSort('expiryDate')">
           <button type="button"
                   class="sort-button"
                   (click)="toggleSort('expiryDate')"
@@ -69,7 +69,7 @@
             </span>
           </button>
         </th>
-        <th class="header-cell" [attr.aria-sort]="getAriaSort('responsible')">
+        <th class="header-cell header-cell--sortable" [attr.aria-sort]="getAriaSort('responsible')">
           <button type="button"
                   class="sort-button"
                   (click)="toggleSort('responsible')"
@@ -80,7 +80,7 @@
             </span>
           </button>
         </th>
-        <th class="header-cell" [attr.aria-sort]="getAriaSort('supplier')">
+        <th class="header-cell header-cell--sortable" [attr.aria-sort]="getAriaSort('supplier')">
           <button type="button"
                   class="sort-button"
                   (click)="toggleSort('supplier')"
@@ -91,7 +91,9 @@
             </span>
           </button>
         </th>
-        <th class="header-cell header-cell--menu" aria-label="Действия"></th>
+
+        <th class="header-cell header-cell--menu" aria-hidden="true"></th>
+
       </tr>
     </thead>
     <tbody>
