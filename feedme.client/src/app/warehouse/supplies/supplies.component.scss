@@ -30,7 +30,7 @@
 
 .chip {
   padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
+  border-radius: var(--radius);
   font-size: 0.75rem;
   border: 1px solid var(--border);
   background: #fff;
@@ -38,15 +38,21 @@
 }
 
 .chip--filled {
-  background: #eef2ff;
-  border-color: #c7d2fe;
-  color: #4338ca;
+  background: color-mix(in srgb, var(--brand-600) 10%, #fff);
+  border: 1px solid var(--brand-600);
+  color: var(--brand-600);
 }
 
 .chip--danger {
   background: #fee2e2;
   border-color: #fecaca;
   color: #b91c1c;
+}
+
+.chip--ghost {
+  border: 1px dashed var(--brand-600);
+  color: var(--brand-600);
+  background: transparent;
 }
 
 .bulkbar {
