@@ -26,12 +26,21 @@
       </label>
     </div>
 
-    <div class="chips" aria-label="Выбранные фильтры">
-      <div class="chip chip--filled">Главный склад</div>
-      <div class="chip">Ок</div>
-      <div class="chip chip--danger">Просрочено</div>
-      <div class="chip chip--draft">Черновик</div>
-      <div class="chip chip--transit">В пути</div>
+    <div class="supplies__filters-control supplies__filters-control--chips">
+      <span class="sr-only">Склад</span>
+      <div class="chips" aria-label="Фильтр по складам">
+        <div class="chip chip--filled">Главный склад</div>
+      </div>
+    </div>
+
+    <div class="supplies__filters-control supplies__filters-control--chips">
+      <span class="sr-only">Статус</span>
+      <div class="chips" aria-label="Фильтр по статусам">
+        <div class="chip">Ок</div>
+        <div class="chip chip--danger">Просрочено</div>
+        <div class="chip chip--draft">Черновик</div>
+        <div class="chip chip--transit">В пути</div>
+      </div>
     </div>
 
     <button type="button" class="btn btn--outline">Сброс</button>
