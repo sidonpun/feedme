@@ -63,7 +63,9 @@
         <th scope="col" class="text-sm font-medium text-center">Срок годности</th>
         <th scope="col" class="text-sm font-medium">Поставщик</th>
         <th scope="col" class="text-sm font-medium">Статус</th>
-        <th scope="col" class="w-[44px]"></th>
+        <th scope="col" class="w-[176px] text-right">
+          <span class="sr-only">Быстрые действия</span>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -116,10 +118,36 @@
             </span>
           </ng-container>
         </td>
-        <td class="w-[44px] text-right">
-          <button type="button" class="icon-btn" aria-label="Меню" (click)="onSettingsClick.emit(item)">
-            ⋯
-          </button>
+        <td class="w-[176px] text-right">
+          <div class="row-actions" role="group" aria-label="Быстрые действия">
+            <button
+              type="button"
+              class="row-action"
+              aria-label="Списать поставку"
+              (click)="writeOff.emit(item)"
+            >
+              <span aria-hidden="true">🗑</span>
+            </button>
+            <button
+              type="button"
+              class="row-action"
+              aria-label="Переместить поставку"
+              (click)="move.emit(item)"
+            >
+              <span aria-hidden="true">⇄</span>
+            </button>
+            <button
+              type="button"
+              class="row-action"
+              aria-label="Распечатать поставку"
+              (click)="print.emit(item)"
+            >
+              <span aria-hidden="true">🖨</span>
+            </button>
+            <button type="button" class="icon-btn" aria-label="Меню" (click)="onSettingsClick.emit(item)">
+              ⋯
+            </button>
+          </div>
         </td>
       </tr>
       <tr *ngIf="paginatedData.length === 0">
