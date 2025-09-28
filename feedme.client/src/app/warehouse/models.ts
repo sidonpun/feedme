@@ -1,4 +1,16 @@
-export type SupplyStatus = 'ok' | 'warning' | 'danger';
+export type SupplyStatus = 'ok' | 'warning' | 'danger' | 'draft' | 'transit';
+
+export const SUPPLY_STATUSES: ReadonlyArray<SupplyStatus> = [
+  'ok',
+  'warning',
+  'danger',
+  'draft',
+  'transit',
+];
+
+export function isSupplyStatus(value: string): value is SupplyStatus {
+  return SUPPLY_STATUSES.includes(value as SupplyStatus);
+}
 
 export interface SupplyRow {
   readonly id: number;

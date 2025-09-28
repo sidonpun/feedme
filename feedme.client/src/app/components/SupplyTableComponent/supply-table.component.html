@@ -37,6 +37,8 @@
         <span class="chip">Ок</span>
         <span class="chip chip--secondary">Скоро срок</span>
         <span class="chip chip--destructive">Просрочено</span>
+        <span class="chip chip--muted">Черновик</span>
+        <span class="chip chip--info">В пути</span>
       </div>
     </div>
 
@@ -115,7 +117,7 @@
               class="badge min-w-[88px] justify-center"
               [ngClass]="status | statusBadgeClass"
             >
-              {{ status }}
+              {{ status | statusBadgeLabel }}
             </span>
           </ng-container>
         </td>
