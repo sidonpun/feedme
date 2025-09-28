@@ -299,6 +299,18 @@
   white-space: nowrap;
 }
 
+.warehouse-page__filters .btn-brand-outline {
+  background: transparent;
+  color: var(--brand-600);
+  border: 1px solid var(--brand-600);
+  box-shadow: none;
+}
+
+.warehouse-page__filters .btn-brand-outline:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--brand-600) 12%, #ffffff);
+  border-color: color-mix(in srgb, var(--brand-600) 90%, #000000 10%);
+}
+
 .ml-auto {
   margin-left: auto;
 }
