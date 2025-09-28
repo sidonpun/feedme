@@ -152,6 +152,7 @@ table.supply-table {
     width: 80px;
   }
 
+
 /* 10. пагинация */
 .table-footer {
   display: flex;
@@ -207,4 +208,5 @@ table.supply-table {
   margin-left: 0.75rem;
   font-size: 0.875rem;
   color: #4b5563;
+
 }
