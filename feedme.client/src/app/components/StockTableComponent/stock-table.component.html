@@ -37,35 +37,63 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of paginatedData" class="stock-table__row h-11 align-middle hover:bg-muted/40 odd:bg-muted/10">
-        <td
-          *ngFor="let column of columns"
-          [ngClass]="{
-            'text-right': column.field === 'unitPrice' || column.field === 'totalCost' || column.field === 'stock' || column.label === 'Кол-во',
-            'text-center': column.field === 'expiryDate' || column.label === 'Дата',
-            'font-mono text-xs': column.label === 'SKU'
-          }"
-        >
-          <ng-container *ngIf="column.label === 'Название' || column.label === 'Поставщик'; else plainCell">
-            <span class="truncate" [title]="formatValue(item, column) ?? ''">
-              {{ formatValue(item, column) }}
-            </span>
-          </ng-container>
-          <ng-template #plainCell>
-            <span>{{ formatValue(item, column) }}</span>
-          </ng-template>
-        </td>
-        <td class="stock-table__actions-cell text-center">
-          <button
-            type="button"
-            class="stock-table__action-button"
-            (click)="onSettingsClick.emit(item)"
-            aria-label="Открыть меню действий"
+      <ng-container *ngFor="let item of paginatedData">
+        <ng-container *ngIf="getExpiryInfo(item) as expiry">
+          <tr
+            class="stock-table__row h-11 align-middle hover:bg-muted/40 odd:bg-muted/10"
+            [ngClass]="{ 'stock-table__row--expired': expiry.status?.state === 'danger' }"
           >
-            ⋯
-          </button>
-        </td>
-      </tr>
+            <td
+              *ngFor="let column of columns"
+              [ngClass]="{
+                'text-right': column.field === 'unitPrice' || column.field === 'totalCost' || column.field === 'stock' || column.label === 'Кол-во',
+                'text-center': column.field === 'expiryDate' || column.label === 'Дата',
+                'font-mono text-xs': column.label === 'SKU'
+              }"
+            >
+              <ng-container *ngIf="column.field === 'expiryDate'; else defaultCell">
+                <div class="stock-table__expiry">
+                  <span class="stock-table__expiry-date">
+                    <ng-container *ngIf="expiry.date; else rawExpiry">
+                      {{ expiry.date | date: 'dd.MM.yyyy' }}
+                    </ng-container>
+                    <ng-template #rawExpiry>
+                      {{ formatValue(item, column) || '—' }}
+                    </ng-template>
+                  </span>
+                  <span
+                    *ngIf="expiry.status as status"
+                    class="badge badge-square"
+                    [ngClass]="status.badgeClass"
+                  >
+                    {{ status.label }}
+                  </span>
+                </div>
+              </ng-container>
+              <ng-template #defaultCell>
+                <ng-container *ngIf="column.label === 'Название' || column.label === 'Поставщик'; else plainCell">
+                  <span class="truncate" [title]="formatValue(item, column) ?? ''">
+                    {{ formatValue(item, column) }}
+                  </span>
+                </ng-container>
+                <ng-template #plainCell>
+                  <span>{{ formatValue(item, column) }}</span>
+                </ng-template>
+              </ng-template>
+            </td>
+            <td class="stock-table__actions-cell text-center">
+              <button
+                type="button"
+                class="stock-table__action-button"
+                (click)="onSettingsClick.emit(item)"
+                aria-label="Открыть меню действий"
+              >
+                ⋯
+              </button>
+            </td>
+          </tr>
+        </ng-container>
+      </ng-container>
       <tr *ngIf="paginatedData.length === 0">
         <td [attr.colspan]="columns.length + 1" class="no-data">Нет данных</td>
       </tr>
