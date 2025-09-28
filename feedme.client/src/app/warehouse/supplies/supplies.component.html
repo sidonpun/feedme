@@ -1,61 +1,162 @@
-<div class="card supplies__filters-card">
-  <form class="card__content p-4 flex flex-wrap items-center gap-3" (submit)="$event.preventDefault()">
-    <div class="supplies__filters-control">
-      <label class="supplies__filters-field">
-        <span class="supplies__filters-label">Поиск</span>
-        <input
-          type="search"
-          class="input w-[320px]"
-          placeholder="Поиск по номеру, SKU или названию"
-          aria-label="Поиск по поставкам"
-        />
-      </label>
+<section class="supplies">
+  <header class="supplies__header">
+    <div>
+      <h1 class="supplies__title">Поставки</h1>
+      <p class="supplies__subtitle">{{ supplies().length }} записей</p>
     </div>
+    <button type="button" class="button button--primary" (click)="openDialog()">
+      + Новая поставка
+    </button>
+  </header>
 
-    <div class="supplies__filters-control">
-      <label class="supplies__filters-field">
-        <span class="supplies__filters-label">Дата от</span>
-        <input type="date" class="input w-[160px]" aria-label="Дата прихода от" />
-      </label>
-    </div>
-
-    <div class="supplies__filters-control">
-      <label class="supplies__filters-field">
-        <span class="supplies__filters-label">Дата до</span>
-        <input type="date" class="input w-[160px]" aria-label="Дата прихода до" />
-      </label>
-    </div>
-
-    <div class="supplies__filters-control supplies__filters-control--chips">
-      <span class="sr-only">Склад</span>
-      <div class="chips" aria-label="Фильтр по складам">
-        <div class="chip chip--filled">Главный склад</div>
-      </div>
-    </div>
-
-    <div class="supplies__filters-control supplies__filters-control--chips">
-      <span class="sr-only">Статус</span>
-      <div class="chips" aria-label="Фильтр по статусам">
-        <div class="chip">Ок</div>
-        <div class="chip chip--danger">Просрочено</div>
-        <div class="chip chip--draft">Черновик</div>
-        <div class="chip chip--transit">В пути</div>
-      </div>
-    </div>
-
-    <button type="button" class="btn btn--outline">Сброс</button>
-    <button type="button" class="btn btn-brand-outline">Импорт</button>
-    <button type="button" class="btn btn--secondary">Экспорт</button>
-    <button type="button" class="btn btn--primary ml-auto">+ Новая поставка</button>
-  </form>
-</div>
-
-<div class="bulkbar"> <!-- TODO: show on selection -->
-  <span class="bulkbar__hint">Выбрано: 3</span>
-  <div class="bulkbar__actions">
-    <button class="btn btn--outline btn-sm" type="button">Списать</button>
-    <button class="btn btn--outline btn-sm" type="button">Переместить</button>
-    <button class="btn btn--outline btn-sm" type="button">Печать</button>
-    <button class="btn btn-danger btn-sm" type="button">Удалить</button>
+  <div class="table-wrapper" *ngIf="supplies().length; else emptySupplies">
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="is-mono">Номер</th>
+          <th class="is-centered">Дата прихода</th>
+          <th>Склад</th>
+          <th>Ответственный</th>
+          <th>Товар</th>
+          <th class="is-right">Количество</th>
+          <th class="is-centered">Годен до</th>
+          <th>Поставщик</th>
+          <th class="is-centered">Статус</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of supplies(); trackBy: trackBySupplyId">
+          <td class="is-mono">{{ row.docNo }}</td>
+          <td class="is-centered">{{ row.arrivalDate }}</td>
+          <td>
+            <div class="truncate" [title]="row.warehouse">{{ row.warehouse }}</div>
+          </td>
+          <td>
+            <div class="truncate" [title]="row.responsible || '—'">{{ row.responsible || '—' }}</div>
+          </td>
+          <td>
+            <div class="truncate" [title]="row.name">{{ row.name }}</div>
+            <div class="meta">SKU: {{ row.sku }}</div>
+          </td>
+          <td class="is-right">{{ row.qty }} {{ row.unit }}</td>
+          <td class="is-centered">{{ row.expiryDate }}</td>
+          <td>
+            <div class="truncate" [title]="row.supplier || '—'">{{ row.supplier || '—' }}</div>
+          </td>
+          <td class="is-centered">
+            <span [class]="badgeClass(row.status)">{{ row.status | uppercase }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-</div>
+  <ng-template #emptySupplies>
+    <div class="supplies__empty">Записей пока нет. Создайте первую поставку.</div>
+  </ng-template>
+
+  <div class="dialog-backdrop" *ngIf="dialogOpen()">
+    <form class="dialog" [formGroup]="supplyForm" (ngSubmit)="submit()">
+      <header class="dialog__header">
+        <h2 class="dialog__title">Новая поставка</h2>
+        <button type="button" class="dialog__close" aria-label="Закрыть" (click)="closeDialog()">×</button>
+      </header>
+
+      <nav class="tabs" role="tablist">
+        <button
+          type="button"
+          *ngFor="let tab of tabs"
+          class="tab"
+          [ngClass]="{ 'tab--active': activeTab() === tab.key }"
+          (click)="setActiveTab(tab.key)"
+        >
+          {{ tab.label }}
+        </button>
+      </nav>
+
+      <section class="tab-panel" *ngIf="activeTab() === 'details'">
+        <div class="form-grid">
+          <label class="field" [ngClass]="{ 'field--invalid': supplyForm.controls.docNo.touched && supplyForm.controls.docNo.invalid }">
+            <span class="field__label">Номер документа *</span>
+            <input class="field__control" type="text" formControlName="docNo" placeholder="PRH-00045" />
+            <span class="field__error" *ngIf="supplyForm.controls.docNo.touched && supplyForm.controls.docNo.invalid">
+              Укажите номер документа
+            </span>
+          </label>
+
+          <label class="field" [ngClass]="{ 'field--invalid': supplyForm.controls.arrivalDate.touched && supplyForm.controls.arrivalDate.invalid }">
+            <span class="field__label">Дата прихода *</span>
+            <input class="field__control" type="date" formControlName="arrivalDate" />
+            <span class="field__error" *ngIf="supplyForm.controls.arrivalDate.touched && supplyForm.controls.arrivalDate.invalid">
+              Укажите дату в формате ГГГГ-ММ-ДД
+            </span>
+          </label>
+
+          <label class="field" [ngClass]="{ 'field--invalid': supplyForm.controls.warehouse.touched && supplyForm.controls.warehouse.invalid }">
+            <span class="field__label">Склад *</span>
+            <input class="field__control" type="text" formControlName="warehouse" placeholder="Главный склад" />
+            <span class="field__error" *ngIf="supplyForm.controls.warehouse.touched && supplyForm.controls.warehouse.invalid">
+              Укажите склад
+            </span>
+          </label>
+
+          <label class="field" [ngClass]="{ 'field--invalid': supplyForm.controls.responsible.touched && supplyForm.controls.responsible.invalid }">
+            <span class="field__label">Ответственный *</span>
+            <input class="field__control" type="text" formControlName="responsible" placeholder="Имя сотрудника" />
+            <span class="field__error" *ngIf="supplyForm.controls.responsible.touched && supplyForm.controls.responsible.invalid">
+              Укажите ответственного
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <section class="tab-panel" *ngIf="activeTab() === 'product'">
+        <div class="form-grid">
+          <label class="field" [ngClass]="{ 'field--invalid': supplyForm.controls.productId.touched && supplyForm.controls.productId.invalid }">
+            <span class="field__label">Товар *</span>
+            <select class="field__control" formControlName="productId">
+              <option value="" disabled>Выберите товар</option>
+              <option *ngFor="let product of products(); trackBy: trackByProductId" [value]="product.id">
+                {{ product.name }} · {{ product.sku }}
+              </option>
+            </select>
+            <span class="field__error" *ngIf="supplyForm.controls.productId.touched && supplyForm.controls.productId.invalid">
+              Выберите товар из каталога
+            </span>
+          </label>
+
+          <label class="field" [ngClass]="{ 'field--invalid': supplyForm.controls.qty.touched && supplyForm.controls.qty.invalid }">
+            <span class="field__label">Количество *</span>
+            <input class="field__control" type="number" formControlName="qty" min="0" step="0.01" />
+            <span class="field__error" *ngIf="supplyForm.controls.qty.touched && supplyForm.controls.qty.invalid">
+              Укажите положительное количество
+            </span>
+          </label>
+
+          <label class="field" [ngClass]="{ 'field--invalid': supplyForm.controls.expiryDate.touched && supplyForm.controls.expiryDate.invalid }">
+            <span class="field__label">Срок годности *</span>
+            <input class="field__control" type="date" formControlName="expiryDate" />
+            <span class="field__error" *ngIf="supplyForm.controls.expiryDate.touched && supplyForm.controls.expiryDate.invalid">
+              Укажите корректную дату
+            </span>
+          </label>
+        </div>
+
+        <aside class="product-meta" *ngIf="selectedProduct() as current">
+          <h4 class="product-meta__title">Данные из каталога</h4>
+          <ul class="product-meta__list">
+            <li><span>SKU:</span> {{ current.sku }}</li>
+            <li><span>Поставщик:</span> {{ current.supplierMain || '—' }}</li>
+            <li><span>Единица:</span> {{ current.unit }}</li>
+          </ul>
+        </aside>
+      </section>
+
+      <footer class="dialog__actions">
+        <button type="button" class="button" (click)="closeDialog()">Отмена</button>
+        <button type="submit" class="button button--primary" [disabled]="submitting()">
+          {{ submitting() ? 'Сохранение…' : 'Сохранить' }}
+        </button>
+      </footer>
+    </form>
+  </div>
+</section>
