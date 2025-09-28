@@ -115,8 +115,31 @@
 </div>
 
 <!-- Пагинация -->
-<div class="pagination-controls">
-  <button (click)="prevPage()" [disabled]="currentPage === 1">Назад</button>
-  <span>Страница {{ currentPage }} из {{ totalPages }}</span>
-  <button (click)="nextPage()" [disabled]="currentPage === totalPages">Далее</button>
-</div>
+<footer class="pagination-footer" aria-label="Навигация по страницам поставок">
+  <span class="pagination-footer__info">
+    Показано {{ paginatedData.length }} из {{ filteredData.length }} поставок
+  </span>
+
+  <div class="pagination-footer__actions">
+    <button
+      type="button"
+      class="btn btn-outline btn-sm pagination-footer__button"
+      variant="outline"
+      size="sm"
+      (click)="prevPage()"
+      [disabled]="currentPage === 1"
+    >
+      Назад
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline btn-sm pagination-footer__button"
+      variant="outline"
+      size="sm"
+      (click)="nextPage()"
+      [disabled]="currentPage === totalPages"
+    >
+      Далее
+    </button>
+  </div>
+</footer>
