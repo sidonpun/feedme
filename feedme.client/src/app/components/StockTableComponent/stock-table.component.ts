@@ -4,6 +4,19 @@ import { TableControlsComponent } from '../table-controls/table-controls.compone
 import { EmptyStateComponent } from '../../warehouse/ui/empty-state.component';
 import { sortBySelector, SortDirection, toggleDirection } from '../../utils/sort.util';
 
+type ExpiryState = 'ok' | 'warn' | 'danger';
+
+interface ExpiryStatus {
+  readonly state: ExpiryState;
+  readonly label: string;
+  readonly badgeClass: string;
+}
+
+interface ExpiryInfo {
+  readonly date: Date | null;
+  readonly status: ExpiryStatus | null;
+}
+
 interface StockTableItem {
   name?: string;
 
@@ -42,6 +55,8 @@ export class StockTableComponent implements OnChanges {
   rowsPerPage = 10;
   currentPage = 1;
   filteredData: StockTableItem[] = [];
+
+  private expiryInfoCache = new WeakMap<StockTableItem, ExpiryInfo>();
 
   readonly columns: StockColumn[] = [
     {
@@ -117,6 +132,18 @@ export class StockTableComponent implements OnChanges {
     return this.getColumnValue(item, column) ?? '';
   }
 
+  getExpiryInfo(item: StockTableItem): ExpiryInfo {
+    const cached = this.expiryInfoCache.get(item);
+
+    if (cached) {
+      return cached;
+    }
+
+    const info = this.createExpiryInfo(item.expiryDate);
+    this.expiryInfoCache.set(item, info);
+    return info;
+  }
+
   get paginatedData(): StockTableItem[] {
     const start = (this.currentPage - 1) * this.rowsPerPage;
     return this.filteredData.slice(start, start + this.rowsPerPage);
@@ -141,6 +168,8 @@ export class StockTableComponent implements OnChanges {
   private applyFilters(options: FilterOptions = {}): void {
     const { justAdded = false, preservePage = false } = options;
     const normalizedQuery = this.normalize(this.searchQuery);
+
+    this.expiryInfoCache = new WeakMap();
 
 
     const nonEmptyItems = this.data.filter(item => this.hasSearchableValue(item));
@@ -220,4 +249,51 @@ export class StockTableComponent implements OnChanges {
     return column.valueAccessor ? column.valueAccessor(item) : item[column.field];
   }
 
+  private createExpiryInfo(value: StockTableItem['expiryDate']): ExpiryInfo {
+    const date = this.toDate(value);
+
+    if (!date) {
+      return { date: null, status: null };
+    }
+
+    return {
+      date,
+      status: this.resolveStatus(date),
+    };
+  }
+
+  private toDate(value: StockTableItem['expiryDate']): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    const date = value instanceof Date ? value : new Date(value);
+    return Number.isNaN(date.getTime()) ? null : this.startOfDay(date);
+  }
+
+  private resolveStatus(expiryDate: Date): ExpiryStatus {
+    const today = this.startOfDay(new Date());
+    const difference = expiryDate.getTime() - today.getTime();
+    const daysRemaining = Math.floor(difference / MS_IN_DAY);
+
+    if (daysRemaining < 0) {
+      return EXPIRED_STATUS;
+    }
+
+    if (daysRemaining <= 14) {
+      return WARNING_STATUS;
+    }
+
+    return OK_STATUS;
+  }
+
+  private startOfDay(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
 }
+
+const MS_IN_DAY = 86_400_000;
+
+const OK_STATUS: ExpiryStatus = { state: 'ok', label: 'OK', badgeClass: 'badge--ok' };
+const WARNING_STATUS: ExpiryStatus = { state: 'warn', label: '≤14 дн', badgeClass: 'badge--warn' };
+const EXPIRED_STATUS: ExpiryStatus = { state: 'danger', label: 'Просрочено', badgeClass: 'badge--danger' };
