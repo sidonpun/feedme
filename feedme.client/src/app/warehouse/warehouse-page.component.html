@@ -22,27 +22,37 @@
   </aside>
 
   <main class="warehouse-page__content">
-    <header class="warehouse-page__top-bar" aria-label="Контекст склада">
-      <nav class="warehouse-page__breadcrumbs" aria-label="Хлебные крошки">
-        <span class="warehouse-page__breadcrumb">Главный склад</span>
-        <span class="warehouse-page__breadcrumb-separator" aria-hidden="true">/</span>
-        <span class="warehouse-page__breadcrumb warehouse-page__breadcrumb--current">Поставки</span>
-      </nav>
 
-      <label class="warehouse-page__warehouse-switch" for="warehouse-selector">
-        <span class="warehouse-page__warehouse-label">Склад</span>
-        <span class="warehouse-page__select-wrapper">
-          <select
-            id="warehouse-selector"
-            class="warehouse-page__warehouse-select"
-            aria-label="Выбор склада"
+    <header class="warehouse-page__top-bar">
+      <div class="warehouse-page__breadcrumbs">
+        Главный склад / <span class="warehouse-page__breadcrumb-current">Поставки</span>
+      </div>
+      <div class="warehouse-page__actions">
+        <div class="density-switch" role="group" aria-label="Плотность строк">
+          <button
+            type="button"
+            class="density-switch__btn density-switch__btn--active"
+            aria-pressed="true"
           >
-            <option value="main">Главный склад</option>
-            <option value="kitchen">Кухня</option>
-            <option value="bar">Бар</option>
-          </select>
-        </span>
-      </label>
+            <span aria-hidden="true" class="density-switch__icon density-switch__icon--compact"></span>
+            <span class="sr-only">Compact</span>
+          </button>
+          <button type="button" class="density-switch__btn" aria-pressed="false">
+            <span
+              aria-hidden="true"
+              class="density-switch__icon density-switch__icon--comfortable"
+            ></span>
+            <span class="sr-only">Comfortable</span>
+          </button>
+        </div>
+        <div class="warehouse-page__actions-buttons">
+          <button type="button" class="btn btn-outline" (click)="openCreateDialog()">
+            + Новая поставка
+          </button>
+          <button type="button" class="btn btn-ghost">Ещё</button>
+        </div>
+      </div>
+
     </header>
 
     <section class="warehouse-page__body">
@@ -209,7 +219,7 @@
         <section class="warehouse-page__table-card">
           <header class="warehouse-page__table-header">Последние поставки</header>
           <div class="warehouse-page__table-wrapper">
-            <table class="warehouse-page__table">
+            <table class="warehouse-page__table tbl-compact">
               <thead
                 class="sticky top-0 bg-background/90 backdrop-blur border-b shadow-[inset_0_-1px_0_0_var(--border)]"
               >
