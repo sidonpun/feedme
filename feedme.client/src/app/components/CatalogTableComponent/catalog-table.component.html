@@ -116,10 +116,26 @@
 </div>
 
 <!-- Пагинация -->
-<div class="pagination-controls">
-  <button (click)="prevPage()" [disabled]="currentPage === 1">Назад</button>
-  <span>Страница {{ currentPage }} из {{ totalPages }}</span>
-  <button (click)="nextPage()" [disabled]="currentPage === totalPages">Далее</button>
+<div class="tbl-footer">
+  <div class="tbl-footer__text">Показано {{ paginatedData.length }} строк</div>
+  <div class="tbl-footer__pager">
+    <button
+      type="button"
+      class="btn btn-outline btn-sm"
+      (click)="prevPage()"
+      [disabled]="currentPage === 1"
+    >
+      Назад
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline btn-sm"
+      (click)="nextPage()"
+      [disabled]="currentPage === totalPages"
+    >
+      Далее
+    </button>
+  </div>
 </div>
 
 <app-confirm-delete-popup
