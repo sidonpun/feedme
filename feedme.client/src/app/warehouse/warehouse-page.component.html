@@ -209,11 +209,11 @@
                       [attr.aria-label]="'Строка ' + row.docNo"
                     />
                   </td>
-                  <td class="warehouse-page__cell warehouse-page__cell--mono font-mono text-xs">{{ row.docNo }}</td>
+                  <td class="warehouse-page__cell font-mono text-xs">{{ row.docNo }}</td>
                   <td class="warehouse-page__cell warehouse-page__cell--center text-center">{{ row.arrivalDate | date: 'dd.MM.yyyy' }}</td>
                   <td class="warehouse-page__cell">{{ row.warehouse }}</td>
                   <td class="warehouse-page__cell">{{ row.responsible }}</td>
-                  <td class="warehouse-page__cell warehouse-page__cell--mono font-mono text-xs">{{ row.sku }}</td>
+                  <td class="warehouse-page__cell font-mono text-xs">{{ row.sku }}</td>
                   <td class="warehouse-page__cell warehouse-page__cell--name">
                     <button
                       type="button"
@@ -235,12 +235,12 @@
                     {{ formatCurrency(rowTotal(row)) }}
                   </td>
                   <td class="warehouse-page__cell warehouse-page__cell--center text-center">{{ row.expiry | date: 'dd.MM.yyyy' }}</td>
-                  <td class="warehouse-page__cell warehouse-page__cell--supplier">
-                    <span class="truncate" [attr.title]="row.supplier">{{ row.supplier }}</span>
+                  <td class="warehouse-page__cell warehouse-page__cell--supplier" [attr.title]="row.supplier">
+                    <span class="truncate">{{ row.supplier }}</span>
                   </td>
                   <td class="warehouse-page__cell warehouse-page__cell--status">
                     <span
-                      class="badge min-w-[88px] text-center"
+                      class="badge min-w-[88px] justify-center"
                       [ngClass]="{
                         'badge-soft': row.status === 'warning',
                         'badge-danger': row.status === 'danger'
