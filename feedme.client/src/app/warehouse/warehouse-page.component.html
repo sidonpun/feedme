@@ -22,14 +22,37 @@
   </aside>
 
   <main class="warehouse-page__content">
+
     <header class="warehouse-page__top-bar">
       <div class="warehouse-page__breadcrumbs">
         Главный склад / <span class="warehouse-page__breadcrumb-current">Поставки</span>
       </div>
       <div class="warehouse-page__actions">
-        <button type="button" class="btn btn-outline" (click)="openCreateDialog()">+ Новая поставка</button>
-        <button type="button" class="btn btn-ghost">Ещё</button>
+        <div class="density-switch" role="group" aria-label="Плотность строк">
+          <button
+            type="button"
+            class="density-switch__btn density-switch__btn--active"
+            aria-pressed="true"
+          >
+            <span aria-hidden="true" class="density-switch__icon density-switch__icon--compact"></span>
+            <span class="sr-only">Compact</span>
+          </button>
+          <button type="button" class="density-switch__btn" aria-pressed="false">
+            <span
+              aria-hidden="true"
+              class="density-switch__icon density-switch__icon--comfortable"
+            ></span>
+            <span class="sr-only">Comfortable</span>
+          </button>
+        </div>
+        <div class="warehouse-page__actions-buttons">
+          <button type="button" class="btn btn-outline" (click)="openCreateDialog()">
+            + Новая поставка
+          </button>
+          <button type="button" class="btn btn-ghost">Ещё</button>
+        </div>
       </div>
+
     </header>
 
     <section class="warehouse-page__body">
@@ -107,9 +130,9 @@
                   aria-label="Фильтр по статусу"
                 >
                   <option value="">Все статусы</option>
-                  <option value="ok">Ок</option>
-                  <option value="warning">Скоро срок</option>
-                  <option value="danger">Просрочено</option>
+                  <option *ngFor="let statusOption of statuses" [value]="statusOption">
+                    {{ statusOption | statusBadgeLabel }}
+                  </option>
                 </select>
               </label>
             </div>
@@ -196,7 +219,7 @@
         <section class="warehouse-page__table-card">
           <header class="warehouse-page__table-header">Последние поставки</header>
           <div class="warehouse-page__table-wrapper">
-            <table class="warehouse-page__table">
+            <table class="warehouse-page__table tbl-compact">
               <thead
                 class="sticky top-0 bg-background/90 backdrop-blur border-b shadow-[inset_0_-1px_0_0_var(--border)]"
               >
@@ -212,7 +235,11 @@
                       aria-label="Выбрать все"
                     />
                   </th>
-                  <th scope="col" class="warehouse-page__cell text-sm font-medium font-mono text-xs">
+                  <th
+                    scope="col"
+                    class="warehouse-page__cell text-sm font-medium font-mono text-xs"
+                    title="Номер приходного документа"
+                  >
                     № док.
                   </th>
                   <th
@@ -230,12 +257,14 @@
                   <th
                     scope="col"
                     class="warehouse-page__cell warehouse-page__cell--numeric text-sm font-medium text-right"
+                    title="Количество в базовой ед. изм."
                   >
                     Кол-во
                   </th>
                   <th
                     scope="col"
                     class="warehouse-page__cell warehouse-page__cell--center text-sm font-medium text-center"
+                    title="Дата, после которой товар списывается"
                   >
                     Срок годности
                   </th>
@@ -294,7 +323,7 @@
                       class="badge min-w-[112px] justify-center"
                       [ngClass]="row.status | statusBadgeClass"
                     >
-                      {{ row.status === 'ok' ? 'Ок' : row.status === 'warning' ? 'Скоро срок' : 'Просрочено' }}
+                      {{ row.status | statusBadgeLabel }}
                     </span>
                   </td>
                   <td class="warehouse-page__cell warehouse-page__cell--icon">
@@ -363,7 +392,7 @@
           <div class="warehouse-page__drawer-meta">SKU {{ row.sku }}</div>
         </div>
         <span class="badge" [ngClass]="row.status | statusBadgeClass">
-          {{ row.status === 'ok' ? 'Ок' : row.status === 'warning' ? 'Скоро срок' : 'Просрочено' }}
+          {{ row.status | statusBadgeLabel }}
         </span>
       </header>
       <div class="warehouse-page__drawer-grid">
@@ -394,156 +423,68 @@
         {{ editingRowId() ? 'Редактирование поставки' : 'Новая поставка' }}
       </header>
       <form class="warehouse-page__dialog-form" [formGroup]="editForm" (ngSubmit)="submitEdit()">
-        <nav
-          class="warehouse-page__dialog-tabs"
-          role="tablist"
-          aria-label="Разделы поставки"
-        >
-          <button
-            *ngFor="let tab of editDialogTabs; trackBy: trackByEditDialogTab"
-            type="button"
-            class="warehouse-page__dialog-tab"
-            [class.warehouse-page__dialog-tab--active]="editDialogTab() === tab.key"
-            (click)="selectEditDialogTab(tab.key)"
-            role="tab"
-            [attr.aria-selected]="editDialogTab() === tab.key"
-            [attr.id]="'edit-dialog-tab-' + tab.key"
-            [attr.aria-controls]="'edit-dialog-panel-' + tab.key"
-          >
-            {{ tab.label }}
-          </button>
-        </nav>
 
-        <section
-          *ngIf="editDialogTab() === 'details'"
-          class="warehouse-page__dialog-panel"
-          role="tabpanel"
-          id="edit-dialog-panel-details"
-          aria-labelledby="edit-dialog-tab-details"
-        >
-          <div class="warehouse-page__dialog-grid">
-            <label class="warehouse-page__dialog-field">
-              <span class="warehouse-page__dialog-label">№ документа</span>
-              <input class="input" formControlName="docNo" />
-            </label>
-            <label class="warehouse-page__dialog-field">
-              <span class="warehouse-page__dialog-label">Дата прихода</span>
-              <input class="input" type="date" formControlName="arrivalDate" />
-            </label>
-            <label class="warehouse-page__dialog-field">
-              <span class="warehouse-page__dialog-label">Склад</span>
-              <input class="input" formControlName="warehouse" />
-            </label>
-            <label class="warehouse-page__dialog-field">
-              <span class="warehouse-page__dialog-label">Ответственный</span>
-              <input class="input" formControlName="responsible" />
-            </label>
-            <label class="warehouse-page__dialog-field">
-              <span class="warehouse-page__dialog-label">Поставщик</span>
-              <input class="input" formControlName="supplier" />
-            </label>
-            <label class="warehouse-page__dialog-field">
-              <span class="warehouse-page__dialog-label">SKU</span>
-              <input class="input" formControlName="sku" />
-            </label>
-            <label class="warehouse-page__dialog-field">
-              <span class="warehouse-page__dialog-label">Название</span>
-              <input class="input" formControlName="name" />
-            </label>
-            <label class="warehouse-page__dialog-field">
-              <span class="warehouse-page__dialog-label">Категория</span>
-              <input class="input" formControlName="category" />
-            </label>
-            <label class="warehouse-page__dialog-field">
-              <span class="warehouse-page__dialog-label">Кол-во</span>
-              <input class="input" type="number" step="0.001" min="0" formControlName="qty" />
-            </label>
-            <label class="warehouse-page__dialog-field">
-              <span class="warehouse-page__dialog-label">Единица измерения</span>
-              <input class="input" formControlName="unit" />
-            </label>
-            <label class="warehouse-page__dialog-field">
-              <span class="warehouse-page__dialog-label">Цена</span>
-              <input class="input" type="number" step="0.01" min="0" formControlName="price" />
-            </label>
-            <label class="warehouse-page__dialog-field">
-              <span class="warehouse-page__dialog-label">Срок годности</span>
-              <input class="input" type="date" formControlName="expiry" />
-              <span class="warehouse-page__field-error" *ngIf="editForm.controls.expiry.touched && editForm.controls.expiry.hasError('dateOrder')">
-                Срок годности не может быть раньше даты прихода
-              </span>
-            </label>
-            <label class="warehouse-page__dialog-field">
-              <span class="warehouse-page__dialog-label">Статус</span>
-              <select class="select" formControlName="status">
-                <option value="ok">Ок</option>
-                <option value="warning">Скоро срок</option>
-                <option value="danger">Просрочено</option>
-              </select>
-            </label>
-          </div>
-        </section>
-
-        <section
-          *ngIf="editDialogTab() === 'items'"
-          class="warehouse-page__dialog-panel"
-          role="tabpanel"
-          id="edit-dialog-panel-items"
-          aria-labelledby="edit-dialog-tab-items"
-        >
-          <div class="warehouse-page__dialog-table">
-            <header>Позиции поставки</header>
-            <div class="warehouse-page__dialog-body">
-              <p>Добавьте продукты к документу после сохранения поставки.</p>
-            </div>
-          </div>
-        </section>
-
-        <section
-          *ngIf="editDialogTab() === 'history'"
-          class="warehouse-page__dialog-panel"
-          role="tabpanel"
-          id="edit-dialog-panel-history"
-          aria-labelledby="edit-dialog-tab-history"
-        >
-          <article class="warehouse-page__history-card">
-            <header class="warehouse-page__history-card-header">Движение по поставке</header>
-            <div class="warehouse-page__history-table">
-              <table class="warehouse-page__table">
-                <thead>
-                  <tr>
-                    <th scope="col" class="warehouse-page__cell text-sm font-medium">Дата</th>
-                    <th scope="col" class="warehouse-page__cell text-sm font-medium">Операция</th>
-                    <th scope="col" class="warehouse-page__cell warehouse-page__cell--numeric text-sm font-medium text-right">
-                      Кол-во
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    *ngFor="let entry of editDialogHistory; trackBy: trackByHistoryEntry"
-                    class="warehouse-page__history-row"
-                  >
-                    <td class="warehouse-page__cell">{{ entry.date }}</td>
-                    <td class="warehouse-page__cell">{{ entry.operation }}</td>
-                    <td class="warehouse-page__cell warehouse-page__cell--numeric text-right">
-                      <span
-                        class="warehouse-page__history-qty"
-                        [ngClass]="{
-                          'warehouse-page__history-qty--in': entry.operation === 'Приход',
-                          'warehouse-page__history-qty--out': entry.operation === 'Списание',
-                          'warehouse-page__history-qty--transfer': entry.operation === 'Перемещение'
-                        }"
-                      >
-                        {{ entry.quantity }}
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </article>
-        </section>
+        <div class="warehouse-page__dialog-grid">
+          <label class="warehouse-page__dialog-field">
+            <span class="warehouse-page__dialog-label">№ документа</span>
+            <input class="input" formControlName="docNo" />
+          </label>
+          <label class="warehouse-page__dialog-field">
+            <span class="warehouse-page__dialog-label">Дата прихода</span>
+            <input class="input" type="date" formControlName="arrivalDate" />
+          </label>
+          <label class="warehouse-page__dialog-field">
+            <span class="warehouse-page__dialog-label">Склад</span>
+            <input class="input" formControlName="warehouse" />
+          </label>
+          <label class="warehouse-page__dialog-field">
+            <span class="warehouse-page__dialog-label">Ответственный</span>
+            <input class="input" formControlName="responsible" />
+          </label>
+          <label class="warehouse-page__dialog-field">
+            <span class="warehouse-page__dialog-label">Поставщик</span>
+            <input class="input" formControlName="supplier" />
+          </label>
+          <label class="warehouse-page__dialog-field">
+            <span class="warehouse-page__dialog-label">SKU</span>
+            <input class="input" formControlName="sku" />
+          </label>
+          <label class="warehouse-page__dialog-field">
+            <span class="warehouse-page__dialog-label">Название</span>
+            <input class="input" formControlName="name" />
+          </label>
+          <label class="warehouse-page__dialog-field">
+            <span class="warehouse-page__dialog-label">Категория</span>
+            <input class="input" formControlName="category" />
+          </label>
+          <label class="warehouse-page__dialog-field">
+            <span class="warehouse-page__dialog-label">Кол-во</span>
+            <input class="input" type="number" step="0.001" min="0" formControlName="qty" />
+          </label>
+          <label class="warehouse-page__dialog-field">
+            <span class="warehouse-page__dialog-label">Единица измерения</span>
+            <input class="input" formControlName="unit" />
+          </label>
+          <label class="warehouse-page__dialog-field">
+            <span class="warehouse-page__dialog-label">Цена</span>
+            <input class="input" type="number" step="0.01" min="0" formControlName="price" />
+          </label>
+          <label class="warehouse-page__dialog-field">
+            <span class="warehouse-page__dialog-label">Срок годности</span>
+            <input class="input" type="date" formControlName="expiry" />
+            <span class="warehouse-page__field-error" *ngIf="editForm.controls.expiry.touched && editForm.controls.expiry.hasError('dateOrder')">
+              Срок годности не может быть раньше даты прихода
+            </span>
+          </label>
+          <label class="warehouse-page__dialog-field">
+            <span class="warehouse-page__dialog-label">Статус</span>
+            <select class="select" formControlName="status">
+              <option *ngFor="let statusOption of statuses" [value]="statusOption">
+                {{ statusOption | statusBadgeLabel }}
+              </option>
+            </select>
+          </label>
+        </div>
 
         <footer class="warehouse-page__dialog-actions">
           <button type="button" class="btn btn-outline" (click)="closeEditDialog()">Отмена</button>

@@ -71,6 +71,12 @@ export class StockTableComponent implements OnChanges {
     { label: 'Остаток', field: 'stock' },
   ];
 
+  private readonly columnTooltips: Record<string, string> = {
+    '№ док.': 'Номер приходного документа',
+    'Кол-во': 'Количество в базовой ед. изм.',
+    'Срок годности': 'Дата, после которой товар списывается',
+  };
+
   sortKey: keyof StockTableItem | null = null;
   sortDirection: SortDirection = 'asc';
 
@@ -132,16 +138,10 @@ export class StockTableComponent implements OnChanges {
     return this.getColumnValue(item, column) ?? '';
   }
 
-  getExpiryInfo(item: StockTableItem): ExpiryInfo {
-    const cached = this.expiryInfoCache.get(item);
 
-    if (cached) {
-      return cached;
-    }
+  getColumnTooltip(label: string): string | null {
+    return this.columnTooltips[label] ?? null;
 
-    const info = this.createExpiryInfo(item.expiryDate);
-    this.expiryInfoCache.set(item, info);
-    return info;
   }
 
   get paginatedData(): StockTableItem[] {
