@@ -170,6 +170,20 @@
   flex-direction: column;
 }
 
+.warehouse-page__filters-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.warehouse-page__filters-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.04em;
+}
+
 .warehouse-page__filters-control--search {
   flex: 1 1 320px;
   min-width: 240px;
@@ -185,6 +199,11 @@
 
 .warehouse-page__filters-control--date .input {
   width: 160px;
+}
+
+.warehouse-page__filters-control--select {
+  flex: 0 1 200px;
+  min-width: 180px;
 }
 
 .warehouse-page__filters .btn {
