@@ -298,28 +298,6 @@
   vertical-align: middle;
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  background-color: rgba(16, 185, 129, 0.18);
-  color: #047857;
-  font-size: 0.8125rem;
-  font-weight: 600;
-}
-
-.badge-secondary {
-  background-color: rgba(245, 158, 11, 0.18);
-  color: #b45309;
-}
-
-.badge-destructive {
-  background-color: rgba(248, 113, 113, 0.18);
-  color: #b91c1c;
-}
-
 .min-w-\[88px\] {
   min-width: 88px;
 }

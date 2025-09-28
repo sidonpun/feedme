@@ -270,10 +270,7 @@
                   <td class="warehouse-page__cell warehouse-page__cell--status min-w-[112px]">
                     <span
                       class="badge min-w-[112px] justify-center"
-                      [ngClass]="{
-                        'badge-soft': row.status === 'warning',
-                        'badge-danger': row.status === 'danger'
-                      }"
+                      [ngClass]="row.status | statusBadgeClass"
                     >
                       {{ row.status === 'ok' ? 'Ок' : row.status === 'warning' ? 'Скоро срок' : 'Просрочено' }}
                     </span>
@@ -343,13 +340,7 @@
           <div class="warehouse-page__drawer-title">{{ row.name }}</div>
           <div class="warehouse-page__drawer-meta">SKU {{ row.sku }}</div>
         </div>
-        <span
-          class="badge"
-          [ngClass]="{
-            'badge-soft': row.status === 'warning',
-            'badge-danger': row.status === 'danger'
-          }"
-        >
+        <span class="badge" [ngClass]="row.status | statusBadgeClass">
           {{ row.status === 'ok' ? 'Ок' : row.status === 'warning' ? 'Скоро срок' : 'Просрочено' }}
         </span>
       </header>
