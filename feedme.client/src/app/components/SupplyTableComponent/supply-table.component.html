@@ -203,8 +203,8 @@
   </table>
 </div>
 
-<!-- TODO: toggle by data -->
 <app-empty
+  *ngIf="!hasAnySupply"
   class="mt-6 block"
   title="Нет поставок"
   subtitle="Создайте первую поставку, чтобы увидеть её в списке."
