@@ -21,6 +21,7 @@ import { WarehouseService } from './warehouse.service';
 import { EmptyStateComponent } from './ui/empty-state.component';
 import { FieldComponent } from './ui/field.component';
 import { MetricComponent } from './ui/metric.component';
+import { StatusBadgeClassPipe } from '../pipes/status-badge-class.pipe';
 
 const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
@@ -39,6 +40,7 @@ const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
     MetricComponent,
     FieldComponent,
     EmptyStateComponent,
+    StatusBadgeClassPipe,
   ],
   templateUrl: './warehouse-page.component.html',
   styleUrl: './warehouse-page.component.css',

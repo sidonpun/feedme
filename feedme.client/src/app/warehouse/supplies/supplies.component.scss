@@ -1,5 +1,20 @@
 :host {
   display: block;
+  --supplies-primary: #fa4b00;
+  --supplies-primary-hover: #d94300;
+  --supplies-secondary: #ffe8db;
+  --supplies-secondary-hover: #ffd4bc;
+  --supplies-outline-hover: rgba(250, 75, 0, 0.08);
+  --supplies-outline-border: #fa4b00;
+  --supplies-outline-text: #8a2e00;
+}
+
+.card,
+.input,
+.select,
+.table,
+.dialog {
+  border-radius: var(--radius);
 }
 
 .supplies__filters-card {
@@ -30,7 +45,7 @@
 
 .chip {
   padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
+  border-radius: var(--radius);
   font-size: 0.75rem;
   border: 1px solid var(--border);
   background: #fff;
@@ -38,9 +53,9 @@
 }
 
 .chip--filled {
-  background: #eef2ff;
-  border-color: #c7d2fe;
-  color: #4338ca;
+  background: color-mix(in srgb, var(--brand-600) 10%, #fff);
+  border: 1px solid var(--brand-600);
+  color: var(--brand-600);
 }
 
 .chip--danger {
@@ -49,13 +64,19 @@
   color: #b91c1c;
 }
 
+.chip--ghost {
+  border: 1px dashed var(--brand-600);
+  color: var(--brand-600);
+  background: transparent;
+}
+
 .bulkbar {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   background: color-mix(in srgb, #f6f7f9 40%, transparent);
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   padding: 0.5rem 0.75rem;
 }
 
@@ -68,4 +89,71 @@
   margin-left: auto;
   display: flex;
   gap: 0.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0;
+  border: 1px solid transparent;
+  background: transparent;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #1f2937;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn.btn-sm {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.btn--primary {
+  background: var(--supplies-primary);
+  color: #ffffff;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--supplies-primary-hover);
+}
+
+.btn--secondary {
+  background: var(--supplies-secondary);
+  color: var(--supplies-outline-text);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background: var(--supplies-secondary-hover);
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--supplies-outline-text);
+  border-color: var(--supplies-outline-border);
+}
+
+.btn--outline:hover:not(:disabled) {
+  background: var(--supplies-outline-hover);
+}
+
+.btn.btn-danger {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+}
+
+.btn.btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+  border-color: #b91c1c;
 }
