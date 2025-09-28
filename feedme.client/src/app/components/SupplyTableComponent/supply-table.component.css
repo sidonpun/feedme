@@ -333,6 +333,17 @@
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
 }
 
+.table-footer__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.table-footer__total {
+  color: #0f172a;
+}
+
 .text-muted-foreground {
   color: #64748b;
 }
