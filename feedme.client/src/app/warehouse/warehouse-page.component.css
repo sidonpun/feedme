@@ -294,21 +294,93 @@
   font-size: 0.75rem;
 }
 
-.warehouse-page__cell--link button {
-  color: #2563eb;
-  font-weight: 600;
-  cursor: pointer;
+.warehouse-page__cell--name {
+  max-width: 240px;
+}
+
+.warehouse-page__cell--supplier {
+  max-width: 220px;
+}
+
+.warehouse-page__product-name {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  max-width: inherit;
   background: none;
   border: none;
   padding: 0;
+  color: #1f2937;
+  text-align: left;
+  line-height: 1.25rem;
 }
 
-.warehouse-page__cell--link button:hover {
-  text-decoration: underline;
+.warehouse-page__product-name:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
 }
 
-.warehouse-page__table tbody tr:hover {
-  background-color: #f8fafc;
+.warehouse-page__product-name:hover {
+  text-decoration: none;
+}
+
+.warehouse-page__row {
+  transition: background-color 0.2s ease;
+}
+
+.warehouse-page__row.hover\:bg-muted\/40:hover {
+  background-color: rgba(148, 163, 184, 0.28);
+}
+
+.warehouse-page__row.odd\:bg-muted\/10:nth-child(odd) {
+  background-color: rgba(148, 163, 184, 0.12);
+}
+
+.warehouse-page__row.h-11 {
+  height: 44px;
+}
+
+.warehouse-page__row.align-middle > .warehouse-page__cell {
+  vertical-align: middle;
+}
+
+.font-mono {
+  font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.font-medium {
+  font-weight: 600;
+}
+
+.cursor-default {
+  cursor: default;
+}
+
+.truncate {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.min-w-\[88px\] {
+  display: inline-flex;
+  min-width: 88px;
+  justify-content: center;
+  align-items: center;
 }
 
 .warehouse-page__row-menu {
