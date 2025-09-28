@@ -122,6 +122,13 @@ export class SupplyTableComponent implements OnChanges {
     return this.sortState?.column === column;
   }
 
+  getSortIcon(column: SortableColumn): string {
+    if (this.isSortedBy(column)) {
+      return this.sortState?.direction === 'asc' ? '▲' : '▼';
+    }
+    return '▲▼';
+  }
+
   getAriaSort(column: SortableColumn): 'ascending' | 'descending' | 'none' {
     if (!this.sortState || this.sortState.column !== column) {
       return 'none';
