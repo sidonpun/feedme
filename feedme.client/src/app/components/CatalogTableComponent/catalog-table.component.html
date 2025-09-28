@@ -14,32 +14,97 @@
 <div class="table-container">
   <table class="catalog-table">
     <thead>
-      <tr>
-        <th *ngFor="let col of columns"
-            [attr.aria-sort]="getAriaSort(col)"
-            [class.sorted]="sortKey === col.key">
-          <button type="button"
-                  class="sort-button"
-                  (click)="onSortColumn(col)">
-            <span>{{ col.label }}</span>
+      <tr class="h-11 align-middle">
+        <th
+          *ngFor="let col of columns"
+          class="text-sm font-medium"
+          [class.text-right]="col.key === 'weight' || col.key === 'deliveryTime' || col.key === 'costEstimate' || col.key === 'taxRate' || col.key === 'unitPrice'"
+          [class.font-mono]="col.key === 'code' || col.key === 'tnved'"
+          [class.text-xs]="col.key === 'code' || col.key === 'tnved'"
+          [attr.aria-sort]="getAriaSort(col)"
+          [class.sorted]="sortKey === col.key"
+        >
+          <button
+            type="button"
+            class="sort-button"
+            (click)="onSortColumn(col)"
+          >
+            <span class="truncate" [title]="col.label">{{ col.label }}</span>
             <span class="sort-indicator" *ngIf="sortKey === col.key">
               {{ sortDirection === 'asc' ? '▲' : '▼' }}
             </span>
           </button>
         </th>
-
-        <th class="actions-header"></th>
-
-
+        <th class="actions-header text-sm font-medium text-center" aria-label="Действия"></th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of paginatedData">
-        <td *ngFor="let col of columns">{{ format(item[col.key]) }}</td>
-
-        <td class="actions-cell">
-          <img src="assets/correct.svg" alt="Редактировать" (click)="edit.emit(item)">
-          <img src="assets/delete.svg" alt="Удалить" (click)="requestDelete(item)">
+      <tr *ngFor="let item of paginatedData" class="h-11 align-middle hover:bg-muted/40 odd:bg-muted/10">
+        <td
+          *ngFor="let col of columns"
+          [class.text-right]="col.key === 'weight' || col.key === 'deliveryTime' || col.key === 'costEstimate' || col.key === 'taxRate' || col.key === 'unitPrice'"
+          [class.font-mono]="col.key === 'code' || col.key === 'tnved'"
+          [class.text-xs]="col.key === 'code' || col.key === 'tnved'"
+        >
+          <ng-container [ngSwitch]="col.key">
+            <span
+              *ngSwitchCase="'name'"
+              class="truncate"
+              [title]="format(item[col.key])"
+            >
+              {{ format(item[col.key]) }}
+            </span>
+            <span
+              *ngSwitchCase="'type'"
+              class="truncate"
+              [title]="format(item[col.key])"
+            >
+              {{ format(item[col.key]) }}
+            </span>
+            <span
+              *ngSwitchCase="'category'"
+              class="truncate"
+              [title]="format(item[col.key])"
+            >
+              {{ format(item[col.key]) }}
+            </span>
+            <span
+              *ngSwitchCase="'supplier'"
+              class="truncate"
+              [title]="format(item[col.key])"
+            >
+              {{ format(item[col.key]) }}
+            </span>
+            <span
+              *ngSwitchCase="'writeoffMethod'"
+              class="truncate"
+              [title]="format(item[col.key])"
+            >
+              {{ format(item[col.key]) }}
+            </span>
+            <span
+              *ngSwitchCase="'allergens'"
+              class="truncate"
+              [title]="format(item[col.key])"
+            >
+              {{ format(item[col.key]) }}
+            </span>
+            <span
+              *ngSwitchDefault
+              [attr.title]="col.key === 'code' || col.key === 'tnved' || col.key === 'unit' ? format(item[col.key]) : null"
+              [class.truncate]="col.key === 'unit'"
+            >
+              {{ format(item[col.key]) }}
+            </span>
+          </ng-container>
+        </td>
+        <td class="actions-cell text-center">
+          <button class="btn-icon" type="button" aria-label="Редактировать" (click)="edit.emit(item)">
+            <img src="assets/correct.svg" alt="Редактировать" />
+          </button>
+          <button class="btn-icon" type="button" aria-label="Удалить" (click)="requestDelete(item)">
+            <img src="assets/delete.svg" alt="Удалить" />
+          </button>
         </td>
       </tr>
       <tr *ngIf="paginatedData.length === 0">

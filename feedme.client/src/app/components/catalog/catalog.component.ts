@@ -7,6 +7,7 @@ import { BehaviorSubject, EMPTY, catchError, take, tap } from 'rxjs';
 import { FilterPipe } from '../../pipes/filter.pipe';
 import { NewProductFormValues } from '../catalog-new-product-popup/catalog-new-product-popup.component';
 import { CatalogItem, CatalogService } from '../../services/catalog.service';
+import { EmptyStateComponent } from '../../warehouse/ui/empty-state.component';
 
 @Pipe({
   name: 'booleanLabel',
@@ -25,7 +26,7 @@ export class BooleanLabelPipe implements PipeTransform {
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, FilterPipe, BooleanLabelPipe],
+  imports: [CommonModule, FormsModule, FilterPipe, BooleanLabelPipe, EmptyStateComponent],
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.css']
 })

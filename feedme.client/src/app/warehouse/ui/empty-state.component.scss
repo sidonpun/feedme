@@ -1,0 +1,22 @@
+.empty {
+  border: 1px dashed var(--border, #e5e7eb);
+  border-radius: .75rem;
+  padding: 2rem;
+  text-align: center;
+  background: color-mix(in srgb, #f6f7f9 30%, transparent);
+}
+
+.empty__title {
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+.empty__subtitle {
+  color: #6b7280;
+  font-size: .875rem;
+  margin-top: .25rem;
+}
+
+.btn.btn-outline {
+  margin-top: .75rem;
+}

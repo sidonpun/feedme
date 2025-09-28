@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableControlsComponent } from '../table-controls/table-controls.component';
+import { EmptyStateComponent } from '../../warehouse/ui/empty-state.component';
 import { sortBySelector, SortDirection, toggleDirection } from '../../utils/sort.util';
 
 interface StockTableItem {
@@ -29,7 +30,7 @@ interface StockColumn {
 @Component({
   selector: 'app-stock-table',
   standalone: true,
-  imports: [CommonModule, TableControlsComponent],
+  imports: [CommonModule, TableControlsComponent, EmptyStateComponent],
   templateUrl: './stock-table.component.html',
   styleUrls: ['./stock-table.component.css']
 })

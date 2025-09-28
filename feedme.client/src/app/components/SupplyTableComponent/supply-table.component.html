@@ -49,7 +49,7 @@
 <div class="table-container">
   <table class="supplies-table">
     <thead class="supplies-table__head sticky top-0 bg-background/90 backdrop-blur border-b shadow-[inset_0_-1px_0_0_var(--border)]">
-      <tr>
+      <tr class="h-11 align-middle">
         <th class="w-[40px]" scope="col">
           <input type="checkbox" class="checkbox" aria-label="Выбрать все поставки" />
         </th>
@@ -117,30 +117,10 @@
             {{ item.status || item.state || 'Ок' }}
           </span>
         </td>
-        <td class="w-[44px]">
-          <div class="menu">
-            <button
-              type="button"
-              class="btn btn-ghost btn-icon"
-              aria-haspopup="true"
-              aria-expanded="false"
-              aria-label="Открыть меню"
-            >
-              ⋯
-            </button>
-            <div class="menu__panel" role="menu">
-              <button type="button" class="menu__item" role="menuitem" (click)="onSettingsClick.emit(item)">
-                Открыть
-              </button>
-              <button type="button" class="menu__item" role="menuitem">
-                Редактировать
-              </button>
-              <div class="menu__separator" role="separator"></div>
-              <button type="button" class="menu__item menu__item--destructive" role="menuitem">
-                Удалить
-              </button>
-            </div>
-          </div>
+        <td class="w-[44px] text-right">
+          <button type="button" class="icon-btn" aria-label="Меню" (click)="onSettingsClick.emit(item)">
+            ⋯
+          </button>
         </td>
       </tr>
       <tr *ngIf="paginatedData.length === 0">
@@ -149,6 +129,14 @@
     </tbody>
   </table>
 </div>
+
+<!-- TODO: toggle by data -->
+<app-empty
+  class="mt-6 block"
+  title="Нет поставок"
+  subtitle="Создайте первую поставку, чтобы увидеть её в списке."
+  ctaText="+ Новая поставка"
+></app-empty>
 
 <div class="table-footer flex items-center p-3 border-t text-sm bg-muted/40 shadow-sm">
   <div class="table-footer__summary text-muted-foreground">

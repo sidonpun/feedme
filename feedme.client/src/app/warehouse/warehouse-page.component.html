@@ -40,15 +40,16 @@
         <app-metric title="Ниже минимума" value="5" hint="> авто-заказ" variant="warn"></app-metric>
       </div>
 
-      <nav class="warehouse-page__tabs" role="tablist">
+      <nav class="warehouse-page__tabs tabs" role="tablist">
         <button
           type="button"
           *ngFor="let entry of tabKeys"
-          class="warehouse-page__tab"
+          class="warehouse-page__tab tabs__btn"
           [class.warehouse-page__tab--active]="activeTab() === entry"
+          [class.tabs__btn--active]="activeTab() === entry"
           (click)="selectTab(entry)"
           role="tab"
-          [attr.aria-selected]="activeTab() === entry"
+          [attr.aria-selected]="activeTab() === entry ? 'true' : 'false'"
         >
           {{ tabLabels[entry] }}
         </button>
@@ -174,9 +175,14 @@
           <header class="warehouse-page__table-header">Последние поставки</header>
           <div class="warehouse-page__table-wrapper">
             <table class="warehouse-page__table">
-              <thead>
+              <thead
+                class="sticky top-0 bg-background/90 backdrop-blur border-b shadow-[inset_0_-1px_0_0_var(--border)]"
+              >
                 <tr>
-                  <th class="warehouse-page__cell warehouse-page__cell--checkbox">
+                  <th
+                    scope="col"
+                    class="warehouse-page__cell warehouse-page__cell--checkbox text-sm font-medium w-[40px]"
+                  >
                     <input
                       type="checkbox"
                       [checked]="allFilteredChecked()"
@@ -184,20 +190,45 @@
                       aria-label="Выбрать все"
                     />
                   </th>
-                  <th class="warehouse-page__cell font-mono text-xs">№ док.</th>
-                  <th class="warehouse-page__cell warehouse-page__cell--center text-center">Дата прихода</th>
-                  <th class="warehouse-page__cell">Склад</th>
-                  <th class="warehouse-page__cell">Ответственный</th>
-                  <th class="warehouse-page__cell font-mono text-xs">SKU</th>
-                  <th class="warehouse-page__cell">Название</th>
-                  <th class="warehouse-page__cell">Категория</th>
-                  <th class="warehouse-page__cell warehouse-page__cell--numeric text-right">Кол-во</th>
-                  <th class="warehouse-page__cell warehouse-page__cell--numeric text-right">Цена</th>
-                  <th class="warehouse-page__cell warehouse-page__cell--numeric text-right">Сумма</th>
-                  <th class="warehouse-page__cell warehouse-page__cell--center text-center">Срок годности</th>
-                  <th class="warehouse-page__cell">Поставщик</th>
-                  <th class="warehouse-page__cell warehouse-page__cell--status">Статус</th>
-                  <th class="warehouse-page__cell warehouse-page__cell--icon" aria-hidden="true"></th>
+                  <th scope="col" class="warehouse-page__cell text-sm font-medium font-mono text-xs">
+                    № док.
+                  </th>
+                  <th
+                    scope="col"
+                    class="warehouse-page__cell warehouse-page__cell--center text-sm font-medium text-center"
+                  >
+                    Дата прихода
+                  </th>
+                  <th scope="col" class="warehouse-page__cell text-sm font-medium">Склад</th>
+                  <th scope="col" class="warehouse-page__cell text-sm font-medium">Ответственный</th>
+                  <th scope="col" class="warehouse-page__cell text-sm font-medium font-mono text-xs">
+                    SKU
+                  </th>
+                  <th scope="col" class="warehouse-page__cell text-sm font-medium">Название</th>
+                  <th
+                    scope="col"
+                    class="warehouse-page__cell warehouse-page__cell--numeric text-sm font-medium text-right"
+                  >
+                    Кол-во
+                  </th>
+                  <th
+                    scope="col"
+                    class="warehouse-page__cell warehouse-page__cell--center text-sm font-medium text-center"
+                  >
+                    Срок годности
+                  </th>
+                  <th scope="col" class="warehouse-page__cell text-sm font-medium">Поставщик</th>
+                  <th
+                    scope="col"
+                    class="warehouse-page__cell warehouse-page__cell--status text-sm font-medium"
+                  >
+                    Статус
+                  </th>
+                  <th
+                    scope="col"
+                    class="warehouse-page__cell warehouse-page__cell--icon text-sm font-medium w-[44px]"
+                    aria-hidden="true"
+                  ></th>
                 </tr>
               </thead>
               <tbody>
@@ -206,7 +237,7 @@
                   class="warehouse-page__row hover:bg-muted/40 odd:bg-muted/10 h-11 align-middle"
                   (dblclick)="openDrawer(row)"
                 >
-                  <td class="warehouse-page__cell warehouse-page__cell--checkbox">
+                  <td class="warehouse-page__cell warehouse-page__cell--checkbox w-[40px]">
                     <input
                       type="checkbox"
                       [checked]="checkedIds().includes(row.id)"
@@ -229,23 +260,16 @@
                       {{ row.name }}
                     </button>
                   </td>
-                  <td class="warehouse-page__cell">{{ row.category }}</td>
                   <td class="warehouse-page__cell warehouse-page__cell--numeric text-right">
                     {{ row.qty | number: '1.0-3' }} {{ row.unit }}
-                  </td>
-                  <td class="warehouse-page__cell warehouse-page__cell--numeric text-right">
-                    {{ formatCurrency(row.price) }}
-                  </td>
-                  <td class="warehouse-page__cell warehouse-page__cell--numeric text-right">
-                    {{ formatCurrency(rowTotal(row)) }}
                   </td>
                   <td class="warehouse-page__cell warehouse-page__cell--center text-center">{{ row.expiry | date: 'dd.MM.yyyy' }}</td>
                   <td class="warehouse-page__cell warehouse-page__cell--supplier" [attr.title]="row.supplier">
                     <span class="truncate">{{ row.supplier }}</span>
                   </td>
-                  <td class="warehouse-page__cell warehouse-page__cell--status">
+                  <td class="warehouse-page__cell warehouse-page__cell--status min-w-[112px]">
                     <span
-                      class="badge min-w-[88px] justify-center"
+                      class="badge min-w-[112px] justify-center"
                       [ngClass]="{
                         'badge-soft': row.status === 'warning',
                         'badge-danger': row.status === 'danger'
@@ -279,7 +303,7 @@
                   </td>
                 </tr>
                 <tr *ngIf="filteredRows().length === 0">
-                  <td class="warehouse-page__cell warehouse-page__empty-row" colspan="15">
+                  <td class="warehouse-page__cell warehouse-page__empty-row" colspan="12">
                     Нет поставок по текущим фильтрам
                   </td>
                 </tr>
