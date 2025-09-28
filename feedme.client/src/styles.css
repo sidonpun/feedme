@@ -5,3 +5,48 @@ html, body {
   height: 100%;
   font-family: Arial, sans-serif;
 }
+
+:root {
+  --brand: #ff6a00;
+}
+
+.square,
+.square * {
+  border-radius: 0 !important;
+}
+
+.no-shadow,
+.no-shadow * {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.icon-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  color: inherit;
+}
+
+.icon-btn:hover {
+  background: rgba(17, 24, 39, 0.06);
+}
+
+.filters-compact {
+  padding: 0.75rem !important;
+  gap: 0.5rem !important;
+}
+
+.tbl-compact th,
+.tbl-compact td {
+  padding: 0.5rem 0.625rem;
+}
