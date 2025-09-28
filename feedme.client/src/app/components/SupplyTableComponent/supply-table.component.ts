@@ -53,6 +53,8 @@ export class SupplyTableComponent implements OnChanges {
   rowsPerPage = 10;
   currentPage = 1;
   filteredData: any[] = [];
+  /** Показывает, есть ли хотя бы одна непустая поставка в исходных данных */
+  hasAnySupply = false;
 
   sortState: SortState | null = null;
 
@@ -90,6 +92,8 @@ export class SupplyTableComponent implements OnChanges {
       !!(item.category?.toString().trim()) ||
       !!(item.supplier?.toString().trim())
     );
+
+    this.hasAnySupply = nonEmpty.length > 0;
 
     // 2) поиск
     const q = this.searchQuery.toLowerCase();
