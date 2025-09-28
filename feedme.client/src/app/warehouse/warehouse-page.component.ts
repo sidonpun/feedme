@@ -20,7 +20,6 @@ import { SupplyRow, SupplyStatus } from './models';
 import { WarehouseService } from './warehouse.service';
 import { EmptyStateComponent } from './ui/empty-state.component';
 import { FieldComponent } from './ui/field.component';
-import { MetricComponent } from './ui/metric.component';
 import { StatusBadgeClassPipe } from '../pipes/status-badge-class.pipe';
 
 const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
@@ -37,7 +36,6 @@ const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
     NgIf,
     NgClass,
     ReactiveFormsModule,
-    MetricComponent,
     FieldComponent,
     EmptyStateComponent,
     StatusBadgeClassPipe,
@@ -69,6 +67,34 @@ export class WarehousePageComponent {
   readonly menuRowId = signal<number | null>(null);
 
   readonly rows = this.warehouseService.list();
+
+  readonly metrics = computed(() => {
+    const rows = this.rows();
+    const now = new Date();
+    const sevenDaysAgo = new Date(now);
+    sevenDaysAgo.setDate(now.getDate() - 7);
+
+    let suppliesLastWeek = 0;
+    let expired = 0;
+
+    for (const row of rows) {
+      const arrivalDate = new Date(row.arrivalDate);
+      if (arrivalDate >= sevenDaysAgo) {
+        suppliesLastWeek += 1;
+      }
+
+      const expiryDate = new Date(row.expiry);
+      if (expiryDate < now) {
+        expired += 1;
+      }
+    }
+
+    return {
+      suppliesLastWeek,
+      positions: rows.length,
+      expired,
+    };
+  });
 
   readonly suppliers = computed(() =>
     Array.from(new Set(this.rows().map((row) => row.supplier))).sort((a, b) =>
