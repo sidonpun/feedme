@@ -7,6 +7,10 @@ export class WarehouseService {
   private readonly rowsSignal = signal<SupplyRow[]>([
     {
       id: 1,
+      docNo: 'PR-000851',
+      arrivalDate: '2025-09-26',
+      warehouse: 'Главный склад',
+      responsible: 'Иванов И.',
       sku: 'MEAT-001',
       name: 'Курица охлажд.',
       category: 'Мясные заготовки',
@@ -19,10 +23,14 @@ export class WarehouseService {
     },
     {
       id: 2,
+      docNo: 'PR-000852',
+      arrivalDate: '2025-09-26',
+      warehouse: 'Кухня',
+      responsible: 'Петров П.',
       sku: 'MEAT-002',
       name: 'Говядина',
       category: 'Мясные заготовки',
-      qty: 11,
+      qty: 45,
       unit: 'кг',
       price: 450,
       expiry: '2025-09-28',
@@ -31,6 +39,10 @@ export class WarehouseService {
     },
     {
       id: 3,
+      docNo: 'PR-000853',
+      arrivalDate: '2025-09-27',
+      warehouse: 'Главный склад',
+      responsible: 'Сидорова А.',
       sku: 'VEG-011',
       name: 'Лук репчатый',
       category: 'Овощи',
@@ -43,6 +55,10 @@ export class WarehouseService {
     },
     {
       id: 4,
+      docNo: 'PR-000854',
+      arrivalDate: '2025-09-27',
+      warehouse: 'Бар',
+      responsible: 'Сергеев Д.',
       sku: 'DAIRY-004',
       name: 'Сливки 33%',
       category: 'Молочные',
@@ -56,4 +72,22 @@ export class WarehouseService {
   ]);
 
   readonly list = () => this.rowsSignal.asReadonly();
+
+  load(rows: SupplyRow[]): void {
+    this.rowsSignal.set(rows.map((row) => ({ ...row })));
+  }
+
+  updateRow(updated: SupplyRow): void {
+    this.rowsSignal.update((rows) =>
+      rows.map((row) => (row.id === updated.id ? { ...updated } : row)),
+    );
+  }
+
+  removeRows(ids: readonly number[]): void {
+    if (ids.length === 0) {
+      return;
+    }
+    const removeSet = new Set(ids);
+    this.rowsSignal.update((rows) => rows.filter((row) => !removeSet.has(row.id)));
+  }
 }
