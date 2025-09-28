@@ -33,3 +33,23 @@
 .catalog-table tbody tr:nth-child(even) {
   background-color: #f9f9f9;
 }
+
+.tbl-footer {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, #f6f7f9 40%, transparent);
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.02) inset, 0 -1px 0 0 rgba(0, 0, 0, 0.02) inset;
+  font-size: 0.875rem;
+}
+
+.tbl-footer__text {
+  color: #6b7280;
+}
+
+.tbl-footer__pager {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+}

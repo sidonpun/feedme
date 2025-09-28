@@ -79,34 +79,22 @@ table.stock-table td.actions-cell {
   width: 80px;
 }
 
-.pagination-controls {
+.tbl-footer {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin: 1rem 0;
+  padding: 0.75rem;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, #f6f7f9 40%, transparent);
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.02) inset, 0 -1px 0 0 rgba(0, 0, 0, 0.02) inset;
+  font-size: 0.875rem;
 }
 
-.pagination-controls button {
-  background-color: #fa4b00;
-  color: #ffffff;
-  border: none;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  border-radius: 0.25rem;
-  transition: background-color 0.4s ease-in;
+.tbl-footer__text {
+  color: #6b7280;
 }
 
-.pagination-controls button:hover:not(:disabled) {
-  background-color: #d94300;
-  cursor: pointer;
-}
-
-.pagination-controls button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.pagination-controls span {
-  font-size: 1rem;
+.tbl-footer__pager {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
 }
