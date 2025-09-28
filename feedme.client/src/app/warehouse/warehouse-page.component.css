@@ -362,16 +362,31 @@
 .warehouse-page__table-footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 16px;
   padding: 16px 24px;
   border-top: 1px solid #e2e8f0;
-  font-size: 0.875rem;
-  color: #6b7280;
+  border-radius: 0 0 12px 12px;
+  background-color: #ffffff;
+  box-shadow: 0 -6px 16px rgba(15, 23, 42, 0.05);
+}
+
+.warehouse-page__table-footer > span {
+  flex: 1;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #64748b;
 }
 
 .warehouse-page__pagination {
   display: flex;
-  gap: 8px;
+  gap: 12px;
+}
+
+.warehouse-page__pagination .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .warehouse-page__empty {
