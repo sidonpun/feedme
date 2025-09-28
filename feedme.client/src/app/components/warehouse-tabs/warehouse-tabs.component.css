@@ -1,127 +1,125 @@
-.container.warehouse-tabs {
+.tabs-underline {
   display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 0 16px;
-  height: 59px;
+  gap: 1.25rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  overflow-x: auto;
 }
 
-.item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
+.tabs-underline__btn {
+  position: relative;
+  padding: 0.5rem 0;
+  border: 0;
+  background: transparent;
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  white-space: nowrap;
   cursor: pointer;
-  font-size: 14px;
-  line-height: 1;
+  transition: color 0.2s ease;
 }
 
-  .item.selected {
-    color: #0056b3;
-    font-weight: bold;
-  }
+.tabs-underline__btn:hover {
+  color: #374151;
+}
 
-  .item img {
-    width: 24px;
-    height: 24px;
-   
-  }
+.tabs-underline__btn.is-active {
+  color: #111827;
+}
 
+.tabs-underline__btn.is-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--brand-600);
+}
+
+.tabs-underline__btn--add {
+  margin-left: auto;
+  color: var(--brand-600);
+}
+
+.tabs-underline__btn--add:hover {
+  color: var(--brand-700, #c2410c);
+}
 
 .popup-backdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.5);
+  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: rgba(17, 24, 39, 0.45);
+  z-index: 10;
 }
 
 .popup-create-storage {
-  width: 250px;
-  height: 150px;
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 15px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  position: relative;
+  width: min(90vw, 24rem);
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
 }
 
-  .popup-create-storage h2 {
-    font-size: 18px;
-    margin-bottom: 10px;
-  }
+.popup-create-storage__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
 
-  .popup-create-storage input {
-    padding: 6px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-  }
+.popup-create-storage__input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  transition: border-color 0.2s ease;
+}
+
+.popup-create-storage__input:focus {
+  outline: none;
+  border-color: var(--brand-600);
+  box-shadow: 0 0 0 1px var(--brand-600);
+}
 
 .popup-buttons {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 0.75rem;
 }
 
-.cancel-btn, .save-btn {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: none;
+.popup-button {
+  min-width: 6.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
   cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.cancel-btn {
-  background-color: #ccc;
+.popup-button--cancel {
+  background-color: #f3f4f6;
+  color: #4b5563;
 }
 
-.save-btn {
-  background-color: #007bff;
-  color: white;
-}
-.warehouse-tabs-container {
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  border-bottom: 1px solid #e6e6e6;
+.popup-button--cancel:hover {
+  background-color: #e5e7eb;
 }
 
-.warehouse-tabs {
-  display: flex;
-  gap: 24px;
+.popup-button--save {
+  background-color: var(--brand-600);
+  color: #ffffff;
 }
 
-.warehouse-tab {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 12px 0;
-  position: relative;
+.popup-button--save:hover {
+  background-color: var(--brand-700, #c2410c);
 }
-
-  .warehouse-tab.active {
-    font-weight: 500;
-    color: #0056b3;
-  }
-
-.new-supply-btn {
-  margin-left: auto; /* прижмёт вправо */
-  background-color: #fa4b00; /* оранжевый */
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-  .new-supply-btn:hover {
-    background-color: #d94300;
-  }
