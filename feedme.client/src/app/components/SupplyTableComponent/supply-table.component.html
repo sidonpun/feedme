@@ -107,15 +107,14 @@
           </span>
         </td>
         <td>
-          <span
-            class="badge min-w-[88px] justify-center"
-            [ngClass]="{
-              'badge-secondary': item.status?.toLowerCase() === 'скоро срок',
-              'badge-destructive': item.status?.toLowerCase() === 'просрочено'
-            }"
-          >
-            {{ item.status || item.state || 'Ок' }}
-          </span>
+          <ng-container *ngIf="(item.status || item.state || 'Ок') as status">
+            <span
+              class="badge min-w-[88px] justify-center"
+              [ngClass]="status | statusBadgeClass"
+            >
+              {{ status }}
+            </span>
+          </ng-container>
         </td>
         <td class="w-[44px] text-right">
           <button type="button" class="icon-btn" aria-label="Меню" (click)="onSettingsClick.emit(item)">

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableControlsComponent } from '../table-controls/table-controls.component';
 import { EmptyStateComponent } from '../../warehouse/ui/empty-state.component';
+import { StatusBadgeClassPipe } from '../../pipes/status-badge-class.pipe';
 
 type SortDirection = 'asc' | 'desc';
 type SortType = 'string' | 'number' | 'date';
@@ -21,7 +22,7 @@ interface FilterOptions {
 @Component({
   selector: 'app-supply-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableControlsComponent, EmptyStateComponent],
+  imports: [CommonModule, FormsModule, TableControlsComponent, EmptyStateComponent, StatusBadgeClassPipe],
   templateUrl: './supply-table.component.html',
   styleUrls: ['./supply-table.component.css']
 })
