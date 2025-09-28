@@ -1,141 +1,164 @@
-<!-- supply-table.component.html -->
-<!-- Заголовок таблицы: поиск + кнопка -->
-<div class="table-header">
-  <app-table-controls [searchQuery]="searchQuery"
-                      [rowsPerPage]="rowsPerPage"
-                      (searchQueryChange)="onSearchChange($event)"
-                      (rowsPerPageChange)="onRowsChange($event)">
-  </app-table-controls>
-  <button class="add-button" (click)="addSupply()">+ Новая поставка</button>
+<div class="card supplies-filters">
+  <div class="card__content p-4 flex flex-wrap items-center gap-3">
+    <label class="filters-control filters-control--search">
+      <span class="filters-control__label">Поиск</span>
+      <input
+        type="search"
+        class="input w-[320px]"
+        placeholder="Поиск по номеру, SKU или названию"
+        aria-label="Поиск по поставкам"
+        [value]="searchQuery"
+        (input)="onSearchChange(($event.target as HTMLInputElement).value)"
+      />
+    </label>
+
+    <label class="filters-control">
+      <span class="filters-control__label">Дата от</span>
+      <input type="date" class="input w-[160px]" aria-label="Дата прихода от" />
+    </label>
+
+    <label class="filters-control">
+      <span class="filters-control__label">Дата до</span>
+      <input type="date" class="input w-[160px]" aria-label="Дата прихода до" />
+    </label>
+
+    <div class="filters-control multi-select">
+      <span class="filters-control__label">Склад</span>
+      <div class="multi-select__control">
+        <span class="chip">Главный склад</span>
+        <span class="chip">Кухня</span>
+      </div>
+    </div>
+
+    <div class="filters-control multi-select">
+      <span class="filters-control__label">Статус</span>
+      <div class="multi-select__control">
+        <span class="chip">Ок</span>
+        <span class="chip chip--secondary">Скоро срок</span>
+        <span class="chip chip--destructive">Просрочено</span>
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-outline">Сброс</button>
+    <button type="button" class="btn btn-secondary">Экспорт</button>
+    <button type="button" class="btn btn-primary ml-auto" (click)="addSupply()">+ Новая поставка</button>
+  </div>
 </div>
 
-<!-- Контейнер с горизонтальным скроллом -->
 <div class="table-container">
-  <table class="supply-table">
-    <thead class="table-head">
+  <table class="supplies-table">
+    <thead class="supplies-table__head sticky top-0 bg-background/90 backdrop-blur border-b shadow-[inset_0_-1px_0_0_var(--border)]">
       <tr>
-        <th class="header-cell header-cell--sortable" [attr.aria-sort]="getAriaSort('productName')">
-          <button type="button"
-                  class="sort-button"
-                  (click)="toggleSort('productName')"
-                  [class.sort-button--active]="isSortedBy('productName')">
-            <span>Название</span>
-            <span class="sort-icon" aria-hidden="true">
-              {{ getSortIcon('productName') }}
-            </span>
-          </button>
+        <th class="w-[40px]" scope="col">
+          <input type="checkbox" class="checkbox" aria-label="Выбрать все поставки" />
         </th>
-        <th class="header-cell header-cell--sortable" [attr.aria-sort]="getAriaSort('category')">
-          <button type="button"
-                  class="sort-button"
-                  (click)="toggleSort('category')"
-                  [class.sort-button--active]="isSortedBy('category')">
-            <span>Категория</span>
-            <span class="sort-icon" aria-hidden="true">
-              {{ getSortIcon('category') }}
-            </span>
-          </button>
-        </th>
-        <th class="header-cell header-cell--sortable" [attr.aria-sort]="getAriaSort('stock')">
-          <button type="button"
-                  class="sort-button"
-                  (click)="toggleSort('stock')"
-                  [class.sort-button--active]="isSortedBy('stock')">
-            <span>Количество</span>
-            <span class="sort-icon" aria-hidden="true">
-              {{ getSortIcon('stock') }}
-            </span>
-          </button>
-        </th>
-        <th class="header-cell header-cell--sortable" [attr.aria-sort]="getAriaSort('unitPrice')">
-          <button type="button"
-                  class="sort-button"
-                  (click)="toggleSort('unitPrice')"
-                  [class.sort-button--active]="isSortedBy('unitPrice')">
-            <span>Цена</span>
-            <span class="sort-icon" aria-hidden="true">
-              {{ getSortIcon('unitPrice') }}
-            </span>
-          </button>
-        </th>
-        <th class="header-cell header-cell--sortable" [attr.aria-sort]="getAriaSort('expiryDate')">
-          <button type="button"
-                  class="sort-button"
-                  (click)="toggleSort('expiryDate')"
-                  [class.sort-button--active]="isSortedBy('expiryDate')">
-            <span>Срок годности</span>
-            <span class="sort-icon" aria-hidden="true">
-              {{ getSortIcon('expiryDate') }}
-            </span>
-          </button>
-        </th>
-        <th class="header-cell header-cell--sortable" [attr.aria-sort]="getAriaSort('responsible')">
-          <button type="button"
-                  class="sort-button"
-                  (click)="toggleSort('responsible')"
-                  [class.sort-button--active]="isSortedBy('responsible')">
-            <span>Ответственный склад</span>
-            <span class="sort-icon" aria-hidden="true">
-              {{ getSortIcon('responsible') }}
-            </span>
-          </button>
-        </th>
-        <th class="header-cell header-cell--sortable" [attr.aria-sort]="getAriaSort('supplier')">
-          <button type="button"
-                  class="sort-button"
-                  (click)="toggleSort('supplier')"
-                  [class.sort-button--active]="isSortedBy('supplier')">
-            <span>Поставщик</span>
-            <span class="sort-icon" aria-hidden="true">
-              {{ getSortIcon('supplier') }}
-            </span>
-          </button>
-        </th>
-
-        <th class="header-cell header-cell--menu" aria-hidden="true"></th>
-
+        <th scope="col" class="text-sm font-medium">№ док.</th>
+        <th scope="col" class="text-sm font-medium">Дата прихода</th>
+        <th scope="col" class="text-sm font-medium">Склад</th>
+        <th scope="col" class="text-sm font-medium">Ответственный</th>
+        <th scope="col" class="text-sm font-medium">SKU</th>
+        <th scope="col" class="text-sm font-medium">Название</th>
+        <th scope="col" class="text-sm font-medium text-right">Кол-во</th>
+        <th scope="col" class="text-sm font-medium text-center">Срок годности</th>
+        <th scope="col" class="text-sm font-medium">Поставщик</th>
+        <th scope="col" class="text-sm font-medium">Статус</th>
+        <th scope="col" class="w-[44px]"></th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of paginatedData">
-        <td>{{ item.productName || item.name }}</td>
-        <td>{{ item.category }}</td>
-        <td>{{ item.stock }}</td>
-        <td>{{ item.unitPrice }}</td>
-        <td>{{ item.expiryDate }}</td>
-        <td>{{ item.responsible }}</td>
-        <td>{{ item.supplier }}</td>
+      <tr *ngFor="let item of paginatedData" class="hover:bg-muted/40 odd:bg-muted/10 h-11 align-middle">
+        <td class="w-[40px]">
+          <input type="checkbox" class="checkbox" aria-label="Выбрать поставку" />
+        </td>
+        <td class="font-mono text-xs">
+          {{ item.documentNumber || item.id || '—' }}
+        </td>
+        <td class="text-center">
+          {{ item.arrivalDate || item.createdAt || item.date || '—' }}
+        </td>
         <td>
-          <button (click)="onSettingsClick.emit(item)">⚙️</button>
+          <span class="truncate" [title]="item.warehouse || item.location || '—'">
+            {{ item.warehouse || item.location || '—' }}
+          </span>
+        </td>
+        <td>
+          <span class="truncate" [title]="item.responsible || item.manager || '—'">
+            {{ item.responsible || item.manager || '—' }}
+          </span>
+        </td>
+        <td class="font-mono text-xs">
+          {{ item.sku || item.code || '—' }}
+        </td>
+        <td>
+          <span class="truncate" [title]="item.productName || item.name || '—'">
+            {{ item.productName || item.name || '—' }}
+          </span>
+        </td>
+        <td class="text-right">
+          {{ (item.stock ?? item.quantity ?? '—') }}
+        </td>
+        <td class="text-center">
+          {{ item.expiryDate ? (item.expiryDate | date: 'dd.MM.yyyy') : '—' }}
+        </td>
+        <td>
+          <span class="truncate" [title]="item.supplier || item.vendor || '—'">
+            {{ item.supplier || item.vendor || '—' }}
+          </span>
+        </td>
+        <td>
+          <span
+            class="badge min-w-[88px] justify-center"
+            [ngClass]="{
+              'badge-secondary': item.status?.toLowerCase() === 'скоро срок',
+              'badge-destructive': item.status?.toLowerCase() === 'просрочено'
+            }"
+          >
+            {{ item.status || item.state || 'Ок' }}
+          </span>
+        </td>
+        <td class="w-[44px]">
+          <div class="menu">
+            <button
+              type="button"
+              class="btn btn-ghost btn-icon"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-label="Открыть меню"
+            >
+              ⋯
+            </button>
+            <div class="menu__panel" role="menu">
+              <button type="button" class="menu__item" role="menuitem" (click)="onSettingsClick.emit(item)">
+                Открыть
+              </button>
+              <button type="button" class="menu__item" role="menuitem">
+                Редактировать
+              </button>
+              <div class="menu__separator" role="separator"></div>
+              <button type="button" class="menu__item menu__item--destructive" role="menuitem">
+                Удалить
+              </button>
+            </div>
+          </div>
         </td>
       </tr>
       <tr *ngIf="paginatedData.length === 0">
-        <td colspan="8" class="no-data">Нет данных</td>
+        <td colspan="12" class="no-data">Нет данных</td>
       </tr>
     </tbody>
   </table>
 </div>
 
-<!-- Пагинация -->
-
 <div class="table-footer flex items-center p-3 border-t text-sm bg-muted/40 shadow-sm">
-  <div class="table-footer__summary">
-    <span class="text-sm text-muted-foreground">Показано {{ paginatedData.length }} поставок</span>
-    <span class="table-footer__page text-muted-foreground">Страница {{ currentPage }} из {{ totalPages }}</span>
+  <div class="table-footer__summary text-muted-foreground">
+    Показано {{ paginatedData.length }} поставок · Страница {{ currentPage }} из {{ totalPages }}
   </div>
   <div class="ml-auto flex gap-2">
-    <button type="button"
-            class="btn btn-outline btn-sm"
-            (click)="prevPage()"
-            [disabled]="currentPage === 1">
+    <button type="button" class="btn btn-outline btn-sm" (click)="prevPage()" [disabled]="currentPage === 1">
       Назад
     </button>
-    <button type="button"
-            class="btn btn-outline btn-sm"
-            (click)="nextPage()"
-            [disabled]="currentPage === totalPages">
+    <button type="button" class="btn btn-outline btn-sm" (click)="nextPage()" [disabled]="currentPage === totalPages">
       Далее
     </button>
   </div>
 </div>
-
