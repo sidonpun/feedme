@@ -399,10 +399,10 @@
   white-space: nowrap;
 }
 
-.warehouse-page__empty-row {
-  text-align: center;
-  padding: 32px 16px;
-  color: #94a3b8;
+
+.warehouse-page__empty-state {
+  display: block;
+  width: 100%;
 }
 
 .warehouse-page__cell--name {

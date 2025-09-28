@@ -278,7 +278,7 @@ describe('WarehousePageComponent', () => {
 
     expect(component.rows().length).toBe(0);
     expect(component.checkedIds().length).toBe(0);
-    const emptyRow = fixture.nativeElement.querySelector('.warehouse-page__empty-row');
-    expect(emptyRow?.textContent).toContain('Нет поставок');
+    const emptyState = fixture.nativeElement.querySelector('.warehouse-page__empty-state');
+    expect(emptyState?.textContent).toContain('Здесь пока пусто');
   });
 });

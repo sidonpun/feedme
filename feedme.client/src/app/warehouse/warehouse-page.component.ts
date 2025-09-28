@@ -18,9 +18,9 @@ import {
 
 import { SupplyRow, SupplyStatus } from './models';
 import { WarehouseService } from './warehouse.service';
-import { EmptyStateComponent } from './ui/empty-state.component';
 import { FieldComponent } from './ui/field.component';
 import { MetricComponent } from './ui/metric.component';
+import { WarehouseEmptyStateComponent } from './components/empty-state/empty-state.component';
 
 const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
@@ -38,7 +38,7 @@ const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
     ReactiveFormsModule,
     MetricComponent,
     FieldComponent,
-    EmptyStateComponent,
+    WarehouseEmptyStateComponent,
   ],
   templateUrl: './warehouse-page.component.html',
   styleUrl: './warehouse-page.component.css',

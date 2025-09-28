@@ -173,7 +173,10 @@
 
         <section class="warehouse-page__table-card">
           <header class="warehouse-page__table-header">Последние поставки</header>
-          <div class="warehouse-page__table-wrapper">
+          <div
+            class="warehouse-page__table-wrapper"
+            *ngIf="filteredRows().length > 0; else suppliesEmptyState"
+          >
             <table class="warehouse-page__table">
               <thead>
                 <tr>
@@ -279,14 +282,17 @@
                     </div>
                   </td>
                 </tr>
-                <tr *ngIf="filteredRows().length === 0">
-                  <td class="warehouse-page__cell warehouse-page__empty-row" colspan="15">
-                    Нет поставок по текущим фильтрам
-                  </td>
-                </tr>
               </tbody>
             </table>
           </div>
+          <ng-template #suppliesEmptyState>
+            <app-warehouse-empty-state
+              class="warehouse-page__empty-state"
+              subtitle="Добавьте первую поставку, чтобы отследить движение товаров."
+              ctaLabel="+ Новая поставка"
+              (cta)="openCreateDialog()"
+            ></app-warehouse-empty-state>
+          </ng-template>
           <footer class="warehouse-page__table-footer">
             <span>
               Показано {{ filteredRows().length }} из {{ rows().length }}.
@@ -301,13 +307,25 @@
       </section>
 
       <section *ngIf="activeTab() === 'stock'" class="warehouse-page__empty">
-        <app-empty title="Остатки" subtitle="Выберите склад и примените фильтры"></app-empty>
+        <app-warehouse-empty-state
+          class="warehouse-page__empty-state"
+          subtitle="Перейдите к поставкам или импортируйте остатки, чтобы увидеть товары на складе."
+          ctaLabel="+ Импорт остатков"
+        ></app-warehouse-empty-state>
       </section>
       <section *ngIf="activeTab() === 'catalog'" class="warehouse-page__empty">
-        <app-empty title="Каталог" subtitle="Импортируйте CSV или создайте первую позицию"></app-empty>
+        <app-warehouse-empty-state
+          class="warehouse-page__empty-state"
+          subtitle="Импортируйте CSV или создайте первую позицию каталога."
+          ctaLabel="+ Новая позиция"
+        ></app-warehouse-empty-state>
       </section>
       <section *ngIf="activeTab() === 'inventory'" class="warehouse-page__empty">
-        <app-empty title="Инвентаризация" subtitle="Создайте обход или запустите экспресс-пересчёт"></app-empty>
+        <app-warehouse-empty-state
+          class="warehouse-page__empty-state"
+          subtitle="Создайте обход или запустите экспресс-пересчёт, чтобы начать инвентаризацию."
+          ctaLabel="+ Новая инвентаризация"
+        ></app-warehouse-empty-state>
       </section>
     </section>
   </main>

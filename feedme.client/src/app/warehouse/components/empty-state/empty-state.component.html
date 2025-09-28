@@ -1,0 +1,12 @@
+<section class="empty-state" role="status" aria-live="polite">
+  <h3 class="empty-state__title">Здесь пока пусто</h3>
+  <p class="empty-state__subtitle">{{ subtitle }}</p>
+  <button
+    type="button"
+    class="btn btn-sm empty-state__cta"
+    (click)="onCtaClick()"
+    [attr.aria-label]="resolvedCtaAriaLabel"
+  >
+    {{ ctaLabel }}
+  </button>
+</section>
