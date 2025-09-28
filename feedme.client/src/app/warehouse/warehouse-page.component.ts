@@ -76,6 +76,7 @@ export class WarehousePageComponent {
   readonly editDialogTab = signal<EditDialogTab>('details');
 
   readonly rows = this.warehouseService.list();
+  readonly metrics = this.warehouseService.metrics();
 
 
   readonly editDialogTabs: ReadonlyArray<{ key: EditDialogTab; label: string }> = [
