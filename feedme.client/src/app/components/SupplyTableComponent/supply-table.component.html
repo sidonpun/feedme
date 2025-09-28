@@ -8,7 +8,8 @@
         placeholder="Поиск по номеру, SKU или названию"
         aria-label="Поиск по поставкам"
         [value]="searchQuery"
-        (input)="onSearchChange(($event.target as HTMLInputElement).value)"
+        #searchInput
+        (input)="onSearchChange(searchInput.value)"
       />
     </label>
 
