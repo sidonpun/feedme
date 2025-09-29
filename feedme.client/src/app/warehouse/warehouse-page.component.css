@@ -347,15 +347,6 @@
 }
 
 
-.warehouse-page__filters-control--search {
-  flex: 1 1 320px;
-  min-width: 240px;
-}
-
-.warehouse-page__filters-control--search .input {
-  width: 100%;
-}
-
 .warehouse-page__filters-control--date {
   flex: 0 0 auto;
 }
