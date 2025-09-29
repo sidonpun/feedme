@@ -1,18 +1,86 @@
-<header class="top-bar">
-  <div class="top-bar-content">
-    <!-- Левая часть верхней панели -->
-    <div class="restaurant-info">
-      <h1>{{ restaurantName }}</h1>
-      <p>{{ status }}</p>
+<header class="warehouse-header">
+  <section class="warehouse-header__panel warehouse-header__breadcrumbs-panel">
+    <div class="warehouse-header__breadcrumbs" aria-label="Навигация по разделам">
+      <ng-container *ngFor="let breadcrumb of breadcrumbs; let isLast = last">
+        <span
+          class="warehouse-header__breadcrumb"
+          [class.warehouse-header__breadcrumb--current]="isLast"
+        >
+          {{ breadcrumb }}
+        </span>
+        <span *ngIf="!isLast" class="warehouse-header__breadcrumb-separator">/</span>
+      </ng-container>
     </div>
+    <div class="warehouse-header__warehouse">
+      <span class="warehouse-header__warehouse-label">Склад:</span>
+      <span class="warehouse-header__warehouse-tag">{{ selectedWarehouse }}</span>
+    </div>
+  </section>
 
-    <!-- Правая часть верхней панели -->
-    <div class="inner-container">
-      <span class="date">{{ formattedDate }}</span>
-      <div class="separator"></div>
-      <span class="name">{{ userName }}</span>
-      <img [src]="avatarUrl" alt="Avatar" class="avatar">
-      <img [src]="arrowDownUrl" alt="Arrow Down" class="arrow-down">
+  <section class="warehouse-header__kpi" aria-label="Ключевые показатели склада">
+    <article class="warehouse-header__metric" *ngFor="let metric of metrics">
+      <p class="warehouse-header__metric-title">{{ metric.title }}</p>
+      <p
+        class="warehouse-header__metric-value"
+        [class.warehouse-header__metric-value--negative]="metric.isNegative"
+      >
+        {{ metric.value }}
+      </p>
+    </article>
+  </section>
+
+  <section class="warehouse-header__panel warehouse-header__toolbar">
+    <div class="warehouse-header__filters" [formGroup]="filterForm">
+      <input
+        class="warehouse-header__input warehouse-header__search"
+        type="search"
+        formControlName="search"
+        [placeholder]="searchPlaceholder"
+        aria-label="Поиск по поставкам"
+      />
+      <input
+        class="warehouse-header__input warehouse-header__date-picker"
+        type="text"
+        inputmode="numeric"
+        formControlName="startDate"
+        [placeholder]="datePlaceholders.start"
+        aria-label="Дата начала периода"
+      />
+      <input
+        class="warehouse-header__input warehouse-header__date-picker"
+        type="text"
+        inputmode="numeric"
+        formControlName="endDate"
+        [placeholder]="datePlaceholders.end"
+        aria-label="Дата окончания периода"
+      />
+      <button
+        type="button"
+        class="warehouse-header__button warehouse-header__reset-button"
+        (click)="onResetFilters()"
+      >
+        Сброс
+      </button>
     </div>
-  </div>
+    <div class="warehouse-header__actions">
+      <button type="button" class="warehouse-header__button warehouse-header__export-button">
+        Экспорт
+      </button>
+      <button type="button" class="warehouse-header__button warehouse-header__cta-button">
+        + Новая поставка
+      </button>
+    </div>
+  </section>
+
+  <nav class="warehouse-header__tabs" aria-label="Навигация по складским разделам">
+    <button
+      type="button"
+      class="warehouse-header__tab"
+      *ngFor="let tab of tabs"
+      [class.warehouse-header__tab--active]="tab === activeTab"
+      (click)="setActiveTab(tab)"
+    >
+      {{ tab }}
+    </button>
+  </nav>
 </header>
