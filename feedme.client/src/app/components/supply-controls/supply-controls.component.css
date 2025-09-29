@@ -1,127 +1,72 @@
-.container {
+:host {
+  display: block;
+}
+
+.supply-controls {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 20px;
-  padding: 0 16px;
-  height: 59px;
-  background-color: #f5f5f5;
-  width: 100%;
-  box-shadow: none;
-}
-
-.item,
-.catalog-button {
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  gap: 6px;
-  padding: 8px 12px;
-  color: #000000;
-  cursor: pointer;
-  position: relative;
-  transition: color 0.3s ease;
-}
-
-  .item img {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-  }
-
-  .item.selected,
-  .catalog-button.selected {
-    font-weight: bold;
-    color: #4F6BD1;
-  }
-
-    .item.selected::after,
-    .catalog-button.selected::after {
-      content: "";
-      position: absolute;
-      bottom: -2px;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background-color: #4F6BD1;
-    }
-
-  .item:hover,
-  .catalog-button:hover {
-    color: #4F6BD1;
-  }
-
-
-.primary-action-btn {
-  width: 180px;
-  height: 40px;
-  background-color: #fa502d;
-  color: #ffffff;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-}
-
-  .primary-action-btn:hover {
-    background-color: #e64827;
-  }
-
-  .primary-action-btn img {
-    width: 20px;
-    height: 20px;
-    margin-right: 6px;
-  }
-.add-button-wrapper {
-  margin-left: auto;
-  padding-right: 16px;
-}
-
-.add-button {
-  display: inline-block;
-  background-color: #fa4b00;
-  color: #fff;
-  border: none;
-  border-radius: 0.375rem;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  /* прижать вправо, если в flex-контейнере */
-  margin-left: auto;
-}
-
-  .add-btn:hover {
-    background-color: #d94300;
-  }
-.table-header {
-  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0 1rem  0.5rem;
+  gap: 16px;
+  padding: 0 4px;
 }
 
-.new-supply-btn {
-  margin-left: auto; /* прижать вправо */
-  background-color: #fa4b00; /* оранжевый */
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-size: 14px;
+.supply-controls__tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 9999px;
+  background: rgba(148, 163, 184, 0.16);
+}
+
+.supply-controls__tab {
+  border: 0;
+  border-radius: 9999px;
+  padding: 10px 22px;
+  background: transparent;
+  color: #475569;
+  font-size: 0.9375rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
-  .new-supply-btn:hover {
-    background-color: #d94300;
+.supply-controls__tab:hover {
+  color: #0f172a;
+}
+
+.supply-controls__tab:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+.supply-controls__tab--active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
+}
+
+.supply-controls__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .supply-controls {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-/* остальной CSS оставляем без изменений */
+  .supply-controls__actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .supply-controls__actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

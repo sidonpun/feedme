@@ -76,27 +76,11 @@
         </article>
       </section>
 
-      <div class="warehouse-page__overview-footer">
-        <nav class="warehouse-page__tabs" role="tablist" aria-label="Разделы склада">
-          <button
-            type="button"
-            *ngFor="let entry of tabKeys"
-            class="warehouse-page__tab"
-            [class.warehouse-page__tab--active]="activeTab() === entry"
-            (click)="selectTab(entry)"
-            role="tab"
-            [attr.aria-selected]="activeTab() === entry ? 'true' : 'false'"
-          >
-            {{ tabLabels[entry] }}
-          </button>
-        </nav>
-        <div class="warehouse-page__header-actions">
-          <button type="button" class="btn btn-secondary">Экспорт</button>
-          <button type="button" class="btn btn-primary" (click)="openCreateDialog()">
-            + Новая поставка
-          </button>
-        </div>
-      </div>
+      <app-supply-controls
+        [activeTab]="activeTab()"
+        (activeTabChange)="selectTab($event)"
+        (createSupply)="openCreateDialog()"
+      ></app-supply-controls>
     </section>
 
     <section *ngIf="activeTab() === 'supplies'" class="warehouse-page__tab-panel">

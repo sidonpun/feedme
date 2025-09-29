@@ -1,22 +1,24 @@
-<div class="container supply-controls">
+<div class="supply-controls" role="navigation" aria-label="Управление разделами склада">
+  <nav class="supply-controls__tabs" role="tablist" aria-label="Разделы склада">
+    <button
+      type="button"
+      *ngFor="let tab of tabs; trackBy: trackByTab"
+      class="supply-controls__tab"
+      [class.supply-controls__tab--active]="tab.key === activeTab"
+      (click)="onSelect(tab.key)"
+      role="tab"
+      [attr.aria-selected]="tab.key === activeTab ? 'true' : 'false'"
+    >
+      {{ tab.label }}
+    </button>
+  </nav>
 
-  <div class="item" [class.selected]="selectedSupply === 'supplies'" (click)="setSupplyType('supplies')">
-    <img src="assets/truck.svg" alt="Поставки товара" class="item-icon">
-    <span>Поставки товара</span>
+  <div class="supply-controls__actions">
+    <button type="button" class="btn btn-secondary">
+      Экспорт
+    </button>
+    <button type="button" class="btn btn-primary" (click)="onCreateSupply()">
+      + Новая поставка
+    </button>
   </div>
-
-  <div class="item" [class.selected]="selectedSupply === 'stock'" (click)="setSupplyType('stock')">
-    <img src="assets/box.svg" alt="Остаток товара" class="item-icon">
-    <span>Остаток товара</span>
-  </div>
-
-
-
-  <div class="item catalog-button" [class.selected]=" selectedSupply === 'catalog'" (click)="handleGoToCatalog()">
-    <img src="assets/catalog.svg" alt="Каталог" class="item-icon">
-    <span>Каталог</span>
-  </div>
-
 </div>
-
-

@@ -22,6 +22,7 @@ import { EmptyStateComponent } from './ui/empty-state.component';
 import { FieldComponent } from './ui/field.component';
 import { StatusBadgeClassPipe } from '../pipes/status-badge-class.pipe';
 import { StatusBadgeLabelPipe } from '../pipes/status-badge-label.pipe';
+import { SupplyControlsComponent } from '../components/supply-controls/supply-controls.component';
 
 const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
@@ -30,6 +31,8 @@ const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
 });
 
 type EditDialogTab = 'details' | 'items' | 'history';
+
+type WarehouseTab = 'supplies' | 'stock' | 'catalog' | 'inventory';
 
 type SupplyHistoryEntry = {
   date: string;
@@ -49,6 +52,7 @@ type SupplyHistoryEntry = {
     EmptyStateComponent,
     StatusBadgeClassPipe,
     StatusBadgeLabelPipe,
+    SupplyControlsComponent,
   ],
   templateUrl: './warehouse-page.component.html',
   styleUrl: './warehouse-page.component.css',
@@ -60,7 +64,7 @@ export class WarehousePageComponent {
 
   @ViewChild('searchInput') private readonly searchInput?: ElementRef<HTMLInputElement>;
 
-  readonly activeTab = signal<'supplies' | 'stock' | 'catalog' | 'inventory'>('supplies');
+  readonly activeTab = signal<WarehouseTab>('supplies');
   readonly query = signal('');
   readonly status = signal<SupplyStatus | ''>('');
   readonly statuses = SUPPLY_STATUSES;
@@ -173,14 +177,6 @@ export class WarehousePageComponent {
     return this.rows().find((row) => row.id === id) ?? null;
   });
 
-  readonly tabKeys = ['supplies', 'stock', 'catalog', 'inventory'] as const;
-  readonly tabLabels: Record<'supplies' | 'stock' | 'catalog' | 'inventory', string> = {
-    supplies: 'Поставки',
-    stock: 'Остатки',
-    catalog: 'Каталог',
-    inventory: 'Инвентаризация',
-  };
-
   readonly editForm = this.fb.group({
     docNo: this.fb.control('', { validators: [Validators.required] }),
     arrivalDate: this.fb.control('', { validators: [Validators.required] }),
@@ -253,7 +249,7 @@ export class WarehousePageComponent {
     this.editDialogTab.set(tab);
   }
 
-  selectTab(tab: 'supplies' | 'stock' | 'catalog' | 'inventory'): void {
+  selectTab(tab: WarehouseTab): void {
     this.activeTab.set(tab);
   }
 
