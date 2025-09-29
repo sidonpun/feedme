@@ -82,27 +82,6 @@ export class SuppliesComponent {
 
   readonly dialogOpen = signal(false);
 
-  readonly quickPeriods: ReadonlyArray<QuickPeriodOption> = [
-    { id: 'today', label: 'Сегодня', days: 0 },
-    { id: '7d', label: '7 дней', days: 7 },
-    { id: '30d', label: '30 дней', days: 30 },
-  ];
-
-  dateFrom = '';
-  dateTo = '';
-  period: Period = '';
-
-  private readonly statusLabels: Record<SupplyStatus, string> = {
-    ok: 'Ок',
-    warning: 'Скоро срок',
-    expired: 'Просрочено',
-  };
-
-  private readonly statusClasses: Record<SupplyStatus, string> = {
-    ok: 'supplies-status supplies-status--ok',
-    warning: 'supplies-status supplies-status--warning',
-    expired: 'supplies-status supplies-status--expired',
-  };
 
   readonly form = this.fb.group({
     docNo: this.fb.control('', { validators: [Validators.required] }),
@@ -179,50 +158,11 @@ export class SuppliesComponent {
 
   openDialog(): void {
     this.dialogOpen.set(true);
-
   }
 
   closeDialog(): void {
     this.dialogOpen.set(false);
     this.resetForm();
-  }
-
-
-  setPeriod(period: QuickPeriod): void {
-    const option = this.quickPeriods.find(({ id }) => id === period);
-
-    if (!option) {
-      return;
-    }
-
-    this.period = option.id;
-
-    const today = this.createToday();
-    const toDate = this.formatDate(today);
-    const fromDate = new Date(today);
-
-    if (option.days > 0) {
-      fromDate.setDate(fromDate.getDate() - option.days);
-    }
-
-    this.dateFrom = this.formatDate(fromDate);
-    this.dateTo = toDate;
-  }
-
-  onDateFromChange(value: string): void {
-    this.dateFrom = value;
-    this.period = '';
-  }
-
-  onDateToChange(value: string): void {
-    this.dateTo = value;
-    this.period = '';
-  }
-
-  resetFilters(): void {
-    this.period = '';
-    this.dateFrom = '';
-    this.dateTo = '';
   }
 
 
@@ -290,13 +230,25 @@ export class SuppliesComponent {
     return row.id;
   }
 
-
-  getStatusLabel(status: SupplyStatus): string {
-    return this.statusLabels[status];
+  statusClass(status: SupplyStatus): Record<string, boolean> {
+    return {
+      'status-pill': true,
+      'status-ok': status === 'ok',
+      'status-warn': status === 'warning',
+      'status-expired': status === 'expired',
+    };
   }
 
-  getStatusClass(status: SupplyStatus): string {
-    return this.statusClasses[status];
+  statusText(status: SupplyStatus): string {
+    if (status === 'ok') {
+      return 'Ок';
+    }
+
+    if (status === 'warning') {
+      return 'Скоро срок';
+    }
+
+    return 'Просрочено';
   }
 
   private parseIsoDate(value: string): Date {
