@@ -89,20 +89,6 @@
             class="warehouse-page__filters card__content p-4 flex flex-wrap items-center gap-3"
             (submit)="$event.preventDefault()"
           >
-            <div class="warehouse-page__filters-control warehouse-page__filters-control--search w-[320px]">
-              <label class="warehouse-page__filters-field">
-                <span class="warehouse-page__filters-label">Поиск</span>
-                <input
-                  #searchInput
-                  class="input"
-                  type="search"
-                  placeholder="Поиск по номеру, SKU или названию"
-                  aria-label="Поиск по поставкам"
-                  [value]="query()"
-                  (input)="updateQuery(searchInput.value)"
-                />
-              </label>
-            </div>
             <div class="warehouse-page__filters-control warehouse-page__filters-control--select">
               <label class="warehouse-page__filters-field">
                 <span class="warehouse-page__filters-label">Статус</span>

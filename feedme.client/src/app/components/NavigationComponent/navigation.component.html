@@ -1,8 +1,0 @@
-<div class="container navigation">
-  <div *ngFor="let tab of tabs"
-       class="item"
-       [class.selected]="tab === selectedTab"
-       (click)="selectTab(tab)">
-    <span>{{ tab }}</span>
-  </div>
-</div>

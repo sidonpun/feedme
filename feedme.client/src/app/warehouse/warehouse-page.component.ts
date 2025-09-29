@@ -2,9 +2,7 @@ import { NgClass, NgFor, NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   HostListener,
-  ViewChild,
   computed,
   effect,
   inject,
@@ -62,10 +60,9 @@ export class WarehousePageComponent {
   private readonly warehouseService = inject(WarehouseService);
   private readonly fb = inject(NonNullableFormBuilder);
 
-  @ViewChild('searchInput') private readonly searchInput?: ElementRef<HTMLInputElement>;
 
-  readonly activeTab = signal<WarehouseTab>('supplies');
-  readonly query = signal('');
+  readonly activeTab = signal<'supplies' | 'stock' | 'catalog' | 'inventory'>('supplies');
+
   readonly status = signal<SupplyStatus | ''>('');
   readonly statuses = SUPPLY_STATUSES;
   readonly supplier = signal('');
@@ -126,7 +123,6 @@ export class WarehousePageComponent {
   );
 
   readonly filteredRows = computed(() => {
-    const search = this.query().trim().toLowerCase();
     const statusFilter = this.status();
     const supplierFilter = this.supplier();
     const warehouseFilter = this.selectedWarehouse();
@@ -134,9 +130,6 @@ export class WarehousePageComponent {
     const to = this.dateTo();
 
     return this.rows().filter((row) => {
-      const matchesQuery = search
-        ? `${row.docNo}${row.name}${row.sku}`.toLowerCase().includes(search)
-        : true;
       const matchesStatus = statusFilter ? row.status === statusFilter : true;
       const matchesSupplier = supplierFilter ? row.supplier === supplierFilter : true;
       const matchesWarehouse = warehouseFilter ? row.warehouse === warehouseFilter : true;
@@ -144,7 +137,6 @@ export class WarehousePageComponent {
       const matchesTo = to ? row.arrivalDate <= to : true;
 
       return (
-        matchesQuery &&
         matchesStatus &&
         matchesSupplier &&
         matchesWarehouse &&
@@ -229,18 +221,6 @@ export class WarehousePageComponent {
     this.menuRowId.set(null);
   }
 
-  @HostListener('document:keydown', ['$event'])
-  onDocumentKeydown(event: KeyboardEvent): void {
-    if (event.key === '/' && !event.defaultPrevented) {
-      const input = this.searchInput?.nativeElement;
-      if (input && document.activeElement !== input) {
-        event.preventDefault();
-        input.focus();
-        input.select();
-      }
-    }
-  }
-
   trackByRow = (_: number, row: SupplyRow) => row.id;
   trackByEditDialogTab = (_: number, tab: { key: EditDialogTab }) => tab.key;
   trackByHistoryEntry = (_: number, entry: SupplyHistoryEntry) => `${entry.date}-${entry.operation}-${entry.quantity}`;
@@ -251,10 +231,6 @@ export class WarehousePageComponent {
 
   selectTab(tab: WarehouseTab): void {
     this.activeTab.set(tab);
-  }
-
-  updateQuery(value: string): void {
-    this.query.set(value);
   }
 
   updateStatus(value: string): void {
@@ -282,7 +258,6 @@ export class WarehousePageComponent {
   }
 
   clearFilters(): void {
-    this.query.set('');
     this.status.set('');
     this.supplier.set('');
     this.dateFrom.set('');
