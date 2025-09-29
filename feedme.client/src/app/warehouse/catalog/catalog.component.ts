@@ -14,7 +14,7 @@ import {
 import { firstValueFrom } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
-import { CatalogService } from './catalog.service';
+import { WarehouseCatalogService } from './catalog.service';
 import { Product } from '../shared/models';
 
 interface ProductFormValue {
@@ -44,13 +44,12 @@ interface ProductFormValue {
   selector: 'app-warehouse-catalog',
   imports: [NgFor, NgIf, NgClass, ReactiveFormsModule],
   templateUrl: './catalog.component.html',
-
   styleUrls: ['./catalog.component.scss'],
-hangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CatalogComponent {
   private readonly fb = inject(NonNullableFormBuilder);
-  private readonly catalogService = inject(CatalogService);
+  private readonly catalogService = inject(WarehouseCatalogService);
 
   private readonly defaults: ProductFormValue = {
     name: '',
@@ -150,18 +149,21 @@ export class CatalogComponent {
       unit: raw.unit,
       unitWeight: this.normalizeNumber(raw.unitWeight),
       writeoff: raw.writeoff,
-      allergens: raw.allergens.trim() || undefined,
-      needsPacking: raw.needsPacking || undefined,
-      perishableAfterOpen: raw.perishableAfterOpen || undefined,
-      supplierMain: raw.supplierMain.trim() || undefined,
+      allergens: raw.allergens.trim() || null,
+      needsPacking: raw.needsPacking,
+      perishableAfterOpen: raw.perishableAfterOpen,
+      supplierMain: raw.supplierMain.trim() || null,
       leadTimeDays: this.normalizeNumber(raw.leadTimeDays),
       costEst: this.normalizeNumber(raw.costEst),
-      vat: raw.vat.trim() || undefined,
+      vat: raw.vat.trim() || null,
       purchasePrice: this.normalizeNumber(raw.purchasePrice),
       salePrice: this.normalizeNumber(raw.salePrice),
-      tnvCode: raw.tnvCode.trim() || undefined,
-      marked: raw.marked || undefined,
-      alcohol: raw.alcohol || undefined,
+      tnvCode: raw.tnvCode.trim() || null,
+      marked: raw.marked,
+      alcohol: raw.alcohol,
+      alcoholCode: null,
+      alcoholStrength: null,
+      alcoholVolume: null,
     };
 
     this.submitting.set(true);
@@ -181,13 +183,13 @@ export class CatalogComponent {
     this.productForm.reset(this.defaults);
   }
 
-  private normalizeNumber(value: number | null): number | undefined {
+  private normalizeNumber(value: number | null): number | null {
     if (value === null || Number.isNaN(value)) {
-      return undefined;
+      return null;
     }
 
     if (value < 0) {
-      return undefined;
+      return null;
     }
 
     return value;

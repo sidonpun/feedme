@@ -1,26 +1,44 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
+import { take } from 'rxjs/operators';
 
-
-import { SupplyProduct, SupplyRow } from '../shared/models';
+import { Product, SupplyProduct, SupplyRow } from '../shared/models';
 import { computeExpiryStatus } from '../shared/status.util';
+import { WarehouseCatalogService } from '../catalog/catalog.service';
 
 @Injectable({ providedIn: 'root' })
 export class SuppliesService {
-  private readonly productList: SupplyProduct[] = [
-    { id: 'prod-chicken', sku: 'MEAT-001', name: 'Курица охлаждённая', unit: 'кг', supplier: 'ООО Куры Дуры' },
-    { id: 'prod-beef', sku: 'MEAT-002', name: 'Говядина вырезка', unit: 'кг', supplier: 'Ферма №5' },
-    { id: 'prod-cream', sku: 'DAIRY-004', name: 'Сливки 33%', unit: 'л', supplier: 'МолКомбинат' },
-    { id: 'prod-apples', sku: 'VEG-011', name: 'Яблоко зеленое', unit: 'кг', supplier: 'ОвощБаза' },
-    { id: 'prod-juice', sku: 'BEV-021', name: 'Сок яблочный', unit: 'л', supplier: 'Fresh Drinks' },
-  ];
+  private readonly catalogService = inject(WarehouseCatalogService);
 
-  private readonly productMap = new Map(this.productList.map((product) => [product.id, product]));
-  private readonly productsSubject = new BehaviorSubject<SupplyProduct[]>(this.productList);
+  private readonly productsSubject = new BehaviorSubject<SupplyProduct[]>([]);
+  private readonly rowsSubject = new BehaviorSubject<SupplyRow[]>([]);
+  private productMap = new Map<string, SupplyProduct>();
+  private rowsInitialized = false;
+  private idCounter = 0;
 
-  private readonly rowsSubject = new BehaviorSubject<SupplyRow[]>(this.createInitialRows());
+  constructor() {
+    this.catalogService.getAll().subscribe(products => {
+      const mapped = products.map(product => this.toSupplyProduct(product));
+      this.productMap = new Map(mapped.map(product => [product.id, product]));
+      this.productsSubject.next(mapped);
 
-  private idCounter = this.rowsSubject.value.length;
+      if (!this.rowsInitialized) {
+        const initialRows = this.createInitialRows(mapped);
+        this.rowsSubject.next(initialRows);
+        this.idCounter = initialRows.length;
+        this.rowsInitialized = true;
+      }
+    });
+
+    this.catalogService
+      .refresh()
+      .pipe(take(1))
+      .subscribe({
+        error: () => {
+          this.productsSubject.next([]);
+        },
+      });
+  }
 
   getAll(): Observable<SupplyRow[]> {
     return this.rowsSubject.asObservable();
@@ -38,13 +56,13 @@ export class SuppliesService {
   add(row: Omit<SupplyRow, 'id'>): Observable<SupplyRow>;
   add(row: SupplyRow | Omit<SupplyRow, 'id'>): Observable<SupplyRow> {
     const payload = { ...row } as SupplyRow;
-    const nextRow: SupplyRow = {
+    const record: SupplyRow = {
       ...payload,
-      id: this.generateId(),
+      id: typeof payload.id === 'string' && payload.id ? payload.id : this.generateId(),
     };
 
-    this.rowsSubject.next([nextRow, ...this.rowsSubject.value]);
-    return of(nextRow);
+    this.rowsSubject.next([record, ...this.rowsSubject.value]);
+    return of(record);
   }
 
   private generateId(): string {
@@ -56,77 +74,78 @@ export class SuppliesService {
     return `supply-${this.idCounter}`;
   }
 
-  private createInitialRows(): SupplyRow[] {
+  private createInitialRows(products: SupplyProduct[]): SupplyRow[] {
+    if (products.length === 0) {
+      return [];
+    }
+
     const today = new Date();
-    const arrivalFirst = this.formatISO(today);
-    const expiryFirst = this.formatISO(this.addDays(today, 30));
 
-    const arrivalSecond = this.formatISO(this.addDays(today, -2));
-    const expirySecond = this.formatISO(this.addDays(today, 7));
+    const formatISO = (source: Date): string => {
+      const year = source.getFullYear();
+      const month = String(source.getMonth() + 1).padStart(2, '0');
+      const day = String(source.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
 
-    const arrivalThird = this.formatISO(this.addDays(today, -5));
-    const expiryThird = this.formatISO(this.addDays(today, -1));
+    const addDays = (source: Date, offset: number): Date => {
+      const result = new Date(source);
+      result.setDate(result.getDate() + offset);
+      return result;
+    };
 
-    return [
-      {
-        id: 'supply-1',
-        docNo: 'PO-000851',
-        arrivalDate: arrivalFirst,
-        warehouse: 'Главный склад',
-        responsible: 'Иванов И.',
-        productId: 'prod-chicken',
-        sku: 'MEAT-001',
-        name: 'Курица охлаждённая',
-        qty: 120,
-        unit: 'кг',
-        expiryDate: expiryFirst,
-        supplier: 'ООО Куры Дуры',
-        status: computeExpiryStatus(expiryFirst),
-      },
-      {
-        id: 'supply-2',
-        docNo: 'PO-000852',
-        arrivalDate: arrivalSecond,
-        warehouse: 'Кухня',
-        responsible: 'Петров П.',
-        productId: 'prod-beef',
-        sku: 'MEAT-002',
-        name: 'Говядина вырезка',
-        qty: 16,
-        unit: 'кг',
-        expiryDate: expirySecond,
-        supplier: 'Ферма №5',
-        status: computeExpiryStatus(expirySecond),
-      },
-      {
-        id: 'supply-3',
-        docNo: 'PO-000853',
-        arrivalDate: arrivalThird,
-        warehouse: 'Бар',
-        responsible: 'Сидоров С.',
-        productId: 'prod-cream',
-        sku: 'DAIRY-004',
-        name: 'Сливки 33%',
-        qty: 12,
-        unit: 'л',
-        expiryDate: expiryThird,
-        supplier: 'МолКомбинат',
-        status: computeExpiryStatus(expiryThird),
-      },
-    ];
+    const bySku = new Map(products.map(product => [product.sku, product]));
+
+    const buildRow = (
+      sku: string,
+      docNo: string,
+      arrivalOffset: number,
+      expiryOffset: number,
+      quantity: number,
+      warehouse: string,
+      responsible: string
+    ): SupplyRow | null => {
+      const product = bySku.get(sku);
+      if (!product) {
+        return null;
+      }
+
+      const arrivalDate = formatISO(addDays(today, arrivalOffset));
+      const expiryDate = formatISO(addDays(today, expiryOffset));
+
+      return {
+        id: this.generateId(),
+        docNo,
+        arrivalDate,
+        warehouse,
+        responsible,
+        productId: product.id,
+        sku: product.sku,
+        name: product.name,
+        qty: quantity,
+        unit: product.unit,
+        expiryDate,
+        supplier: product.supplier,
+        status: computeExpiryStatus(expiryDate),
+      } satisfies SupplyRow;
+    };
+
+    const rows = [
+      buildRow('MEAT-001', 'PO-000851', 0, 30, 120, 'Главный склад', 'Иванов И.'),
+      buildRow('MEAT-002', 'PO-000852', -2, 7, 16, 'Кухня', 'Петров П.'),
+      buildRow('DAIRY-004', 'PO-000853', -5, -1, 12, 'Бар', 'Сидоров С.'),
+    ].filter((row): row is SupplyRow => row !== null);
+
+    return rows;
   }
 
-  private addDays(date: Date, days: number): Date {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-  }
-
-  private formatISO(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-
+  private toSupplyProduct(product: Product): SupplyProduct {
+    return {
+      id: product.id,
+      sku: product.sku,
+      name: product.name,
+      unit: product.unit,
+      supplier: product.supplierMain ?? undefined,
+    } satisfies SupplyProduct;
   }
 }

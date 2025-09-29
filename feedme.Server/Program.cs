@@ -99,6 +99,7 @@ public class Program
         app.MapFallbackToFile("/index.html");
 
         await app.ApplyMigrationsAsync();
+        await app.SeedDatabaseAsync();
 
         await app.RunAsync();
     }
