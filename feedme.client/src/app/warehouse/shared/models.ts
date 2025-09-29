@@ -24,6 +24,7 @@ export interface SupplyProduct {
   name: string;
   unit: string;
   supplier?: string;
+  purchasePrice: number | null;
 }
 
 export interface Product {
