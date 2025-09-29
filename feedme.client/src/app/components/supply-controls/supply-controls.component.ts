@@ -19,7 +19,7 @@ type SupplyTab = {
 export class SupplyControlsComponent {
   @Input() activeTab: SupplySection = 'supplies';
   @Output() activeTabChange = new EventEmitter<SupplySection>();
-  @Output() createSupply = new EventEmitter<void>();
+  @Output() primaryAction = new EventEmitter<void>();
 
   readonly tabs: ReadonlyArray<SupplyTab> = [
     { key: 'supplies', label: 'Поставки' },
@@ -27,6 +27,13 @@ export class SupplyControlsComponent {
     { key: 'catalog', label: 'Каталог' },
     { key: 'inventory', label: 'Инвентаризация' },
   ];
+
+  private readonly actionLabels: Record<SupplySection, { label: string; aria: string }> = {
+    supplies: { label: '+ Новая поставка', aria: 'Создать новую поставку' },
+    stock: { label: '+ Новая поставка', aria: 'Создать новую поставку' },
+    catalog: { label: '+ Новый товар', aria: 'Добавить новый товар в каталог' },
+    inventory: { label: '+ Новая поставка', aria: 'Создать новую поставку' },
+  };
 
   onSelect(tab: SupplySection): void {
     if (this.activeTab === tab) {
@@ -36,8 +43,16 @@ export class SupplyControlsComponent {
     this.activeTabChange.emit(tab);
   }
 
-  onCreateSupply(): void {
-    this.createSupply.emit();
+  onPrimaryAction(): void {
+    this.primaryAction.emit();
+  }
+
+  get primaryActionLabel(): string {
+    return this.actionLabels[this.activeTab]?.label ?? this.actionLabels.supplies.label;
+  }
+
+  get primaryActionAriaLabel(): string {
+    return this.actionLabels[this.activeTab]?.aria ?? this.actionLabels.supplies.aria;
   }
 
   trackByTab = (_: number, tab: SupplyTab) => tab.key;
