@@ -1,13 +1,42 @@
+
 <section class="supplies">
+  <section class="kpis" *ngIf="kpi() as metrics">
+    <div class="kpi">
+      <div class="kpi__label">Поставок за 7 дней</div>
+      <div class="kpi__value">{{ metrics.weekSupplies }}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__label">Сумма закупок / 7 дн.</div>
+      <div class="kpi__value">{{ metrics.weekSpend | currency: 'RUB' }}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__label">Позиций на складе</div>
+      <div class="kpi__value">{{ metrics.items }}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__label">Просрочено</div>
+      <div class="kpi__value kpi__value--danger">{{ metrics.expired }}</div>
+    </div>
+  </section>
+
 
   <section class="filters">
     <input class="fm-input w-280" placeholder="Поиск по номеру, SKU или названию" />
-    <input class="fm-input w-140" type="date" />
-    <input class="fm-input w-140" type="date" />
-    <button class="btn btn-outline" type="button">Сброс</button>
-    <button class="btn btn-secondary" type="button">Экспорт</button>
-    <button class="btn btn-primary" type="button" (click)="openDialog()">+ Новая поставка</button>
-  </section>
+    <input
+      class="fm-input w-140"
+      type="date"
+      [ngModel]="dateFrom"
+      (ngModelChange)="onDateFromChange($event)"
+      ngModelOptions="{ standalone: true }"
+    />
+    <input
+      class="fm-input w-140"
+      type="date"
+      [ngModel]="dateTo"
+      (ngModelChange)="onDateToChange($event)"
+      ngModelOptions="{ standalone: true }"
+    />
+
 
   <div class="card supplies__table-card">
     <div class="card__content supplies__table-wrapper">
@@ -63,9 +92,93 @@
       <ng-template #loading>
         <div class="supplies__empty">Загрузка...</div>
       </ng-template>
+
     </div>
+
+    <button class="btn btn-outline" type="button" (click)="resetFilters()">Сброс</button>
+    <button class="btn btn-secondary" type="button">Экспорт</button>
+
+    <button class="btn btn-primary" type="button" (click)="openDialog()">+ Новая поставка</button>
   </div>
+</header>
+
+<section class="kpis">
+  <article class="kpis__item">
+    <span class="kpis__label">Активные поставки</span>
+    <span class="kpis__value">{{ supplyKpis().ok }}</span>
+  </article>
+  <article class="kpis__item">
+    <span class="kpis__label">Скоро срок</span>
+    <span class="kpis__value">{{ supplyKpis().warning }}</span>
+  </article>
+  <article class="kpis__item">
+    <span class="kpis__label">Просрочено</span>
+    <span class="kpis__value">{{ supplyKpis().expired }}</span>
+  </article>
+  <article class="kpis__item">
+    <span class="kpis__label">Всего поставок</span>
+    <span class="kpis__value">{{ supplyKpis().total }}</span>
+  </article>
 </section>
+
+<section class="filters">
+  <input class="fm-input w-280" placeholder="Поиск по номеру, SKU или названию" />
+  <input class="fm-input w-140" type="date" />
+  <input class="fm-input w-140" type="date" />
+  <button class="btn btn-outline" type="button">Сброс</button>
+  <button class="btn btn-secondary" type="button">Экспорт</button>
+</section>
+
+<ng-container *ngIf="rowsReady(); else loading">
+  <table class="fm-table supplies-table" *ngIf="rows().length > 0; else empty">
+    <thead>
+      <tr>
+        <th class="fm-table__checkbox">
+          <input type="checkbox" aria-label="Выбрать все" />
+        </th>
+        <th>№ док.</th>
+        <th>Дата прихода</th>
+        <th>Склад</th>
+        <th>Ответственный</th>
+        <th>SKU</th>
+        <th>Название</th>
+        <th class="fm-table__numeric">Кол-во</th>
+        <th class="fm-table__center">Срок годности</th>
+        <th class="fm-table__truncate">Поставщик</th>
+        <th>Статус</th>
+        <th class="fm-table__actions" aria-label="Действия"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of rows(); trackBy: trackBySupplyId">
+        <td class="fm-table__checkbox">
+          <input type="checkbox" [attr.aria-label]="'Выбрать поставку ' + row.docNo" />
+        </td>
+        <td class="fm-table__mono">{{ row.docNo }}</td>
+        <td>{{ row.arrivalDate | date: 'dd.MM.yyyy' }}</td>
+        <td>{{ row.warehouse }}</td>
+        <td>{{ row.responsible || '—' }}</td>
+        <td class="fm-table__mono">{{ row.sku }}</td>
+        <td>{{ row.name }}</td>
+        <td class="fm-table__numeric">{{ row.qty | number: '1.0-2' }} {{ row.unit }}</td>
+        <td class="fm-table__center">{{ row.expiryDate | date: 'dd.MM.yyyy' }}</td>
+        <td class="fm-table__truncate" [title]="row.supplier || '—'">{{ row.supplier || '—' }}</td>
+        <td>
+          <span [class]="getStatusClass(row.status)">{{ getStatusLabel(row.status) }}</span>
+        </td>
+        <td class="fm-table__actions">⋯</td>
+      </tr>
+    </tbody>
+  </table>
+</ng-container>
+
+<ng-template #empty>
+  <div class="supplies__empty">Поставки пока не добавлены</div>
+</ng-template>
+
+<ng-template #loading>
+  <div class="supplies__empty">Загрузка...</div>
+</ng-template>
 
 <section class="supplies-dialog" *ngIf="dialogOpen()">
   <div class="supplies-dialog__backdrop" (click)="closeDialog()"></div>

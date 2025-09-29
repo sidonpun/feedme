@@ -7,7 +7,14 @@ import { SuppliesService } from './supplies.service';
 
 class MockSuppliesService {
   private readonly productsSubject = new BehaviorSubject<SupplyProduct[]>([
-    { id: 'prod-chicken', sku: 'MEAT-001', name: 'Курица охлаждённая', unit: 'кг', supplier: 'ООО Куры Дуры' },
+    {
+      id: 'prod-chicken',
+      sku: 'MEAT-001',
+      name: 'Курица охлаждённая',
+      unit: 'кг',
+      supplier: 'ООО Куры Дуры',
+      purchasePrice: 210,
+    },
   ]);
   private readonly rowsSubject = new BehaviorSubject<SupplyRow[]>([]);
   private idCounter = 0;
@@ -122,5 +129,64 @@ describe('SuppliesComponent', () => {
     expect(rows[0].docNo).toBe('PO-000123');
     expect(rows[0].status).toBe('ok');
     expect(rows[0].id).toContain('mock-');
+  });
+
+  it('computes KPI summary based on supply data', () => {
+    const todaySupply: Omit<SupplyRow, 'id'> = {
+      docNo: 'PO-000200',
+      arrivalDate: formatISO(0),
+      warehouse: 'Главный склад',
+      responsible: 'Иванов И.',
+      productId: 'prod-chicken',
+      sku: 'MEAT-001',
+      name: 'Курица охлаждённая',
+      qty: 10,
+      unit: 'кг',
+      expiryDate: formatISO(5),
+      supplier: 'ООО Куры Дуры',
+      status: 'ok',
+    };
+
+    const expiredSupply: Omit<SupplyRow, 'id'> = {
+      docNo: 'PO-000201',
+      arrivalDate: formatISO(-5),
+      warehouse: 'Бар',
+      responsible: 'Петров П.',
+      productId: 'prod-chicken',
+      sku: 'MEAT-001',
+      name: 'Курица охлаждённая',
+      qty: 2,
+      unit: 'кг',
+      expiryDate: formatISO(-1),
+      supplier: 'ООО Куры Дуры',
+      status: 'expired',
+    };
+
+    const oldSupply: Omit<SupplyRow, 'id'> = {
+      docNo: 'PO-000199',
+      arrivalDate: formatISO(-15),
+      warehouse: 'Резерв',
+      responsible: 'Сидоров С.',
+      productId: 'prod-chicken',
+      sku: 'MEAT-001',
+      name: 'Курица охлаждённая',
+      qty: 3,
+      unit: 'кг',
+      expiryDate: formatISO(-5),
+      supplier: 'ООО Куры Дуры',
+      status: 'warning',
+    };
+
+    service.add(todaySupply).subscribe();
+    service.add(expiredSupply).subscribe();
+    service.add(oldSupply).subscribe();
+
+    fixture.detectChanges();
+
+    const summary = component.kpi();
+    expect(summary.weekSupplies).toBe(2);
+    expect(summary.expired).toBe(1);
+    expect(summary.items).toBe(1);
+    expect(summary.weekSpend).toBe(2520);
   });
 });

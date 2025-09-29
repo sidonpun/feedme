@@ -1,9 +1,9 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { startWith, take } from 'rxjs';
+import { startWith, take, tap } from 'rxjs';
 
 import { SupplyProduct, SupplyRow, SupplyStatus } from '../shared/models';
 import { computeExpiryStatus } from '../shared/status.util';
@@ -21,10 +21,20 @@ type SupplyFormValue = {
   expiryDate: string;
 };
 
+type QuickPeriod = 'today' | '7d' | '30d';
+
+type Period = QuickPeriod | '';
+
+interface QuickPeriodOption {
+  readonly id: QuickPeriod;
+  readonly label: string;
+  readonly days: number;
+}
+
 @Component({
   standalone: true,
   selector: 'app-supplies',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './supplies.component.html',
   styleUrl: './supplies.component.scss',
 
@@ -35,10 +45,43 @@ export class SuppliesComponent {
   private readonly suppliesService = inject(SuppliesService);
 
 
-  readonly rows$ = this.suppliesService.getAll();
+  readonly rowsReady = signal(false);
+
+  readonly rows = toSignal(
+    this.suppliesService.getAll().pipe(tap(() => this.rowsReady.set(true))),
+    { initialValue: [] as SupplyRow[] },
+  );
+
+  readonly supplyKpis = computed(() => {
+    const rows = this.rows();
+
+    let warning = 0;
+    let expired = 0;
+
+    for (const row of rows) {
+      if (row.status === 'warning') {
+        warning += 1;
+      } else if (row.status === 'expired') {
+        expired += 1;
+      }
+    }
+
+    const ok = rows.length - warning - expired;
+
+    return {
+      total: rows.length,
+      ok: ok < 0 ? 0 : ok,
+      warning,
+      expired,
+    } as const;
+  });
   readonly products$ = this.suppliesService.getProducts();
 
+  private readonly rowsSignal = toSignal(this.rows$, { initialValue: [] as SupplyRow[] });
+  private readonly productsSignal = toSignal(this.products$, { initialValue: [] as SupplyProduct[] });
+
   readonly dialogOpen = signal(false);
+
 
   readonly form = this.fb.group({
     docNo: this.fb.control('', { validators: [Validators.required] }),
@@ -65,6 +108,54 @@ export class SuppliesComponent {
     return this.suppliesService.getProductById(id) ?? null;
   });
 
+  readonly kpi = computed((): { weekSupplies: number; weekSpend: number; items: number; expired: number } => {
+    const rows = this.rowsSignal();
+    const products = this.productsSignal();
+
+    const today = new Date();
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const endOfToday = new Date(startOfToday);
+    endOfToday.setDate(endOfToday.getDate() + 1);
+    endOfToday.setMilliseconds(endOfToday.getMilliseconds() - 1);
+
+    const weekStart = new Date(startOfToday);
+    weekStart.setDate(weekStart.getDate() - 6);
+
+    const priceByProduct = new Map<string, number>();
+    for (const product of products) {
+      priceByProduct.set(product.id, product.purchasePrice ?? 0);
+    }
+
+    let weekSupplies = 0;
+    let weekSpend = 0;
+    let expired = 0;
+    const uniqueProductIds = new Set<string>();
+
+    for (const row of rows) {
+      uniqueProductIds.add(row.productId);
+
+      if (row.status === 'expired') {
+        expired += 1;
+      }
+
+      const arrival = this.parseIsoDate(row.arrivalDate);
+      if (!Number.isNaN(arrival.getTime()) && arrival >= weekStart && arrival <= endOfToday) {
+        weekSupplies += 1;
+        const price = priceByProduct.get(row.productId) ?? 0;
+        weekSpend += price * row.qty;
+      }
+    }
+
+    const normalizedWeekSpend = Math.round(weekSpend * 100) / 100;
+
+    return {
+      weekSupplies,
+      weekSpend: normalizedWeekSpend,
+      items: uniqueProductIds.size,
+      expired,
+    };
+  });
+
   openDialog(): void {
     this.dialogOpen.set(true);
   }
@@ -73,6 +164,7 @@ export class SuppliesComponent {
     this.dialogOpen.set(false);
     this.resetForm();
   }
+
 
   submit(): void {
     if (this.form.invalid) {
@@ -159,6 +251,15 @@ export class SuppliesComponent {
     return 'Просрочено';
   }
 
+  private parseIsoDate(value: string): Date {
+    const [year, month, day] = value.split('-').map(part => Number.parseInt(part, 10));
+    if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
+      return new Date(NaN);
+    }
+
+    return new Date(year, month - 1, day);
+  }
+
   private resetForm(): void {
     this.form.reset({
       docNo: '',
@@ -172,5 +273,16 @@ export class SuppliesComponent {
     this.form.markAsPristine();
     this.form.markAsUntouched();
 
+  }
+
+  private createToday(): Date {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today;
+  }
+
+  private formatDate(date: Date): string {
+    const normalized = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return normalized.toISOString().slice(0, 10);
   }
 }
