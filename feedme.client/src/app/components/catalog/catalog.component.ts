@@ -1,4 +1,12 @@
-import { Component, OnInit, Pipe, PipeTransform, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  Pipe,
+  PipeTransform,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -8,6 +16,7 @@ import { FilterPipe } from '../../pipes/filter.pipe';
 import { NewProductFormValues } from '../catalog-new-product-popup/catalog-new-product-popup.component';
 import { CatalogItem, CatalogService } from '../../services/catalog.service';
 import { EmptyStateComponent } from '../../warehouse/ui/empty-state.component';
+import { CatalogNewProductPopupComponent } from '../catalog-new-product-popup/catalog-new-product-popup.component';
 
 @Pipe({
   name: 'booleanLabel',
@@ -26,9 +35,17 @@ export class BooleanLabelPipe implements PipeTransform {
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, FilterPipe, BooleanLabelPipe, EmptyStateComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    FilterPipe,
+    BooleanLabelPipe,
+    EmptyStateComponent,
+    CatalogNewProductPopupComponent,
+  ],
   templateUrl: './catalog.component.html',
-  styleUrls: ['./catalog.component.css']
+  styleUrls: ['./catalog.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CatalogComponent implements OnInit {
   private readonly catalogService = inject(CatalogService);
@@ -36,9 +53,16 @@ export class CatalogComponent implements OnInit {
   activeTab: 'info' | 'logistics' = 'info';
   filter = '';
 
+  private readonly newProductPopupOpen = signal(false);
+  private readonly newProductError = signal<string | null>(null);
+  private readonly loadError = signal<string | null>(null);
+
+  readonly isNewProductPopupVisible = this.newProductPopupOpen.asReadonly();
+  readonly creationErrorMessage = this.newProductError.asReadonly();
+  readonly loadErrorMessage = this.loadError.asReadonly();
+
   private readonly catalogDataSubject = new BehaviorSubject<CatalogItem[]>([]);
   readonly catalogData$ = this.catalogDataSubject.asObservable();
-  errorMessage: string | null = null;
 
 
   ngOnInit(): void {
@@ -47,11 +71,26 @@ export class CatalogComponent implements OnInit {
 
       .pipe(
         take(1),
-        tap(data => this.catalogDataSubject.next(data)),
+        tap(data => {
+          this.loadError.set(null);
+          this.catalogDataSubject.next(data);
+        }),
         catchError(() => this.handleError('Не удалось загрузить каталог. Попробуйте ещё раз.'))
       )
       .subscribe();
 
+  }
+
+  /** Открывает модальное окно создания товара */
+  openNewProductPopup(): void {
+    this.newProductError.set(null);
+    this.newProductPopupOpen.set(true);
+  }
+
+  /** Закрывает модальное окно создания товара */
+  closeNewProductPopup(): void {
+    this.newProductPopupOpen.set(false);
+    this.newProductError.set(null);
   }
 
   /** Добавляет новый товар в каталог */
@@ -64,16 +103,23 @@ export class CatalogComponent implements OnInit {
           const updated = [...this.catalogDataSubject.value, created];
           this.catalogDataSubject.next(updated);
 
-          this.errorMessage = null;
+          this.loadError.set(null);
+          this.newProductError.set(null);
+          this.newProductPopupOpen.set(false);
         }),
-        catchError(() => this.handleError('Не удалось сохранить товар. Попробуйте ещё раз.'))
+        catchError(() => this.handleCreateError('Не удалось сохранить товар. Попробуйте ещё раз.'))
       )
       .subscribe();
   }
 
   private handleError(message: string) {
-    this.errorMessage = message;
+    this.loadError.set(message);
     return EMPTY;
 
+  }
+
+  private handleCreateError(message: string) {
+    this.newProductError.set(message);
+    return EMPTY;
   }
 }

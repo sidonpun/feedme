@@ -1,80 +1,98 @@
 <div class="catalog-header">
   <input type="text" placeholder="Поиск…" [(ngModel)]="filter" />
   <div class="tabs">
-    <button (click)="activeTab='info'" [class.active]="activeTab==='info'">Основная информация</button>
-    <button (click)="activeTab='logistics'" [class.active]="activeTab==='logistics'">Закупка и логистика</button>
+    <button type="button" (click)="activeTab='info'" [class.active]="activeTab==='info'">Основная информация</button>
+    <button type="button" (click)="activeTab='logistics'" [class.active]="activeTab==='logistics'">Закупка и логистика</button>
   </div>
+  <button type="button" class="catalog-header__action" (click)="openNewProductPopup()">
+    + Новый товар
+  </button>
 </div>
-<div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+<div class="error-message" *ngIf="loadErrorMessage() as errorMessage">{{ errorMessage }}</div>
 
+<ng-container *ngIf="catalogData$ | async as catalogData">
+  <ng-container *ngIf="catalogData.length; else emptyCatalog">
+    <div *ngIf="activeTab==='info'">
+      <table class="catalog-table">
+        <thead>
+          <tr>
+            <th>Название</th>
+            <th>Тип</th>
+            <th>Код</th>
+            <th>Категория</th>
+            <th>Ед.изм.</th>
+            <th>Вес</th>
+            <th>Метод списания</th>
+            <th>Аллергены</th>
+            <th>Флаги</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of catalogData | filter:filter">
+            <td>{{ item.name }}</td>
+            <td>{{ item.type }}</td>
+            <td>{{ item.code }}</td>
+            <td>{{ item.category }}</td>
+            <td>{{ item.unit }}</td>
+            <td>{{ item.weight }}</td>
+            <td>{{ item.writeoffMethod }}</td>
+            <td>{{ item.allergens }}</td>
+            <td>
+              <div>Требует фасовки: {{ item.packagingRequired | booleanLabel }}</div>
+              <div>Портится после вскрытия: {{ item.spoilsAfterOpening | booleanLabel }}</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-<div *ngIf="activeTab==='info'">
-  <table class="catalog-table">
-    <thead>
-      <tr>
-        <th>Название</th>
-        <th>Тип</th>
-        <th>Код</th>
-        <th>Категория</th>
-        <th>Ед.изм.</th>
-        <th>Вес</th>
-        <th>Метод списания</th>
-        <th>Аллергены</th>
-        <th>Флаги</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of (catalogData$ | async) | filter:filter">
-        <td>{{ item.name }}</td>
-        <td>{{ item.type }}</td>
-        <td>{{ item.code }}</td>
-        <td>{{ item.category }}</td>
-        <td>{{ item.unit }}</td>
-        <td>{{ item.weight }}</td>
-        <td>{{ item.writeoffMethod }}</td>
-        <td>{{ item.allergens }}</td>
-        <td>
-          <div>Требует фасовки: {{ item.packagingRequired | booleanLabel }}</div>
-          <div>Портится после вскрытия: {{ item.spoilsAfterOpening | booleanLabel }}</div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+    <div *ngIf="activeTab==='logistics'">
+      <table class="catalog-table">
+        <thead>
+          <tr>
+            <th>Поставщик</th>
+            <th>Срок поставки</th>
+            <th>Оценочная себестоимость</th>
+            <th>Ставка НДС</th>
+            <th>Цена за ед.</th>
+            <th>Цена продажи</th>
+            <th>Код ТН ВЭД</th>
+            <th>Маркируемый</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of catalogData | filter:filter">
+            <td>{{ item.supplier }}</td>
+            <td>{{ item.deliveryTime }}</td>
+            <td>{{ item.costEstimate }}</td>
+            <td>{{ item.taxRate }}</td>
+            <td>{{ item.unitPrice }}</td>
+            <td>{{ item.salePrice }}</td>
+            <td>{{ item.tnved }}</td>
+            <td>{{ item.isMarked }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</ng-container>
 
-<div *ngIf="activeTab==='logistics'">
-  <table class="catalog-table">
-    <thead>
-      <tr>
-        <th>Поставщик</th>
-        <th>Срок поставки</th>
-        <th>Оценочная себестоимость</th>
-        <th>Ставка НДС</th>
-        <th>Цена за ед.</th>
-        <th>Цена продажи</th>
-        <th>Код ТН ВЭД</th>
-        <th>Маркируемый</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of (catalogData$ | async) | filter:filter">
-        <td>{{ item.supplier }}</td>
-        <td>{{ item.deliveryTime }}</td>
-        <td>{{ item.costEstimate }}</td>
-        <td>{{ item.taxRate }}</td>
-        <td>{{ item.unitPrice }}</td>
-        <td>{{ item.salePrice }}</td>
-        <td>{{ item.tnved }}</td>
-        <td>{{ item.isMarked }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+<ng-template #emptyCatalog>
+  <div class="catalog-empty">
+    <app-empty
+      class="mt-6 block"
+      title="Каталог пока пуст"
+      subtitle="Добавьте первый продукт, чтобы начать работу с каталогом."
+    ></app-empty>
+    <button type="button" class="catalog-empty__action" (click)="openNewProductPopup()">
+      + Новый товар
+    </button>
+  </div>
+</ng-template>
 
-<!-- TODO: toggle by data -->
-<app-empty
-  class="mt-6 block"
-  title="Каталог пока пуст"
-  subtitle="Добавьте первый продукт, чтобы начать работу с каталогом."
-  ctaText="+ Новый продукт"
-></app-empty>
+<app-catalog-new-product-popup
+  *ngIf="isNewProductPopupVisible()"
+  [errorMessage]="creationErrorMessage()"
+  (cancel)="closeNewProductPopup()"
+  (save)="addProduct($event)"
+></app-catalog-new-product-popup>

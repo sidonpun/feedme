@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   HostListener,
+  ViewChild,
   computed,
   effect,
   inject,
@@ -21,6 +22,7 @@ import { FieldComponent } from './ui/field.component';
 import { StatusBadgeClassPipe } from '../pipes/status-badge-class.pipe';
 import { StatusBadgeLabelPipe } from '../pipes/status-badge-label.pipe';
 import { SupplyControlsComponent } from '../components/supply-controls/supply-controls.component';
+import { CatalogComponent as LegacyCatalogComponent } from '../components/catalog/catalog.component';
 
 const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
@@ -51,6 +53,7 @@ type SupplyHistoryEntry = {
     StatusBadgeClassPipe,
     StatusBadgeLabelPipe,
     SupplyControlsComponent,
+    LegacyCatalogComponent,
   ],
   templateUrl: './warehouse-page.component.html',
   styleUrl: './warehouse-page.component.css',
@@ -59,6 +62,9 @@ type SupplyHistoryEntry = {
 export class WarehousePageComponent {
   private readonly warehouseService = inject(WarehouseService);
   private readonly fb = inject(NonNullableFormBuilder);
+
+  @ViewChild(LegacyCatalogComponent)
+  private catalogComponent?: LegacyCatalogComponent;
 
 
   readonly activeTab = signal<'supplies' | 'stock' | 'catalog' | 'inventory'>('supplies');
@@ -231,6 +237,19 @@ export class WarehousePageComponent {
 
   selectTab(tab: WarehouseTab): void {
     this.activeTab.set(tab);
+  }
+
+  handlePrimaryAction(): void {
+    const active = this.activeTab();
+
+    if (active === 'supplies' || active === 'stock' || active === 'inventory') {
+      this.openCreateDialog();
+      return;
+    }
+
+    if (active === 'catalog') {
+      this.catalogComponent?.openNewProductPopup();
+    }
   }
 
   updateStatus(value: string): void {

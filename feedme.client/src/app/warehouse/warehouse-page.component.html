@@ -79,6 +79,7 @@
       <app-supply-controls
         [activeTab]="activeTab()"
         (activeTabChange)="selectTab($event)"
+
       ></app-supply-controls>
     </section>
 
@@ -326,8 +327,8 @@
       <section *ngIf="activeTab() === 'stock'" class="warehouse-page__empty">
         <app-empty title="Остатки" subtitle="Выберите склад и примените фильтры"></app-empty>
       </section>
-      <section *ngIf="activeTab() === 'catalog'" class="warehouse-page__empty">
-        <app-empty title="Каталог" subtitle="Импортируйте CSV или создайте первую позицию"></app-empty>
+      <section *ngIf="activeTab() === 'catalog'" class="warehouse-page__tab-panel">
+        <app-catalog></app-catalog>
       </section>
       <section *ngIf="activeTab() === 'inventory'" class="warehouse-page__empty">
         <app-empty title="Инвентаризация" subtitle="Создайте обход или запустите экспресс-пересчёт"></app-empty>
