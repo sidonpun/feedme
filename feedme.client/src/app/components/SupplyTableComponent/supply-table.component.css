@@ -4,15 +4,19 @@
   gap: 0;
   --supply-accent: var(--brand-600, #fa4b00);
   --supply-accent-strong: #d94300;
-  --supply-accent-border: rgba(250, 75, 0, 0.24);
   --supply-accent-hover: rgba(250, 75, 0, 0.08);
+  --supply-outline-border: #cbd5f0;
+  --supply-outline-hover: #f1f5f9;
 }
 
 @supports (color: color-mix(in srgb, #000 0%, #fff 100%)) {
   :host {
     --supply-accent-strong: color-mix(in srgb, var(--supply-accent) 88%, #000000 12%);
-    --supply-accent-border: color-mix(in srgb, var(--supply-accent) 24%, transparent);
     --supply-accent-hover: color-mix(in srgb, var(--supply-accent) 8%, #ffffff);
+  }
+
+  .btn-brand-outline:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--brand-600, #6366f1) 90%, #000000 10%);
   }
 }
 
@@ -142,31 +146,32 @@
 }
 
 .btn-outline {
-  border-color: var(--supply-accent-border);
+  border-color: var(--supply-outline-border);
   background-color: #ffffff;
   color: var(--supply-accent);
   box-shadow: none;
 }
 
 .btn-outline:hover:not(:disabled) {
-  background-color: var(--supply-accent-hover);
+  background-color: var(--supply-outline-hover);
+  border-color: var(--supply-outline-border);
 }
 
 .btn-brand-outline {
   background-color: #ffffff;
   color: var(--supply-accent);
-  border: 1px solid var(--supply-accent);
+  border: 1px solid var(--brand-600, #6366f1);
   box-shadow: none;
 }
 
 .btn-brand-outline:hover:not(:disabled) {
   background-color: var(--supply-accent-hover);
-  border-color: var(--supply-accent-strong);
+  border-color: var(--brand-600, #6366f1);
 }
 
 .btn-secondary {
   background-color: #ffffff;
-  border-color: var(--supply-accent-border);
+  border-color: transparent;
   color: var(--supply-accent);
   box-shadow: none;
 }
