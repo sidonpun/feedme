@@ -44,8 +44,9 @@ interface ProductFormValue {
   selector: 'app-warehouse-catalog',
   imports: [NgFor, NgIf, NgClass, ReactiveFormsModule],
   templateUrl: './catalog.component.html',
+
   styleUrls: ['./catalog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+hangeDetectionStrategy.OnPush,
 })
 export class CatalogComponent {
   private readonly fb = inject(NonNullableFormBuilder);

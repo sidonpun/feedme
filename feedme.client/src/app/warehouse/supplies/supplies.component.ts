@@ -33,7 +33,9 @@ interface SupplyFormValue {
   selector: 'app-warehouse-supplies',
   imports: [NgIf, NgFor, NgClass, ReactiveFormsModule],
   templateUrl: './supplies.component.html',
+
   styleUrls: ['./supplies.component.scss'],
+
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SuppliesComponent {
