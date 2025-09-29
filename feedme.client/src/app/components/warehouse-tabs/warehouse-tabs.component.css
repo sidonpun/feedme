@@ -86,7 +86,7 @@
 .popup-create-storage__input:focus {
   outline: none;
   border-color: var(--brand-600);
-  box-shadow: 0 0 0 1px var(--brand-600);
+  box-shadow: 0 0 0 1px var(--ring-shadow, rgba(37, 99, 235, 0.35));
 }
 
 .popup-buttons {
