@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Linq;
-using feedme.Server.Models;
+using feedme.Server.Contracts;
 using Xunit;
 
 namespace feedme.Server.Tests;
@@ -14,16 +14,33 @@ public class ReceiptsApiTests
         await using var factory = new FeedmeApplicationFactory();
         using var client = factory.CreateClient();
 
+        var receivedAt = DateTime.UtcNow.AddDays(-10);
         var request = new
         {
             number = "RCPT-1001",
             supplier = "Green Foods LLC",
             warehouse = "Central Warehouse",
-            receivedAt = DateTime.UtcNow,
+            receivedAt,
             items = new[]
             {
-                new { catalogItemId = "CAT-001", itemName = "Tomatoes", quantity = 10.5m, unit = "kg", unitPrice = 2.75m },
-                new { catalogItemId = "CAT-002", itemName = "Mozzarella", quantity = 4.0m, unit = "kg", unitPrice = 8.10m }
+                new
+                {
+                    catalogItemId = "CAT-001",
+                    itemName = "Tomatoes",
+                    quantity = 10.5m,
+                    unit = "kg",
+                    unitPrice = 2.75m,
+                    expiryDate = DateTime.UtcNow.AddDays(2)
+                },
+                new
+                {
+                    catalogItemId = "CAT-002",
+                    itemName = "Mozzarella",
+                    quantity = 4.0m,
+                    unit = "kg",
+                    unitPrice = 8.10m,
+                    expiryDate = DateTime.UtcNow.AddDays(20)
+                }
             }
         };
 
@@ -32,7 +49,7 @@ public class ReceiptsApiTests
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers.Location);
 
-        var created = await response.Content.ReadFromJsonAsync<Receipt>();
+        var created = await response.Content.ReadFromJsonAsync<ReceiptResponse>();
         Assert.NotNull(created);
         Assert.False(string.IsNullOrWhiteSpace(created!.Id));
         Assert.Equal(request.number, created.Number);
@@ -41,6 +58,10 @@ public class ReceiptsApiTests
 
         var expectedTotal = request.items.Sum(item => item.unitPrice * item.quantity);
         Assert.Equal(expectedTotal, created.TotalAmount);
+
+        var statuses = created.Items.Select(item => item.Status).ToArray();
+        Assert.Contains("warning", statuses);
+        Assert.Contains("ok", statuses);
     }
 
     [Fact]
@@ -54,24 +75,33 @@ public class ReceiptsApiTests
             number = "RCPT-1002",
             supplier = "Fresh Farms",
             warehouse = "North Warehouse",
-            receivedAt = DateTime.UtcNow,
+            receivedAt = DateTime.UtcNow.AddDays(-5),
             items = new[]
             {
-                new { catalogItemId = "CAT-010", itemName = "Basil", quantity = 15.0m, unit = "bunch", unitPrice = 1.20m }
+                new
+                {
+                    catalogItemId = "CAT-010",
+                    itemName = "Basil",
+                    quantity = 15.0m,
+                    unit = "bunch",
+                    unitPrice = 1.20m,
+                    expiryDate = DateTime.UtcNow.AddDays(-1)
+                }
             }
         });
 
-        var created = await createResponse.Content.ReadFromJsonAsync<Receipt>();
+        var created = await createResponse.Content.ReadFromJsonAsync<ReceiptResponse>();
         Assert.NotNull(created);
 
         var response = await client.GetAsync($"/api/receipts/{created!.Id}");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var fetched = await response.Content.ReadFromJsonAsync<Receipt>();
+        var fetched = await response.Content.ReadFromJsonAsync<ReceiptResponse>();
         Assert.NotNull(fetched);
         Assert.Equal(created.Id, fetched!.Id);
         Assert.Equal(created.Number, fetched.Number);
         Assert.Equal(created.TotalAmount, fetched.TotalAmount);
+        Assert.All(fetched.Items, item => Assert.Equal("expired", item.Status));
     }
 
     [Fact]

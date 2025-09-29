@@ -68,7 +68,8 @@ public class PostgresReceiptRepository(AppDbContext context) : IReceiptRepositor
             ItemName = Sanitize(item.ItemName),
             Quantity = item.Quantity,
             Unit = Sanitize(item.Unit),
-            UnitPrice = item.UnitPrice
+            UnitPrice = item.UnitPrice,
+            ExpiryDate = NormalizeDate(item.ExpiryDate)
         };
     }
 
@@ -91,4 +92,21 @@ public class PostgresReceiptRepository(AppDbContext context) : IReceiptRepositor
     }
 
     private static string Sanitize(string value) => value?.Trim() ?? string.Empty;
+
+    private static DateTime? NormalizeDate(DateTime? value)
+    {
+        if (value is null)
+        {
+            return null;
+        }
+
+        var date = value.Value.Date;
+
+        return date.Kind switch
+        {
+            DateTimeKind.Unspecified => DateTime.SpecifyKind(date, DateTimeKind.Utc),
+            DateTimeKind.Local => date.ToUniversalTime(),
+            _ => date
+        };
+    }
 }

@@ -59,6 +59,7 @@ export class SuppliesService {
     const record: SupplyRow = {
       ...payload,
       id: typeof payload.id === 'string' && payload.id ? payload.id : this.generateId(),
+      status: computeExpiryStatus(payload.expiryDate, payload.arrivalDate),
     };
 
     this.rowsSubject.next([record, ...this.rowsSubject.value]);
@@ -126,7 +127,7 @@ export class SuppliesService {
         unit: product.unit,
         expiryDate,
         supplier: product.supplier,
-        status: computeExpiryStatus(expiryDate),
+        status: computeExpiryStatus(expiryDate, arrivalDate),
       } satisfies SupplyRow;
     };
 

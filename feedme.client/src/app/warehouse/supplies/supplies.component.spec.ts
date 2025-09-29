@@ -76,12 +76,12 @@ describe('SuppliesComponent', () => {
 
   it('computes status before saving and sends payload to service', () => {
     const addSpy = spyOn(service, 'add').and.callThrough();
-    const expiry = formatISO(7);
+    const expiry = formatISO(2);
 
     component.openDialog();
     component.form.setValue({
       docNo: 'PO-999999',
-      arrivalDate: formatISO(0),
+      arrivalDate: formatISO(-8),
       warehouse: 'Главный склад',
       responsible: 'Петров П.',
       productId: 'prod-chicken',
