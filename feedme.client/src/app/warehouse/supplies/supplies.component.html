@@ -1,5 +1,9 @@
-
 <section class="supplies">
+  <header class="fm-topbar">
+    <div class="crumbs"><b>Поставки</b> / Главный склад</div>
+    <button class="btn btn-outline" type="button">Добавить склад</button>
+  </header>
+
   <section class="kpis" *ngIf="kpi() as metrics">
     <div class="kpi">
       <div class="kpi__label">Поставок за 7 дней</div>
@@ -19,142 +23,82 @@
     </div>
   </section>
 
-
   <section class="filters">
-    <input class="fm-input w-280" placeholder="Поиск по номеру, SKU или названию" />
-
-    <input class="fm-input w-140" type="date" />
-    <input class="fm-input w-140" type="date" />
-    <button class="btn btn-outline" type="button">Сброс</button>
-    <button class="btn btn-secondary" type="button">Экспорт</button>
-    <button class="btn btn-secondary" type="button" (click)="openImportDialog()">Импорт</button>
-    <button class="btn btn-primary" type="button" (click)="openDialog()">+ Новая поставка</button>
+    <input
+      class="fm-input w-280"
+      placeholder="Поиск по номеру, SKU или названию"
+      [(ngModel)]="query"
+    />
+    <input class="fm-input w-140" type="date" [(ngModel)]="dateFrom" />
+    <input class="fm-input w-140" type="date" [(ngModel)]="dateTo" />
+    <button class="btn btn-outline" type="button" (click)="onReset()">Сброс</button>
+    <button class="btn btn-secondary" type="button" (click)="onExport()">Экспорт</button>
+    <button class="btn btn-primary" type="button" (click)="openNewSupply()">+ Новая поставка</button>
   </section>
 
-
-  <div class="card supplies__table-card">
-    <div class="card__content supplies__table-wrapper">
-      <ng-container *ngIf="rows$ | async as rows; else loading">
-        <table class="fm-table" *ngIf="rows.length > 0; else empty">
+  <div class="table-panel">
+    <ng-container *ngIf="rowsReady(); else loading">
+      <ng-container *ngIf="sortedRows.length > 0; else empty">
+        <table class="fm-table" aria-label="Поставки">
           <thead>
             <tr>
-              <th class="text-center">
-                <input type="checkbox" aria-label="Выбрать все" />
+              <th (click)="toggleSort('docNo')" [attr.aria-sort]="ariaSort('docNo')">
+                № док. <span class="sort">{{ sortIcon('docNo') }}</span>
               </th>
-              <th>№ док.</th>
-              <th>Дата прихода</th>
-              <th>Склад</th>
-              <th>Ответственный</th>
-              <th>SKU</th>
-              <th>Название</th>
-              <th class="text-right">Кол-во</th>
-              <th class="text-center">Срок годности</th>
-              <th>Поставщик</th>
-              <th>Статус</th>
-              <th class="text-right">Действия</th>
+              <th (click)="toggleSort('arrivalDate')" [attr.aria-sort]="ariaSort('arrivalDate')">
+                Дата прихода <span class="sort">{{ sortIcon('arrivalDate') }}</span>
+              </th>
+              <th (click)="toggleSort('warehouse')" [attr.aria-sort]="ariaSort('warehouse')">
+                Склад <span class="sort">{{ sortIcon('warehouse') }}</span>
+              </th>
+              <th (click)="toggleSort('responsible')" [attr.aria-sort]="ariaSort('responsible')">
+                Ответственный <span class="sort">{{ sortIcon('responsible') }}</span>
+              </th>
+              <th (click)="toggleSort('sku')" [attr.aria-sort]="ariaSort('sku')">
+                SKU <span class="sort">{{ sortIcon('sku') }}</span>
+              </th>
+              <th (click)="toggleSort('name')" [attr.aria-sort]="ariaSort('name')">
+                Название <span class="sort">{{ sortIcon('name') }}</span>
+              </th>
+              <th class="text-right" (click)="toggleSort('qty')" [attr.aria-sort]="ariaSort('qty')">
+                Кол-во <span class="sort">{{ sortIcon('qty') }}</span>
+              </th>
+              <th class="text-center" (click)="toggleSort('expiryDate')" [attr.aria-sort]="ariaSort('expiryDate')">
+                Срок годности <span class="sort">{{ sortIcon('expiryDate') }}</span>
+              </th>
+              <th (click)="toggleSort('supplier')" [attr.aria-sort]="ariaSort('supplier')">
+                Поставщик <span class="sort">{{ sortIcon('supplier') }}</span>
+              </th>
+              <th (click)="toggleSort('status')" [attr.aria-sort]="ariaSort('status')">
+                Статус <span class="sort">{{ sortIcon('status') }}</span>
+              </th>
             </tr>
           </thead>
-          <tbody>
-            <tr *ngFor="let row of rows; trackBy: trackBySupplyId">
-              <td class="text-center">
-                <input type="checkbox" [attr.aria-label]="'Выбрать поставку ' + row.docNo" />
-              </td>
+          <tbody [@list]="sortedRows.length">
+            <tr *ngFor="let row of sortedRows; trackBy: trackByRowId" @row>
               <td class="mono">{{ row.docNo }}</td>
-              <td class="text-center">{{ row.arrivalDate | date: 'dd.MM.yyyy' }}</td>
+              <td class="text-center">{{ row.arrivalDate | date: 'yyyy-MM-dd' }}</td>
               <td>{{ row.warehouse }}</td>
               <td>{{ row.responsible || '—' }}</td>
               <td class="mono">{{ row.sku }}</td>
               <td class="truncate" [title]="row.name">{{ row.name }}</td>
               <td class="text-right">{{ row.qty | number: '1.0-2' }} {{ row.unit }}</td>
-              <td class="text-center">{{ row.expiryDate | date: 'dd.MM.yyyy' }}</td>
+              <td class="text-center">{{ row.expiryDate | date: 'yyyy-MM-dd' }}</td>
               <td class="truncate" [title]="row.supplier || '—'">{{ row.supplier || '—' }}</td>
-              <td>
-                <span [ngClass]="statusClass(row.status)">{{ statusText(row.status) }}</span>
-              </td>
-              <td class="text-right">
-                <button class="icon-btn" type="button" aria-label="Списать">🗑</button>
-                <button class="icon-btn" type="button" aria-label="Переместить">⇄</button>
-                <button class="icon-btn" type="button" aria-label="Печать">🖨</button>
-              </td>
+              <td><span [ngClass]="statusClass(row.status)">{{ statusText(row.status) }}</span></td>
             </tr>
           </tbody>
         </table>
-        <ng-template #empty>
-          <div class="supplies__empty">Поставки пока не добавлены</div>
-        </ng-template>
       </ng-container>
-      <ng-template #loading>
-        <div class="supplies__empty">Загрузка...</div>
-      </ng-template>
-
-    </div>
-
-    <button class="btn btn-outline" type="button" (click)="resetFilters()">Сброс</button>
-    <button class="btn btn-secondary" type="button">Экспорт</button>
-
-    <button class="btn btn-primary" type="button" (click)="openDialog()">+ Новая поставка</button>
+    </ng-container>
+    <ng-template #loading>
+      <div class="supplies__empty">Загрузка...</div>
+    </ng-template>
+    <ng-template #empty>
+      <div class="supplies__empty">Поставки пока не добавлены</div>
+    </ng-template>
   </div>
-</header>
-
-<section class="kpis">
-  <article class="kpis__item">
-    <span class="kpis__label">Активные поставки</span>
-    <span class="kpis__value">{{ supplyKpis().ok }}</span>
-  </article>
-  <article class="kpis__item">
-    <span class="kpis__label">Скоро срок</span>
-    <span class="kpis__value">{{ supplyKpis().warning }}</span>
-  </article>
-  <article class="kpis__item">
-    <span class="kpis__label">Просрочено</span>
-    <span class="kpis__value">{{ supplyKpis().expired }}</span>
-  </article>
-  <article class="kpis__item">
-    <span class="kpis__label">Всего поставок</span>
-    <span class="kpis__value">{{ supplyKpis().total }}</span>
-  </article>
 </section>
-
-<section class="filters">
-  <input class="fm-input w-280" placeholder="Поиск по номеру, SKU или названию" />
-  <input class="fm-input w-140" type="date" />
-  <input class="fm-input w-140" type="date" />
-  <button class="btn btn-outline" type="button">Сброс</button>
-  <button class="btn btn-secondary" type="button">Экспорт</button>
-</section>
-
-<ng-container *ngIf="importDialogOpen()">
-  <div class="fm-dialog-backdrop" (click)="closeImportDialog()"></div>
-  <div class="fm-dialog square" role="dialog" aria-modal="true" aria-labelledby="supplies-import-title">
-    <header class="fm-dialog__header">
-      <div class="fm-dialog__title" id="supplies-import-title">Импорт CSV</div>
-      <button class="fm-dialog__close" type="button" (click)="closeImportDialog()" aria-label="Закрыть">×</button>
-    </header>
-
-    <section
-      class="fm-dropzone"
-      (dragover)="onDragOver($event)"
-      (drop)="onDrop($event)"
-    >
-      <div class="fm-dropzone__icon">⬇</div>
-      <div class="fm-dropzone__title">Перетащите файл CSV сюда</div>
-      <div class="fm-dropzone__sub">
-        или
-        <label class="link">
-          <input type="file" accept=".csv,text/csv" (change)="onFile($event)" hidden />
-          выберите с диска
-        </label>
-      </div>
-      <div class="fm-dropzone__file" *ngIf="selectedFileName() as fileName">Выбрано: {{ fileName }}</div>
-    </section>
-
-    <footer class="fm-dialog__footer">
-      <button class="btn btn-outline" type="button" (click)="closeImportDialog()">Отмена</button>
-      <button class="btn btn-primary" type="button" (click)="mockImport()">Импортировать</button>
-    </footer>
-  </div>
-</ng-container>
-
 
 <section class="supplies-dialog" *ngIf="dialogOpen()">
   <div class="supplies-dialog__backdrop" (click)="closeDialog()"></div>
@@ -258,9 +202,8 @@
       </div>
 
       <footer class="supplies-dialog__footer">
-        <button type="button" class="supplies__btn supplies__btn--outline" (click)="closeDialog()">Отмена</button>
-        <button type="submit" class="supplies__btn supplies__btn--primary">Сохранить</button>
-
+        <button type="button" class="btn btn-outline" (click)="closeDialog()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
       </footer>
     </form>
   </div>
