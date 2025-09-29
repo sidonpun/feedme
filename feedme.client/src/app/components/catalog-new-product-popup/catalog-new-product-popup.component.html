@@ -1,138 +1,184 @@
 <div class="popup-backdrop">
-  <div class="popup-content">
-    <button class="close-btn" type="button" (click)="close()">×</button>
-    <h2>Новый товар</h2>
+  <div class="popup-content" role="dialog" aria-modal="true" aria-labelledby="new-product-title">
+    <div class="popup-header">
+      <h2 id="new-product-title" class="popup-title">Новый товар</h2>
+      <button class="close-btn" type="button" (click)="close()" aria-label="Закрыть окно">
+        ×
+      </button>
+    </div>
+
     <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="section">
+
+    <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <section class="section">
         <h3 class="section-title">Основная информация</h3>
         <div class="form-grid">
           <div class="input-container">
-            <label>Название товара</label>
-            <input formControlName="name" />
+            <label for="new-product-name">Название товара</label>
+            <input id="new-product-name" formControlName="name" autocomplete="off" placeholder="Например, Курица гриль" />
           </div>
           <div class="input-container">
-            <label>Тип номенклатуры</label>
-            <select formControlName="type">
+            <label for="new-product-type">Тип номенклатуры</label>
+            <select id="new-product-type" formControlName="type">
               <option *ngFor="let t of types" [value]="t">{{ t }}</option>
             </select>
           </div>
           <div class="input-container">
-            <label>Номенклатурный код</label>
-            <input formControlName="code" />
+            <label for="new-product-code">Номенклатурный код</label>
+            <input id="new-product-code" formControlName="code" autocomplete="off" placeholder="Например, MEAT-003" />
           </div>
           <div class="input-container">
-            <label>Категория</label>
-            <input formControlName="category" />
+            <label for="new-product-category">Категория</label>
+            <input id="new-product-category" formControlName="category" autocomplete="off" placeholder="Например, Мясные заготовки" />
           </div>
           <div class="input-container">
-            <label>Единица измерения (базовая)</label>
-            <select formControlName="unit">
+            <label for="new-product-unit">Единица измерения (базовая)</label>
+            <select id="new-product-unit" formControlName="unit">
               <option *ngFor="let u of units" [value]="u">{{ u }}</option>
             </select>
           </div>
           <div class="input-container">
-            <label>Вес/объем единицы</label>
-            <input type="number" formControlName="weight" />
+            <label for="new-product-weight">Вес/объем единицы</label>
+            <input
+              id="new-product-weight"
+              type="number"
+              formControlName="weight"
+              inputmode="decimal"
+              placeholder="Например, 2.5"
+            />
           </div>
           <div class="input-container">
-            <label>Метод списания</label>
-            <select formControlName="writeoffMethod">
+            <label for="new-product-writeoff">Метод списания</label>
+            <select id="new-product-writeoff" formControlName="writeoffMethod">
               <option value="FIFO">FIFO</option>
               <option value="FEFO">FEFO</option>
+              <option value="LIFO">LIFO</option>
             </select>
           </div>
           <div class="input-container">
-            <label>Аллергены</label>
-            <input formControlName="allergens" />
+            <label for="new-product-allergens">Аллергены</label>
+            <input id="new-product-allergens" formControlName="allergens" autocomplete="off" placeholder="Например, молоко" />
           </div>
           <div class="checkbox-container">
-            <label class="checkbox-label">
-              <input type="checkbox" formControlName="packagingRequired" />
+            <label class="checkbox-label" for="new-product-packaging">
+              <input id="new-product-packaging" type="checkbox" formControlName="packagingRequired" />
               Требует фасовки
             </label>
           </div>
           <div class="checkbox-container">
-            <label class="checkbox-label">
-              <input type="checkbox" formControlName="spoilsAfterOpening" />
+            <label class="checkbox-label" for="new-product-spoils">
+              <input id="new-product-spoils" type="checkbox" formControlName="spoilsAfterOpening" />
               Портится после вскрытия
             </label>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="section">
+      <section class="section">
         <h3 class="section-title">Закупка и логистика</h3>
         <div class="form-grid">
           <div class="input-container">
-            <label>Поставщик (основной)</label>
-            <input formControlName="supplier" />
+            <label for="new-product-supplier">Поставщик (основной)</label>
+            <input id="new-product-supplier" formControlName="supplier" autocomplete="off" placeholder="Например, ООО Кури Дурс" />
           </div>
           <div class="input-container">
-            <label>Срок поставки (дней)</label>
-            <input type="number" formControlName="deliveryTime" />
+            <label for="new-product-delivery-time">Срок поставки (дней)</label>
+            <input
+              id="new-product-delivery-time"
+              type="number"
+              formControlName="deliveryTime"
+              inputmode="numeric"
+              placeholder="Например, 2"
+            />
           </div>
           <div class="input-container">
-            <label>Оценочная себестоимость</label>
-            <input type="number" formControlName="costEstimate" />
+            <label for="new-product-cost">Оценочная себестоимость</label>
+            <input
+              id="new-product-cost"
+              type="number"
+              formControlName="costEstimate"
+              inputmode="decimal"
+              placeholder="Например, 350"
+            />
           </div>
           <div class="input-container">
-            <label>Ставка НДС</label>
-            <select formControlName="taxRate">
+            <label for="new-product-tax">Ставка НДС</label>
+            <select id="new-product-tax" formControlName="taxRate">
               <option *ngFor="let rate of taxRates" [value]="rate">{{ rate }}</option>
             </select>
           </div>
           <div class="input-container">
-            <label>Цена за единицу</label>
-            <input type="number" formControlName="unitPrice" />
+            <label for="new-product-unit-price">Цена за единицу</label>
+            <input
+              id="new-product-unit-price"
+              type="number"
+              formControlName="unitPrice"
+              inputmode="decimal"
+              placeholder="Например, 420"
+            />
           </div>
           <div class="input-container">
-            <label>Цена продажи (опционально)</label>
-            <input type="number" formControlName="salePrice" />
+            <label for="new-product-sale-price">Цена продажи (опционально)</label>
+            <input
+              id="new-product-sale-price"
+              type="number"
+              formControlName="salePrice"
+              inputmode="decimal"
+              placeholder="Например, 520"
+            />
           </div>
           <div class="input-container">
-            <label>Код ТН ВЭД</label>
-            <input formControlName="tnved" />
+            <label for="new-product-tnved">Код ТН ВЭД</label>
+            <input id="new-product-tnved" formControlName="tnved" autocomplete="off" placeholder="Например, 0207" />
           </div>
           <div class="checkbox-container">
-            <label class="checkbox-label">
-              <input type="checkbox" formControlName="isMarked" />
+            <label class="checkbox-label" for="new-product-marked">
+              <input id="new-product-marked" type="checkbox" formControlName="isMarked" />
               Маркируемый товар
             </label>
           </div>
           <div class="checkbox-container">
-            <label class="checkbox-label">
-              <input type="checkbox" formControlName="isAlcohol" />
+            <label class="checkbox-label" for="new-product-alcohol">
+              <input id="new-product-alcohol" type="checkbox" formControlName="isAlcohol" />
               Алкогольная продукция
             </label>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="section" *ngIf="form.get('isAlcohol')?.value">
+      <section class="section" *ngIf="form.get('isAlcohol')?.value">
         <h3 class="section-title">Алкогольная продукция</h3>
         <div class="form-grid">
           <div class="input-container">
-            <label>Код вида алкоголя</label>
-            <input formControlName="alcoholCode" />
+            <label for="new-product-alcohol-code">Код вида алкоголя</label>
+            <input id="new-product-alcohol-code" formControlName="alcoholCode" autocomplete="off" />
           </div>
           <div class="input-container">
-            <label>Крепость (%)</label>
-            <input type="number" formControlName="alcoholStrength" />
+            <label for="new-product-alcohol-strength">Крепость (%)</label>
+            <input
+              id="new-product-alcohol-strength"
+              type="number"
+              formControlName="alcoholStrength"
+              inputmode="decimal"
+              placeholder="Например, 40"
+            />
           </div>
           <div class="input-container">
-            <label>Объем тары, л</label>
-            <input type="number" formControlName="alcoholVolume" />
+            <label for="new-product-alcohol-volume">Объем тары, л</label>
+            <input
+              id="new-product-alcohol-volume"
+              type="number"
+              formControlName="alcoholVolume"
+              inputmode="decimal"
+              placeholder="Например, 0.75"
+            />
           </div>
         </div>
-      </div>
+      </section>
+
       <div class="popup-buttons">
         <button type="button" class="cancel-btn" (click)="close()">Отмена</button>
-
-        <button type="submit" class="save-btn" [disabled]="form.invalid">
-
-          Сохранить
-        </button>
+        <button type="submit" class="save-btn" [disabled]="form.invalid">Сохранить</button>
       </div>
     </form>
   </div>
