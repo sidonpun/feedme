@@ -1,4 +1,12 @@
-import { Component, OnInit, Pipe, PipeTransform, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  Pipe,
+  PipeTransform,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -36,7 +44,8 @@ export class BooleanLabelPipe implements PipeTransform {
     CatalogNewProductPopupComponent,
   ],
   templateUrl: './catalog.component.html',
-  styleUrls: ['./catalog.component.css']
+  styleUrls: ['./catalog.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CatalogComponent implements OnInit {
   private readonly catalogService = inject(CatalogService);
@@ -44,12 +53,16 @@ export class CatalogComponent implements OnInit {
   activeTab: 'info' | 'logistics' = 'info';
   filter = '';
 
-  showNewProductPopup = false;
-  createErrorMessage: string | null = null;
+  private readonly newProductPopupOpen = signal(false);
+  private readonly newProductError = signal<string | null>(null);
+  private readonly loadError = signal<string | null>(null);
+
+  readonly isNewProductPopupVisible = this.newProductPopupOpen.asReadonly();
+  readonly creationErrorMessage = this.newProductError.asReadonly();
+  readonly loadErrorMessage = this.loadError.asReadonly();
 
   private readonly catalogDataSubject = new BehaviorSubject<CatalogItem[]>([]);
   readonly catalogData$ = this.catalogDataSubject.asObservable();
-  errorMessage: string | null = null;
 
 
   ngOnInit(): void {
@@ -58,7 +71,10 @@ export class CatalogComponent implements OnInit {
 
       .pipe(
         take(1),
-        tap(data => this.catalogDataSubject.next(data)),
+        tap(data => {
+          this.loadError.set(null);
+          this.catalogDataSubject.next(data);
+        }),
         catchError(() => this.handleError('Не удалось загрузить каталог. Попробуйте ещё раз.'))
       )
       .subscribe();
@@ -67,14 +83,14 @@ export class CatalogComponent implements OnInit {
 
   /** Открывает модальное окно создания товара */
   openNewProductPopup(): void {
-    this.createErrorMessage = null;
-    this.showNewProductPopup = true;
+    this.newProductError.set(null);
+    this.newProductPopupOpen.set(true);
   }
 
   /** Закрывает модальное окно создания товара */
   closeNewProductPopup(): void {
-    this.showNewProductPopup = false;
-    this.createErrorMessage = null;
+    this.newProductPopupOpen.set(false);
+    this.newProductError.set(null);
   }
 
   /** Добавляет новый товар в каталог */
@@ -87,9 +103,9 @@ export class CatalogComponent implements OnInit {
           const updated = [...this.catalogDataSubject.value, created];
           this.catalogDataSubject.next(updated);
 
-          this.errorMessage = null;
-          this.createErrorMessage = null;
-          this.showNewProductPopup = false;
+          this.loadError.set(null);
+          this.newProductError.set(null);
+          this.newProductPopupOpen.set(false);
         }),
         catchError(() => this.handleCreateError('Не удалось сохранить товар. Попробуйте ещё раз.'))
       )
@@ -97,13 +113,13 @@ export class CatalogComponent implements OnInit {
   }
 
   private handleError(message: string) {
-    this.errorMessage = message;
+    this.loadError.set(message);
     return EMPTY;
 
   }
 
   private handleCreateError(message: string) {
-    this.createErrorMessage = message;
+    this.newProductError.set(message);
     return EMPTY;
   }
 }

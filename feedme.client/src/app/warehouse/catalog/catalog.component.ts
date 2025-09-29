@@ -133,6 +133,14 @@ export class CatalogComponent {
     this.resetForm();
   }
 
+  openNewProductPopup(): void {
+    this.openDialog();
+  }
+
+  closeNewProductPopup(): void {
+    this.closeDialog();
+  }
+
   async submit(): Promise<void> {
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
