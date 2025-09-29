@@ -1,119 +1,85 @@
-import { NgClass, NgFor, NgIf } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
-import {
-  NonNullableFormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { firstValueFrom } from 'rxjs';
+import { startWith, take } from 'rxjs';
 
-import { CatalogService } from '../catalog/catalog.service';
+import { SupplyProduct, SupplyRow, SupplyStatus } from '../shared/models';
+import { computeExpiryStatus } from '../shared/status.util';
 import { SuppliesService } from './supplies.service';
-import { Product, SupplyRow } from '../shared/models';
 
-interface SupplyFormValue {
+type SupplyFormValue = {
+
   docNo: string;
   arrivalDate: string;
   warehouse: string;
   responsible: string;
   productId: string;
-  qty: number | null;
+
+  qty: number;
   expiryDate: string;
-}
+};
 
 @Component({
   standalone: true,
-  selector: 'app-warehouse-supplies',
-  imports: [NgIf, NgFor, NgClass, ReactiveFormsModule],
+  selector: 'app-supplies',
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './supplies.component.html',
-
-  styleUrls: ['./supplies.component.scss'],
+  styleUrl: './supplies.component.scss',
 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SuppliesComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly suppliesService = inject(SuppliesService);
-  private readonly catalogService = inject(CatalogService);
 
-  readonly tabs: ReadonlyArray<{ key: 'details' | 'product'; label: string }> = [
-    { key: 'details', label: 'Детали документа' },
-    { key: 'product', label: 'Товар' },
-  ];
+
+  readonly rows$ = this.suppliesService.getAll();
+  readonly products$ = this.suppliesService.getProducts();
 
   readonly dialogOpen = signal(false);
-  readonly submitting = signal(false);
-  readonly activeTab = signal<'details' | 'product'>('details');
 
-  private readonly defaults: SupplyFormValue = {
-    docNo: '',
-    arrivalDate: '',
-    warehouse: '',
-    responsible: '',
-    productId: '',
-    qty: null,
-    expiryDate: '',
+  private readonly statusLabels: Record<SupplyStatus, string> = {
+    ok: 'Ок',
+    warning: 'Скоро срок',
+    expired: 'Просрочено',
   };
 
-  readonly supplyForm = this.fb.group({
-    docNo: this.fb.control(this.defaults.docNo, {
-      validators: [Validators.required, Validators.maxLength(60)],
-    }),
-    arrivalDate: this.fb.control(this.defaults.arrivalDate, {
-      validators: [Validators.required, Validators.pattern(/^\d{4}-\d{2}-\d{2}$/)],
-    }),
-    warehouse: this.fb.control(this.defaults.warehouse, {
-      validators: [Validators.required, Validators.maxLength(120)],
-    }),
-    responsible: this.fb.control(this.defaults.responsible, {
-      validators: [Validators.required, Validators.maxLength(120)],
-    }),
-    productId: this.fb.control(this.defaults.productId, {
-      validators: [Validators.required],
-    }),
-    qty: this.fb.control<number | null>(this.defaults.qty, {
-      validators: [Validators.required, Validators.min(0.0000001)],
-    }),
-    expiryDate: this.fb.control(this.defaults.expiryDate, {
-      validators: [Validators.required, Validators.pattern(/^\d{4}-\d{2}-\d{2}$/)],
-    }),
-  });
+  private readonly statusClasses: Record<SupplyStatus, string> = {
+    ok: 'supplies-status supplies-status--ok',
+    warning: 'supplies-status supplies-status--warning',
+    expired: 'supplies-status supplies-status--expired',
+  };
 
-  readonly products = toSignal(this.catalogService.getAll(), {
-    initialValue: [] as Product[],
-  });
-
-  readonly supplies = toSignal(this.suppliesService.getAll(), {
-    initialValue: [] as SupplyRow[],
+  readonly form = this.fb.group({
+    docNo: this.fb.control('', { validators: [Validators.required] }),
+    arrivalDate: this.fb.control('', { validators: [Validators.required] }),
+    warehouse: this.fb.control('', { validators: [Validators.required] }),
+    responsible: this.fb.control(''),
+    productId: this.fb.control('', { validators: [Validators.required] }),
+    qty: this.fb.control(0, { validators: [Validators.required, Validators.min(0.0001)] }),
+    expiryDate: this.fb.control('', { validators: [Validators.required] }),
   });
 
   private readonly selectedProductId = toSignal(
-    this.supplyForm.controls.productId.valueChanges,
-    { initialValue: this.supplyForm.controls.productId.value },
+    this.form.controls.productId.valueChanges.pipe(startWith(this.form.controls.productId.value)),
+    { initialValue: this.form.controls.productId.value },
   );
 
-  readonly selectedProduct = computed(() => {
+  readonly selectedProduct = computed<SupplyProduct | null>(() => {
+
     const id = this.selectedProductId();
     if (!id) {
       return null;
     }
-    return this.products().find((product) => product.id === id) ?? null;
-  });
 
-  readonly selectedSupplier = computed(() => this.selectedProduct()?.supplierMain ?? '—');
-  readonly selectedUnit = computed(() => this.selectedProduct()?.unit ?? '—');
-  readonly selectedSku = computed(() => this.selectedProduct()?.sku ?? '—');
+    return this.suppliesService.getProductById(id) ?? null;
+  });
 
   openDialog(): void {
     this.dialogOpen.set(true);
-    this.activeTab.set('details');
+
   }
 
   closeDialog(): void {
@@ -121,90 +87,93 @@ export class SuppliesComponent {
     this.resetForm();
   }
 
-  setActiveTab(tab: 'details' | 'product'): void {
-    this.activeTab.set(tab);
-  }
 
-  async submit(): Promise<void> {
-    if (this.supplyForm.invalid) {
-      this.supplyForm.markAllAsTouched();
+  submit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 
-    const raw = this.supplyForm.getRawValue();
-    const product = this.products().find((item) => item.id === raw.productId);
+    const value = this.form.getRawValue() as SupplyFormValue;
+    const product = this.suppliesService.getProductById(value.productId);
+
     if (!product) {
-      this.supplyForm.controls.productId.setErrors({ required: true });
-      this.activeTab.set('product');
+      this.form.controls.productId.setErrors({ missingProduct: true });
       return;
     }
 
-    if (!raw.qty || raw.qty <= 0) {
-      this.supplyForm.controls.qty.setErrors({ min: true });
-      this.activeTab.set('product');
+    const docNo = value.docNo.trim();
+    const warehouse = value.warehouse.trim();
+    const responsible = value.responsible.trim();
+    const qty = Number(value.qty);
+
+    if (!docNo) {
+      this.form.controls.docNo.setErrors({ required: true });
+      this.form.controls.docNo.markAsTouched();
       return;
     }
 
-    if (!this.isValidISODate(raw.expiryDate)) {
-      this.supplyForm.controls.expiryDate.setErrors({ pattern: true });
-      this.activeTab.set('product');
+    if (!warehouse) {
+      this.form.controls.warehouse.setErrors({ required: true });
+      this.form.controls.warehouse.markAsTouched();
       return;
     }
 
-    const payload: SupplyRow = {
-      id: '',
-      docNo: raw.docNo.trim(),
-      arrivalDate: raw.arrivalDate,
-      warehouse: raw.warehouse.trim(),
-      responsible: raw.responsible.trim() || undefined,
+    if (!Number.isFinite(qty) || qty <= 0) {
+      this.form.controls.qty.setErrors({ min: true });
+      this.form.controls.qty.markAsTouched();
+      return;
+    }
+
+    const payload: Omit<SupplyRow, 'id'> = {
+      docNo,
+      arrivalDate: value.arrivalDate,
+      warehouse,
+      responsible: responsible ? responsible : undefined,
       productId: product.id,
       sku: product.sku,
       name: product.name,
-      qty: raw.qty,
+      qty,
       unit: product.unit,
-      expiryDate: raw.expiryDate,
-      supplier: product.supplierMain,
-      status: 'ok',
+      expiryDate: value.expiryDate,
+      supplier: product.supplier,
+      status: computeExpiryStatus(value.expiryDate),
     };
 
-    this.submitting.set(true);
-    try {
-      await firstValueFrom(this.suppliesService.add(payload));
-      this.closeDialog();
-    } finally {
-      this.submitting.set(false);
-    }
+    this.suppliesService
+      .add(payload)
+      .pipe(take(1))
+      .subscribe(() => {
+        this.closeDialog();
+      });
+r
   }
 
   trackBySupplyId(_: number, row: SupplyRow): string {
     return row.id;
   }
 
-  trackByProductId(_: number, product: Product): string {
-    return product.id;
+
+  getStatusLabel(status: SupplyStatus): string {
+    return this.statusLabels[status];
   }
 
-  badgeClass(status: SupplyRow['status']): string {
-    switch (status) {
-      case 'warning':
-        return 'status-badge status-badge--warning';
-      case 'expired':
-        return 'status-badge status-badge--expired';
-      default:
-        return 'status-badge status-badge--ok';
-    }
+  getStatusClass(status: SupplyStatus): string {
+    return this.statusClasses[status];
   }
 
   private resetForm(): void {
-    this.supplyForm.reset(this.defaults);
-  }
+    this.form.reset({
+      docNo: '',
+      arrivalDate: '',
+      warehouse: '',
+      responsible: '',
+      productId: '',
+      qty: 0,
+      expiryDate: '',
+    });
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
 
-  private isValidISODate(value: string): boolean {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-      return false;
-    }
-
-    const parsed = new Date(value);
-    return !Number.isNaN(parsed.getTime());
   }
 }
