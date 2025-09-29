@@ -198,7 +198,7 @@
 .field__control:focus {
   outline: none;
   border-color: #fa4b00;
-  box-shadow: 0 0 0 1px #fa4b00;
+  box-shadow: 0 0 0 1px var(--ring-shadow, rgba(37, 99, 235, 0.35));
 }
 
 .field--invalid .field__control {
