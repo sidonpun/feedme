@@ -1,32 +1,11 @@
 export type SupplyStatus = 'ok' | 'warning' | 'expired';
 
-export interface Product {
-  id: string;
-  name: string;
-  type: 'Товар' | 'Заготовка' | 'Полуфабрикат';
-  sku: string;
-  category: string;
-  unit: 'кг' | 'л' | 'шт' | string;
-  unitWeight?: number;
-  writeoff?: 'FIFO' | 'FEFO' | 'LIFO' | string;
-  allergens?: string;
-  needsPacking?: boolean;
-  perishableAfterOpen?: boolean;
-  supplierMain?: string;
-  leadTimeDays?: number;
-  costEst?: number;
-  vat?: string;
-  purchasePrice?: number;
-  salePrice?: number;
-  tnvCode?: string;
-  marked?: boolean;
-  alcohol?: boolean;
-}
 
 export interface SupplyRow {
   id: string;
   docNo: string;
-  arrivalDate: string;
+  arrivalDate: string; // YYYY-MM-DD
+
   warehouse: string;
   responsible?: string;
   productId: string;
@@ -34,7 +13,17 @@ export interface SupplyRow {
   name: string;
   qty: number;
   unit: string;
-  expiryDate: string;
+
+  expiryDate: string; // YYYY-MM-DD
   supplier?: string;
   status: SupplyStatus;
 }
+
+export interface SupplyProduct {
+  id: string;
+  sku: string;
+  name: string;
+  unit: string;
+  supplier?: string;
+}
+
