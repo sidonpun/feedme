@@ -129,7 +129,7 @@ input::placeholder {
 input:focus-visible,
 select:focus-visible {
   border-color: #ff8c2a;
-  box-shadow: 0 0 0 4px rgba(255, 140, 42, 0.18);
+  box-shadow: 0 0 0 4px var(--ring-shadow, rgba(37, 99, 235, 0.35));
   outline: none;
 }
 
@@ -204,7 +204,7 @@ select {
 .save-btn {
   background: linear-gradient(135deg, #ff952d 0%, #ff7a1a 100%);
   color: #ffffff;
-  box-shadow: 0 12px 24px rgba(255, 123, 26, 0.28);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
 }
 
 .save-btn:disabled {
@@ -217,7 +217,7 @@ select {
 .save-btn:not(:disabled):hover,
 .save-btn:not(:disabled):focus-visible {
   transform: translateY(-1px);
-  box-shadow: 0 16px 28px rgba(255, 123, 26, 0.32);
+  box-shadow: 0 16px 28px rgba(15, 23, 42, 0.16);
   outline: none;
 }
 

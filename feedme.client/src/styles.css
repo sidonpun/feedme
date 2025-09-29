@@ -4,7 +4,11 @@
   --accent-color: #fa4b00;
   --accent-hover-color: #d94300;
   --brand-600: #fa4b00;
-  --ring: var(--brand-600);
+  --brand-700: #d94300;
+  --ring: #2563eb;
+  --ring-shadow: rgba(37, 99, 235, 0.35);
+  --shadow-soft: rgba(15, 23, 42, 0.08);
+  --shadow-medium: rgba(15, 23, 42, 0.12);
   --cancel-color: #ccc;
   --cancel-hover-color: #b3b3b3;
 
@@ -12,7 +16,7 @@
 
 *:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--ring);
+  box-shadow: 0 0 0 2px var(--ring-shadow);
 }
 
 html, body {
@@ -111,7 +115,7 @@ button,
   transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
   background: var(--brand-600);
   color: #ffffff;
-  box-shadow: 0 8px 16px rgba(255, 106, 0, 0.25);
+  box-shadow: 0 8px 16px var(--shadow-medium);
 }
 
 .btn--primary,
@@ -157,7 +161,7 @@ button:hover:not(:disabled) {
 .shadcn-btn[variant="secondary"] {
   background: color-mix(in srgb, var(--brand-600) 10%, #ffffff);
   color: var(--brand-600);
-  box-shadow: 0 8px 16px rgba(255, 106, 0, 0.15);
+  box-shadow: 0 8px 16px var(--shadow-soft);
 }
 
 .btn-secondary:hover:not(:disabled),
@@ -202,7 +206,7 @@ button:hover:not(:disabled) {
 .select:focus {
   outline: none;
   border-color: var(--ring);
-  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.25);
+  box-shadow: 0 0 0 3px var(--ring-shadow);
 }
 
 .select {

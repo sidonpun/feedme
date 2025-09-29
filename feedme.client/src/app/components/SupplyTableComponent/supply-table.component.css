@@ -232,7 +232,7 @@
 
 .icon-btn:focus-visible {
   outline: 0;
-  box-shadow: 0 0 0 2px var(--brand, #ff6a00);
+  box-shadow: 0 0 0 2px var(--ring-shadow, rgba(37, 99, 235, 0.35));
 }
 
 .sr-only {
