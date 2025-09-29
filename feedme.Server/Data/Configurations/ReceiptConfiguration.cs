@@ -80,6 +80,9 @@ public class ReceiptConfiguration : IEntityTypeConfiguration<Receipt>
                 .HasPrecision(18, 4)
                 .IsRequired();
 
+            items.Property(line => line.ExpiryDate)
+                .HasColumnName("expiry_date");
+
             items.Ignore(line => line.TotalCost);
 
             items.HasIndex("receipt_id");

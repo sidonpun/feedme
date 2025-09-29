@@ -37,7 +37,8 @@ describe('ReceiptService', () => {
           itemName: 'Помидоры',
           quantity: 5,
           unit: 'кг',
-          unitPrice: 150
+          unitPrice: 150,
+          expiryDate: '2024-04-25T00:00:00.000Z'
         }
       ]
     };
@@ -51,7 +52,8 @@ describe('ReceiptService', () => {
       items: [
         {
           ...payload.items[0],
-          totalCost: payload.items[0].quantity * payload.items[0].unitPrice
+          totalCost: payload.items[0].quantity * payload.items[0].unitPrice,
+          status: 'warning'
         }
       ],
       totalAmount: payload.items[0].quantity * payload.items[0].unitPrice

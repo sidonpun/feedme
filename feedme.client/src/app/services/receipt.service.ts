@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiUrlService } from './api-url.service';
 
+export type ShelfLifeStatus = 'ok' | 'warning' | 'expired';
+
 export interface ReceiptLine {
   catalogItemId: string;
   itemName: string;
@@ -10,6 +12,8 @@ export interface ReceiptLine {
   unit: string;
   unitPrice: number;
   totalCost: number;
+  expiryDate: string | null;
+  status: ShelfLifeStatus;
 }
 
 export interface Receipt {
@@ -22,7 +26,7 @@ export interface Receipt {
   totalAmount: number;
 }
 
-export type CreateReceiptLine = Omit<ReceiptLine, 'totalCost'>;
+export type CreateReceiptLine = Omit<ReceiptLine, 'totalCost' | 'status'>;
 
 export interface CreateReceipt {
   number: string;
