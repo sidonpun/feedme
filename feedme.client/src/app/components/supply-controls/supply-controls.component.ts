@@ -1,45 +1,44 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgFor } from '@angular/common';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+
+type SupplySection = 'supplies' | 'stock' | 'catalog' | 'inventory';
+
+type SupplyTab = {
+  readonly key: SupplySection;
+  readonly label: string;
+};
 
 @Component({
   selector: 'app-supply-controls',
   standalone: true,
-  imports: [CommonModule],
+  imports: [NgFor],
   templateUrl: './supply-controls.component.html',
-  styleUrls: ['./supply-controls.component.css']
+  styleUrls: ['./supply-controls.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SupplyControlsComponent {
-  @Input() selectedSupply: string = 'supplies';
-  @Output() selectedSupplyChange = new EventEmitter<string>();
-  @Output() openNewProduct = new EventEmitter<void>();  // ← новое
-  @Output() addSupply = new EventEmitter<void>();
-  @Output() goToCatalog = new EventEmitter<void>();
+  @Input() activeTab: SupplySection = 'supplies';
+  @Output() activeTabChange = new EventEmitter<SupplySection>();
+  @Output() createSupply = new EventEmitter<void>();
 
-  setSupplyType(type: 'supplies' | 'stock' | 'catalog'): void {
-    // если та же вкладка — ничего не делать
-    if (this.selectedSupply === type) {
+  readonly tabs: ReadonlyArray<SupplyTab> = [
+    { key: 'supplies', label: 'Поставки' },
+    { key: 'stock', label: 'Остатки' },
+    { key: 'catalog', label: 'Каталог' },
+    { key: 'inventory', label: 'Инвентаризация' },
+  ];
+
+  onSelect(tab: SupplySection): void {
+    if (this.activeTab === tab) {
       return;
     }
 
-    // установить новую вкладку
-    this.selectedSupply = type;
-    // уведомить родителя об изменении
-    this.selectedSupplyChange.emit(this.selectedSupply);
-
-    // при переходе на каталог можно дополнительно вызвать навигацию
-    if (type === 'catalog') {
-      this.goToCatalog.emit();
-    }
+    this.activeTabChange.emit(tab);
   }
-  
 
-
-
-  handleGoToCatalog(): void {
-    this.setSupplyType('catalog');
-    this.goToCatalog.emit();
+  onCreateSupply(): void {
+    this.createSupply.emit();
   }
-  onAddClick() {
-    this.addSupply.emit();
-  }
+
+  trackByTab = (_: number, tab: SupplyTab) => tab.key;
 }
