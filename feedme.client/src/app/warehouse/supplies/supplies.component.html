@@ -11,6 +11,7 @@
     <input class="fm-input w-140" type="date" />
     <button class="btn btn-outline" type="button">Сброс</button>
     <button class="btn btn-secondary" type="button">Экспорт</button>
+    <button class="btn btn-secondary" type="button" (click)="openImportDialog()">Импорт</button>
     <button class="btn btn-primary" type="button" (click)="openDialog()">+ Новая поставка</button>
   </section>
 
@@ -67,6 +68,38 @@
     </div>
   </div>
 </section>
+
+<ng-container *ngIf="importDialogOpen()">
+  <div class="fm-dialog-backdrop" (click)="closeImportDialog()"></div>
+  <div class="fm-dialog square" role="dialog" aria-modal="true" aria-labelledby="supplies-import-title">
+    <header class="fm-dialog__header">
+      <div class="fm-dialog__title" id="supplies-import-title">Импорт CSV</div>
+      <button class="fm-dialog__close" type="button" (click)="closeImportDialog()" aria-label="Закрыть">×</button>
+    </header>
+
+    <section
+      class="fm-dropzone"
+      (dragover)="onDragOver($event)"
+      (drop)="onDrop($event)"
+    >
+      <div class="fm-dropzone__icon">⬇</div>
+      <div class="fm-dropzone__title">Перетащите файл CSV сюда</div>
+      <div class="fm-dropzone__sub">
+        или
+        <label class="link">
+          <input type="file" accept=".csv,text/csv" (change)="onFile($event)" hidden />
+          выберите с диска
+        </label>
+      </div>
+      <div class="fm-dropzone__file" *ngIf="selectedFileName() as fileName">Выбрано: {{ fileName }}</div>
+    </section>
+
+    <footer class="fm-dialog__footer">
+      <button class="btn btn-outline" type="button" (click)="closeImportDialog()">Отмена</button>
+      <button class="btn btn-primary" type="button" (click)="mockImport()">Импортировать</button>
+    </footer>
+  </div>
+</ng-container>
 
 <section class="supplies-dialog" *ngIf="dialogOpen()">
   <div class="supplies-dialog__backdrop" (click)="closeDialog()"></div>

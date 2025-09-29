@@ -39,6 +39,8 @@ export class SuppliesComponent {
   readonly products$ = this.suppliesService.getProducts();
 
   readonly dialogOpen = signal(false);
+  readonly importDialogOpen = signal(false);
+  readonly selectedFileName = signal<string | null>(null);
 
   private readonly statusLabels: Record<SupplyStatus, string> = {
     ok: 'Ок',
@@ -85,6 +87,15 @@ export class SuppliesComponent {
   closeDialog(): void {
     this.dialogOpen.set(false);
     this.resetForm();
+  }
+
+  openImportDialog(): void {
+    this.importDialogOpen.set(true);
+  }
+
+  closeImportDialog(): void {
+    this.importDialogOpen.set(false);
+    this.selectedFileName.set(null);
   }
 
 
@@ -159,6 +170,36 @@ export class SuppliesComponent {
 
   getStatusClass(status: SupplyStatus): string {
     return this.statusClasses[status];
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    const file = event.dataTransfer?.files?.item(0);
+
+    if (file) {
+      this.selectedFileName.set(file.name);
+    }
+  }
+
+  onFile(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.item(0);
+
+    if (file) {
+      this.selectedFileName.set(file.name);
+    }
+
+    if (input) {
+      input.value = '';
+    }
+  }
+
+  mockImport(): void {
+    this.closeImportDialog();
   }
 
   private resetForm(): void {
