@@ -65,7 +65,7 @@ export class WarehousePageComponent {
   readonly status = signal<SupplyStatus | ''>('');
   readonly statuses = SUPPLY_STATUSES;
   readonly supplier = signal('');
-  readonly warehouseFilter = signal('');
+  readonly selectedWarehouse = signal('');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
   readonly checkedIds = signal<number[]>([]);
@@ -80,6 +80,9 @@ export class WarehousePageComponent {
 
   readonly rows = this.warehouseService.list();
   readonly metrics = this.warehouseService.metrics();
+  readonly overviewMetrics = computed(() =>
+    this.warehouseService.metricsForWarehouse(this.selectedWarehouse() || null),
+  );
 
 
   readonly editDialogTabs: ReadonlyArray<{ key: EditDialogTab; label: string }> = [
@@ -103,16 +106,26 @@ export class WarehousePageComponent {
   );
 
   readonly warehouses = computed(() =>
-    Array.from(new Set(this.rows().map((row) => row.warehouse))).sort((a, b) =>
-      a.localeCompare(b),
-    ),
+    Array.from(new Set(this.rows().map((row) => row.warehouse))).sort((a, b) => {
+      if (a === b) {
+        return 0;
+      }
+      if (a === 'Главный склад') {
+        return -1;
+      }
+      if (b === 'Главный склад') {
+        return 1;
+      }
+
+      return a.localeCompare(b);
+    }),
   );
 
   readonly filteredRows = computed(() => {
     const search = this.query().trim().toLowerCase();
     const statusFilter = this.status();
     const supplierFilter = this.supplier();
-    const warehouseFilter = this.warehouseFilter();
+    const warehouseFilter = this.selectedWarehouse();
     const from = this.dateFrom();
     const to = this.dateTo();
 
@@ -190,6 +203,19 @@ export class WarehousePageComponent {
 
   constructor() {
     effect(() => {
+      const availableWarehouses = this.warehouses();
+      if (!availableWarehouses.length) {
+        this.selectedWarehouse.set('');
+        return;
+      }
+
+      const current = this.selectedWarehouse();
+      if (!current || !availableWarehouses.includes(current)) {
+        this.selectedWarehouse.set(availableWarehouses[0]);
+      }
+    });
+
+    effect(() => {
       const availableIds = new Set(this.rows().map((row) => row.id));
       const filteredSelection = this.checkedIds().filter((id) => availableIds.has(id));
       if (filteredSelection.length !== this.checkedIds().length) {
@@ -247,8 +273,8 @@ export class WarehousePageComponent {
     this.supplier.set(value);
   }
 
-  updateWarehouse(value: string): void {
-    this.warehouseFilter.set(value);
+  selectWarehouse(value: string): void {
+    this.selectedWarehouse.set(value);
   }
 
   updateDateFrom(value: string): void {
@@ -263,7 +289,6 @@ export class WarehousePageComponent {
     this.query.set('');
     this.status.set('');
     this.supplier.set('');
-    this.warehouseFilter.set('');
     this.dateFrom.set('');
     this.dateTo.set('');
   }
