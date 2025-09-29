@@ -1,92 +1,259 @@
-.popup-backdrop {
+:root {
+  --brand: #ff6a00;
+}
+
+.dialog-backdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: rgba(17, 24, 39, 0.45);
   z-index: 1000;
 }
 
-.popup-content {
-  width: 500px;
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
-  position: relative;
+.dialog {
+  width: min(720px, calc(100% - 32px));
+  max-height: calc(100vh - 80px);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
-  .popup-content h2 {
-    text-align: center;
-    margin-bottom: 16px;
-  }
-
-
-.popup-buttons {
+.npd {
   display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 24px;
+  width: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.npd__header {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  margin-top: 20px;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
-  .popup-buttons button {
-    width: 48%;
-    padding: 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    border: none;
-  }
-
-.cancel-btn {
-  background-color: #ccc;
+.npd__title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
 }
 
-.save-btn {
-  background-color: #007bff;
-  color: white;
-}
-
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
+.npd__close {
+  padding: 0 6px;
+  height: 32px;
   border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #6b7280;
   font-size: 24px;
+  line-height: 1;
   cursor: pointer;
-  color: #777;
 }
 
-/* Подсказки каталога */
-.input-container {
+.npd__close:hover {
+  color: #111827;
+}
+
+.npd__close:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.npd__section {
+  margin-top: 12px;
+}
+
+.npd__section-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin: 16px 0 8px;
+  color: #374151;
+  text-transform: none;
+}
+
+.npd__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 860px) {
+  .npd__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: block;
   position: relative;
 }
 
-.suggestions-container {
+.field--full {
+  grid-column: 1 / -1;
+}
+
+.field__label {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.field__control {
+  display: block;
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #111827;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field__control::placeholder {
+  color: #9ca3af;
+}
+
+.field__control:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 2px rgba(255, 106, 0, 0.25);
+}
+
+.field__suggestions {
   position: absolute;
-  top: 100%;
+  top: calc(100% - 1px);
   left: 0;
   width: 100%;
-  max-height: 150px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-top: none;
+  border-radius: 0;
+  box-shadow: none;
+  z-index: 10;
+  display: grid;
+  max-height: 220px;
   overflow-y: auto;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  z-index: 2000;
 }
 
-.suggestion-item {
-  padding: 10px;
+.field__suggestion {
+  padding: 10px 12px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font-size: 14px;
+  color: #111827;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-.suggestion-item:hover {
-  background-color: #f0f0f0;
+.field__suggestion:hover {
+  background: rgba(255, 106, 0, 0.08);
+}
+
+.field__suggestion:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: -2px;
+  background: rgba(255, 106, 0, 0.08);
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #111827;
+}
+
+.checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1px solid #d1d5db;
+  border-radius: 0;
+  appearance: none;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+}
+
+.checkbox input[type="checkbox"]:checked::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: var(--brand);
+}
+
+.checkbox input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.npd__footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn {
+  height: 40px;
+  padding: 0 20px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, filter 0.2s ease;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.btn--outline {
+  background: #ffffff;
+  color: var(--brand);
+  border-color: var(--brand);
+}
+
+.btn--outline:hover {
+  background: rgba(255, 106, 0, 0.08);
+}
+
+.btn--primary {
+  background: var(--brand);
+  color: #ffffff;
+}
+
+.btn--primary:hover {
+  filter: brightness(0.92);
+}
+
+.btn:disabled,
+.btn[disabled] {
+  cursor: not-allowed;
+  filter: none;
+  opacity: 0.6;
+}
+
+:host ::ng-deep .dialog,
+:host ::ng-deep .cdk-overlay-pane {
+  box-shadow: none !important;
+  border-radius: 0 !important;
 }
