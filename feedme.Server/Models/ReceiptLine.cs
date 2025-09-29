@@ -22,5 +22,7 @@ public class ReceiptLine
     [Range(typeof(decimal), "0.00", "79228162514264337593543950335", ErrorMessage = "Unit price must be non-negative.")]
     public decimal UnitPrice { get; set; }
 
+    public DateTime? ExpiryDate { get; set; }
+
     public decimal TotalCost => UnitPrice * Quantity;
 }

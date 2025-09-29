@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TableControlsComponent } from '../table-controls/table-controls.component';
 import { EmptyStateComponent } from '../../warehouse/ui/empty-state.component';
 import { sortBySelector, SortDirection, toggleDirection } from '../../utils/sort.util';
+import { computeExpiryStatus } from '../../warehouse/shared/status.util';
 
 type ExpiryState = 'ok' | 'warn' | 'danger';
 
@@ -24,6 +25,7 @@ interface StockTableItem {
 
   category?: string;
   expiryDate?: string | Date;
+  arrivalDate?: string | Date;
   unitPrice?: string | number;
   totalCost?: string | number;
   stock?: string | number;
@@ -57,6 +59,17 @@ export class StockTableComponent implements OnChanges {
   filteredData: StockTableItem[] = [];
 
   private expiryInfoCache = new WeakMap<StockTableItem, ExpiryInfo>();
+
+  getExpiryInfo(item: StockTableItem): ExpiryInfo {
+    const cached = this.expiryInfoCache.get(item);
+    if (cached) {
+      return cached;
+    }
+
+    const info = this.createExpiryInfo(item);
+    this.expiryInfoCache.set(item, info);
+    return info;
+  }
 
   readonly columns: StockColumn[] = [
     {
@@ -249,20 +262,21 @@ export class StockTableComponent implements OnChanges {
     return column.valueAccessor ? column.valueAccessor(item) : item[column.field];
   }
 
-  private createExpiryInfo(value: StockTableItem['expiryDate']): ExpiryInfo {
-    const date = this.toDate(value);
+  private createExpiryInfo(item: StockTableItem): ExpiryInfo {
+    const date = this.toDate(item.expiryDate);
 
     if (!date) {
       return { date: null, status: null };
     }
 
+    const statusCode = computeExpiryStatus(item.expiryDate ?? date, item.arrivalDate);
     return {
       date,
-      status: this.resolveStatus(date),
+      status: STATUS_MAP[statusCode],
     };
   }
 
-  private toDate(value: StockTableItem['expiryDate']): Date | null {
+  private toDate(value: string | Date | undefined): Date | null {
     if (!value) {
       return null;
     }
@@ -271,29 +285,13 @@ export class StockTableComponent implements OnChanges {
     return Number.isNaN(date.getTime()) ? null : this.startOfDay(date);
   }
 
-  private resolveStatus(expiryDate: Date): ExpiryStatus {
-    const today = this.startOfDay(new Date());
-    const difference = expiryDate.getTime() - today.getTime();
-    const daysRemaining = Math.floor(difference / MS_IN_DAY);
-
-    if (daysRemaining < 0) {
-      return EXPIRED_STATUS;
-    }
-
-    if (daysRemaining <= 14) {
-      return WARNING_STATUS;
-    }
-
-    return OK_STATUS;
-  }
-
   private startOfDay(date: Date): Date {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 }
 
-const MS_IN_DAY = 86_400_000;
-
-const OK_STATUS: ExpiryStatus = { state: 'ok', label: 'OK', badgeClass: 'badge--ok' };
-const WARNING_STATUS: ExpiryStatus = { state: 'warn', label: '≤14 дн', badgeClass: 'badge--warn' };
-const EXPIRED_STATUS: ExpiryStatus = { state: 'danger', label: 'Просрочено', badgeClass: 'badge--danger' };
+const STATUS_MAP: Record<'ok' | 'warning' | 'expired', ExpiryStatus> = {
+  ok: { state: 'ok', label: 'OK', badgeClass: 'badge--ok' },
+  warning: { state: 'warn', label: 'Скоро срок', badgeClass: 'badge--warn' },
+  expired: { state: 'danger', label: 'Просрочено', badgeClass: 'badge--danger' },
+};

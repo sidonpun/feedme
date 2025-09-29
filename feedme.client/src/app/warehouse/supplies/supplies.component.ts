@@ -137,7 +137,7 @@ export class SuppliesComponent {
       unit: product.unit,
       expiryDate: value.expiryDate,
       supplier: product.supplier,
-      status: computeExpiryStatus(value.expiryDate),
+      status: computeExpiryStatus(value.expiryDate, value.arrivalDate),
     };
 
     this.suppliesService
