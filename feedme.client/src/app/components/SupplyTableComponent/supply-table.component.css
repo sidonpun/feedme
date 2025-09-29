@@ -2,6 +2,22 @@
   display: flex;
   flex-direction: column;
   gap: 0;
+  --supply-accent: var(--brand-600, #fa4b00);
+  --supply-accent-strong: #d94300;
+  --supply-accent-hover: rgba(250, 75, 0, 0.08);
+  --supply-outline-border: #cbd5f0;
+  --supply-outline-hover: #f1f5f9;
+}
+
+@supports (color: color-mix(in srgb, #000 0%, #fff 100%)) {
+  :host {
+    --supply-accent-strong: color-mix(in srgb, var(--supply-accent) 88%, #000000 12%);
+    --supply-accent-hover: color-mix(in srgb, var(--supply-accent) 8%, #ffffff);
+  }
+
+  .btn-brand-outline:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--brand-600, #6366f1) 90%, #000000 10%);
+  }
 }
 
 .card {
@@ -112,13 +128,16 @@
   justify-content: center;
   gap: 6px;
   border-radius: 8px;
-  border: none;
+  border: 1px solid transparent;
   padding: 10px 16px;
   font-size: 0.9375rem;
   font-weight: 600;
   line-height: 1.2;
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: #ffffff;
+  color: var(--supply-accent);
+  box-shadow: none;
 }
 
 .btn:disabled {
@@ -127,43 +146,49 @@
 }
 
 .btn-outline {
-  border: 1px solid #cbd5f0;
-  background-color: transparent;
-  color: #334155;
+  border-color: var(--supply-outline-border);
+  background-color: #ffffff;
+  color: var(--supply-accent);
+  box-shadow: none;
 }
 
 .btn-outline:hover:not(:disabled) {
-  background-color: #f1f5f9;
+  background-color: var(--supply-outline-hover);
+  border-color: var(--supply-outline-border);
 }
 
 .btn-brand-outline {
-  background-color: transparent;
-  color: var(--brand-600);
-  border: 1px solid var(--brand-600);
+  background-color: #ffffff;
+  color: var(--supply-accent);
+  border: 1px solid var(--brand-600, #6366f1);
   box-shadow: none;
 }
 
 .btn-brand-outline:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--brand-600) 12%, #ffffff);
-  border-color: color-mix(in srgb, var(--brand-600) 90%, #000000 10%);
+  background-color: var(--supply-accent-hover);
+  border-color: var(--brand-600, #6366f1);
 }
 
 .btn-secondary {
-  background-color: #e2e8f0;
-  color: #0f172a;
+  background-color: #ffffff;
+  border-color: transparent;
+  color: var(--supply-accent);
+  box-shadow: none;
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background-color: #cbd5f0;
+  background-color: var(--supply-accent-hover);
 }
 
 .btn-primary {
-  background-color: #6366f1;
+  background-color: var(--supply-accent);
+  border-color: var(--supply-accent);
   color: #ffffff;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #4f46e5;
+  background-color: var(--supply-accent-strong);
+  border-color: var(--supply-accent-strong);
 }
 
 .row-actions {
