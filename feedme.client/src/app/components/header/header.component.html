@@ -1,7 +1,9 @@
 <header class="warehouse-header">
   <section class="warehouse-header__panel warehouse-header__breadcrumbs-panel">
     <div class="warehouse-header__breadcrumbs" aria-label="Навигация по разделам">
+
       <ng-container *ngFor="let breadcrumb of breadcrumbs(); let isLast = last">
+
         <span
           class="warehouse-header__breadcrumb"
           [class.warehouse-header__breadcrumb--current]="isLast"
@@ -13,23 +15,29 @@
     </div>
     <div class="warehouse-header__warehouse">
       <span class="warehouse-header__warehouse-label">Склад:</span>
+
       <span class="warehouse-header__warehouse-tag">{{ selectedWarehouse() }}</span>
+
     </div>
   </section>
 
   <section class="warehouse-header__kpi" aria-label="Ключевые показатели склада">
+
     <article class="warehouse-header__metric" *ngFor="let metric of metrics()">
+
       <p class="warehouse-header__metric-title">{{ metric.title }}</p>
       <p
         class="warehouse-header__metric-value"
         [class.warehouse-header__metric-value--negative]="metric.isNegative"
       >
+
         <ng-container *ngIf="metric.format === 'currency'; else numberMetric">
           {{ metric.value | currency: 'RUB':'symbol-narrow':'1.0-0':'ru-RU' }}
         </ng-container>
         <ng-template #numberMetric>
           {{ metric.value | number: '1.0-0':'ru-RU' }}
         </ng-template>
+
       </p>
     </article>
   </section>
@@ -82,7 +90,9 @@
       type="button"
       class="warehouse-header__tab"
       *ngFor="let tab of tabs"
+
       [class.warehouse-header__tab--active]="tab === activeTab()"
+
       (click)="setActiveTab(tab)"
     >
       {{ tab }}

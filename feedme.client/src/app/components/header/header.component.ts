@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -27,6 +28,7 @@ interface HeaderFilters {
   readonly endDate: string;
 }
 
+
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -37,6 +39,7 @@ interface HeaderFilters {
 })
 export class HeaderComponent {
   private readonly formBuilder = inject(FormBuilder);
+
   private readonly warehouseService = inject(WarehouseService);
 
   private readonly warehouseRows = this.warehouseService.list();
@@ -45,8 +48,10 @@ export class HeaderComponent {
   readonly tabs: readonly TabName[] = ['Поставки', 'Остатки', 'Каталог', 'Инвентаризация'];
   readonly activeTab = signal<TabName>(this.tabs[0]);
 
+
   readonly searchPlaceholder = 'Поиск по номеру, SKU или названию';
   readonly datePlaceholders = { start: 'дд.мм.гггг', end: 'дд.мм.гггг' } as const;
+
 
   private readonly filterDefaults: HeaderFilters = {
     search: '',
@@ -107,6 +112,7 @@ export class HeaderComponent {
         isNegative: snapshot.expired > 0,
       },
     ] satisfies readonly WarehouseMetric[];
+
   });
 
   onResetFilters(): void {
@@ -114,6 +120,8 @@ export class HeaderComponent {
   }
 
   setActiveTab(tab: TabName): void {
+
     this.activeTab.set(tab);
+
   }
 }
