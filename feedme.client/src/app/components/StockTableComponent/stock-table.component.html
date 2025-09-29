@@ -1,8 +1,7 @@
 <div class="table-header">
   <app-table-controls [searchQuery]="searchQuery"
-                      [rowsPerPage]="rowsPerPage"
-                      (searchQueryChange)="onSearchChange($event)"
-                      (rowsPerPageChange)="onRowsChange($event)">
+                      [showRowsSelector]="false"
+                      (searchQueryChange)="onSearchChange($event)">
   </app-table-controls>
 </div>
 
@@ -38,7 +37,7 @@
       </tr>
     </thead>
     <tbody>
-      <ng-container *ngFor="let item of paginatedData">
+      <ng-container *ngFor="let item of visibleData">
         <ng-container *ngIf="getExpiryInfo(item) as expiry">
           <tr
             class="stock-table__row h-11 align-middle hover:bg-muted/40 odd:bg-muted/10"
@@ -95,23 +94,17 @@
           </tr>
         </ng-container>
       </ng-container>
-      <tr *ngIf="paginatedData.length === 0">
+      <tr *ngIf="visibleData.length === 0">
         <td [attr.colspan]="columns.length + 1" class="no-data">Нет данных</td>
       </tr>
     </tbody>
   </table>
 </div>
 
-<!-- TODO: toggle by data -->
 <app-empty
+  *ngIf="visibleData.length === 0 && !searchQuery"
   class="mt-6 block"
   title="Нет остатков"
   subtitle="Добавьте товары или обновите их остатки, чтобы увидеть список."
   ctaText="+ Новый товар"
 ></app-empty>
-
-<div class="pagination-controls">
-  <button (click)="prevPage()" [disabled]="currentPage === 1">Назад</button>
-  <span>Страница {{ currentPage }} из {{ totalPages }}</span>
-  <button (click)="nextPage()" [disabled]="currentPage === totalPages">Далее</button>
-</div>
