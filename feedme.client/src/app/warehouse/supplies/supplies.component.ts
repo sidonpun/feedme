@@ -71,6 +71,34 @@ export class SuppliesComponent {
 
   readonly dialogOpen = signal(false);
 
+  private readonly selectedWarehouse = signal<string | null>(null);
+
+  readonly warehouseOptions = computed(() => {
+    const rows = this.rows();
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return [] as string[];
+    }
+
+    const unique = new Set<string>();
+    for (const row of rows) {
+      if (row.warehouse) {
+        unique.add(row.warehouse);
+      }
+    }
+
+    return Array.from(unique).sort((left, right) => left.localeCompare(right, 'ru'));
+  });
+
+  readonly activeWarehouse = computed(() => {
+    const selected = this.selectedWarehouse();
+    const options = this.warehouseOptions();
+    if (selected && options.includes(selected)) {
+      return selected;
+    }
+
+    return options[0] ?? null;
+  });
+
   query = '';
   dateFrom = '';
   dateTo = '';
@@ -107,6 +135,11 @@ export class SuppliesComponent {
 
   readonly kpi = computed((): { weekSupplies: number; weekSpend: number; items: number; expired: number } => {
     const rows = this.rows();
+    const warehouse = this.activeWarehouse();
+    const filteredRows =
+      warehouse && Array.isArray(rows) && rows.length > 0
+        ? rows.filter(row => row.warehouse === warehouse)
+        : rows;
     const products = this.productsSignal();
 
     const today = new Date();
@@ -128,7 +161,7 @@ export class SuppliesComponent {
     let expired = 0;
     const uniqueProductIds = new Set<string>();
 
-    for (const row of rows) {
+    for (const row of filteredRows) {
       uniqueProductIds.add(row.productId);
 
       if (row.status === 'expired') {
@@ -244,6 +277,7 @@ export class SuppliesComponent {
       .add(payload)
       .pipe(take(1))
       .subscribe(() => {
+        this.selectedWarehouse.set(warehouse);
         this.closeDialog();
       });
   }
@@ -256,6 +290,7 @@ export class SuppliesComponent {
     this.query = '';
     this.dateFrom = '';
     this.dateTo = '';
+    this.selectedWarehouse.set(null);
   }
 
   onExport(): void {
@@ -361,6 +396,16 @@ export class SuppliesComponent {
     return 'Просрочено';
   }
 
+  onWarehouseSelect(name: string | null): void {
+    if (typeof name !== 'string') {
+      this.selectedWarehouse.set(null);
+      return;
+    }
+
+    const normalized = name.trim();
+    this.selectedWarehouse.set(normalized.length > 0 ? normalized : null);
+  }
+
   private parseIsoDate(value: string): Date {
     const [year, month, day] = value.split('-').map(part => Number.parseInt(part, 10));
     if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
@@ -386,6 +431,11 @@ export class SuppliesComponent {
   }
 
   private matchesFilters(row: SupplyRow): boolean {
+    const warehouse = this.activeWarehouse();
+    if (warehouse && row.warehouse !== warehouse) {
+      return false;
+    }
+
     if (!this.matchesQuery(row)) {
       return false;
     }

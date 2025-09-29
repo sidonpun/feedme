@@ -1,42 +1,89 @@
 <section class="supplies">
-  <header class="fm-topbar">
-    <div class="crumbs"><b>Поставки</b> / Главный склад</div>
-    <button class="btn btn-outline" type="button">Добавить склад</button>
+  <header class="supplies__header panel">
+    <nav class="supplies__breadcrumbs" aria-label="Хлебные крошки">
+      <span class="supplies__crumb supplies__crumb--root">Поставки</span>
+      <span class="supplies__crumb-separator" aria-hidden="true">/</span>
+      <span class="supplies__crumb supplies__crumb--current">{{ activeWarehouse() ?? '—' }}</span>
+    </nav>
+
+    <div class="supplies__warehouse">
+      <label class="supplies__warehouse-label" for="supplies-warehouse-select">Склад:</label>
+      <select
+        id="supplies-warehouse-select"
+        class="supplies__select"
+        [ngModel]="activeWarehouse() ?? ''"
+        (ngModelChange)="onWarehouseSelect($event)"
+        [disabled]="warehouseOptions().length === 0"
+      >
+        <option *ngFor="let warehouseName of warehouseOptions()" [ngValue]="warehouseName">
+          {{ warehouseName }}
+        </option>
+      </select>
+      <button class="supplies__link" type="button">+ Добавить</button>
+    </div>
   </header>
 
-  <section class="kpis" *ngIf="kpi() as metrics">
-    <div class="kpi">
-      <div class="kpi__label">Поставок за 7 дней</div>
-      <div class="kpi__value">{{ metrics.weekSupplies }}</div>
+  <section class="supplies__metrics" *ngIf="kpi() as metrics">
+    <article class="supplies__metric-card">
+      <p class="supplies__metric-label">Поставок за 7 дней</p>
+      <p class="supplies__metric-value">{{ metrics.weekSupplies }}</p>
+    </article>
+    <article class="supplies__metric-card">
+      <p class="supplies__metric-label">Сумма закупок / 7 дн.</p>
+      <p class="supplies__metric-value">{{ metrics.weekSpend | currency: 'RUB': 'symbol-narrow': '1.0-0' }}</p>
+    </article>
+    <article class="supplies__metric-card">
+      <p class="supplies__metric-label">Позиций на складе</p>
+      <p class="supplies__metric-value">{{ metrics.items }}</p>
+    </article>
+    <article class="supplies__metric-card supplies__metric-card--warning">
+      <p class="supplies__metric-label">Просрочено</p>
+      <p class="supplies__metric-value supplies__metric-value--danger">{{ metrics.expired }}</p>
+    </article>
+  </section>
+
+  <section class="supplies__toolbar panel">
+    <div class="supplies__filters">
+      <input
+        class="supplies__input"
+        placeholder="Поиск по номеру, SKU или названию"
+        [(ngModel)]="query"
+        aria-label="Поиск по поставкам"
+      />
+      <input
+        class="supplies__input"
+        type="date"
+        [(ngModel)]="dateFrom"
+        aria-label="Фильтр по дате от"
+      />
+      <input
+        class="supplies__input"
+        type="date"
+        [(ngModel)]="dateTo"
+        aria-label="Фильтр по дате до"
+      />
+      <button class="supplies__button supplies__button--outline" type="button" (click)="onReset()">
+        Сброс
+      </button>
     </div>
-    <div class="kpi">
-      <div class="kpi__label">Сумма закупок / 7 дн.</div>
-      <div class="kpi__value">{{ metrics.weekSpend | currency: 'RUB' }}</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi__label">Позиций на складе</div>
-      <div class="kpi__value">{{ metrics.items }}</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi__label">Просрочено</div>
-      <div class="kpi__value kpi__value--danger">{{ metrics.expired }}</div>
+    <div class="supplies__actions">
+      <button class="supplies__button supplies__button--blue" type="button" (click)="onExport()">
+        Экспорт
+      </button>
+      <button class="supplies__button supplies__button--orange" type="button" (click)="openNewSupply()">
+        + Новая поставка
+      </button>
     </div>
   </section>
 
-  <section class="filters">
-    <input
-      class="fm-input w-280"
-      placeholder="Поиск по номеру, SKU или названию"
-      [(ngModel)]="query"
-    />
-    <input class="fm-input w-140" type="date" [(ngModel)]="dateFrom" />
-    <input class="fm-input w-140" type="date" [(ngModel)]="dateTo" />
-    <button class="btn btn-outline" type="button" (click)="onReset()">Сброс</button>
-    <button class="btn btn-secondary" type="button" (click)="onExport()">Экспорт</button>
-    <button class="btn btn-primary" type="button" (click)="openNewSupply()">+ Новая поставка</button>
-  </section>
+  <nav class="supplies__tabs" aria-label="Разделы склада">
+    <button class="supplies__tab supplies__tab--active" type="button" aria-current="page">Поставки</button>
+    <button class="supplies__tab" type="button" disabled>Остатки</button>
+    <button class="supplies__tab" type="button" disabled>Каталог</button>
+    <button class="supplies__tab" type="button" disabled>Инвентаризация</button>
+  </nav>
 
-  <div class="table-panel">
+  <div class="table-panel panel">
     <ng-container *ngIf="rowsReady(); else loading">
       <ng-container *ngIf="sortedRows.length > 0; else empty">
         <table class="fm-table" aria-label="Поставки">
