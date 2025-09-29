@@ -17,17 +17,32 @@ describe('computeExpiryStatus', () => {
     expect(computeExpiryStatus(toISO(yesterday))).toBe('expired');
   });
 
-  it('returns "warning" when expiry date is within 14 days', () => {
-    const nextWeek = new Date();
-    nextWeek.setDate(nextWeek.getDate() + 7);
+  it('returns "warning" when 80% of shelf life has passed', () => {
+    const arrival = new Date();
+    arrival.setDate(arrival.getDate() - 8);
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + 2);
 
-    expect(computeExpiryStatus(toISO(nextWeek))).toBe('warning');
+    expect(computeExpiryStatus(toISO(expiry), toISO(arrival))).toBe('warning');
   });
 
-  it('returns "ok" when expiry date is more than 14 days away', () => {
-    const nextMonth = new Date();
-    nextMonth.setDate(nextMonth.getDate() + 30);
+  it('returns "ok" when shelf life consumption is below threshold', () => {
+    const arrival = new Date();
+    arrival.setDate(arrival.getDate() - 2);
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + 8);
 
-    expect(computeExpiryStatus(toISO(nextMonth))).toBe('ok');
+    expect(computeExpiryStatus(toISO(expiry), toISO(arrival))).toBe('ok');
+  });
+
+  it('falls back to remaining days when arrival is unknown', () => {
+    const expirySoon = new Date();
+    expirySoon.setDate(expirySoon.getDate() + 2);
+
+    const expiryLater = new Date();
+    expiryLater.setDate(expiryLater.getDate() + 10);
+
+    expect(computeExpiryStatus(toISO(expirySoon))).toBe('warning');
+    expect(computeExpiryStatus(toISO(expiryLater))).toBe('ok');
   });
 });

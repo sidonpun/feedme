@@ -156,6 +156,8 @@ export class AddReceiptPopupComponent implements OnInit {
       return;
     }
 
+    const expiryIso = rawValue.expiryDate ? this.toIsoDate(rawValue.expiryDate) : null;
+
     const payload: CreateReceipt = {
       number,
       supplier: rawValue.supplier?.trim() || product.supplier,
@@ -167,7 +169,8 @@ export class AddReceiptPopupComponent implements OnInit {
           itemName: product.name,
           quantity,
           unit,
-          unitPrice: product.unitPrice
+          unitPrice: product.unitPrice,
+          expiryDate: expiryIso,
         }
       ]
     };

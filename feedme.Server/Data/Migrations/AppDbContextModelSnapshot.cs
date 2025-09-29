@@ -222,6 +222,10 @@ namespace feedme.Server.Data.Migrations
                                 .HasColumnType("numeric(18,4)")
                                 .HasColumnName("unit_price");
 
+                            b1.Property<DateTime?>("ExpiryDate")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("expiry_date");
+
                             b1.HasKey("receipt_id", "Id");
 
                             b1.HasIndex("receipt_id");

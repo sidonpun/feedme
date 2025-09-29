@@ -59,7 +59,9 @@ describe('AddReceiptPopupComponent', () => {
           quantity: 5,
           unit: 'кг',
           unitPrice: catalogItem.unitPrice,
-          totalCost: catalogItem.unitPrice * 5
+          totalCost: catalogItem.unitPrice * 5,
+          expiryDate: '2024-04-25T00:00:00.000Z',
+          status: 'warning'
         }
       ],
       totalAmount: catalogItem.unitPrice * 5
@@ -103,6 +105,7 @@ describe('AddReceiptPopupComponent', () => {
       component.form.controls.receivedAt.setValue('2024-04-15');
       component.form.controls.quantity.setValue(5);
       component.form.controls.unit.setValue('кг');
+      component.form.controls.expiryDate.setValue('2024-04-25');
 
       component.onSubmit();
 
@@ -117,7 +120,8 @@ describe('AddReceiptPopupComponent', () => {
             itemName: catalogItem.name,
             quantity: 5,
             unit: 'кг',
-            unitPrice: catalogItem.unitPrice
+            unitPrice: catalogItem.unitPrice,
+            expiryDate: '2024-04-25T00:00:00.000Z'
           }
         ]
       });
