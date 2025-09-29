@@ -1,3 +1,4 @@
+
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -9,11 +10,13 @@ import { computeExpiryStatus } from '../shared/status.util';
 import { SuppliesService } from './supplies.service';
 
 type SupplyFormValue = {
+
   docNo: string;
   arrivalDate: string;
   warehouse: string;
   responsible: string;
   productId: string;
+
   qty: number;
   expiryDate: string;
 };
@@ -24,11 +27,13 @@ type SupplyFormValue = {
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './supplies.component.html',
   styleUrl: './supplies.component.scss',
+
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SuppliesComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly suppliesService = inject(SuppliesService);
+
 
   readonly rows$ = this.suppliesService.getAll();
   readonly products$ = this.suppliesService.getProducts();
@@ -63,21 +68,25 @@ export class SuppliesComponent {
   );
 
   readonly selectedProduct = computed<SupplyProduct | null>(() => {
+
     const id = this.selectedProductId();
     if (!id) {
       return null;
     }
+
     return this.suppliesService.getProductById(id) ?? null;
   });
 
   openDialog(): void {
     this.dialogOpen.set(true);
+
   }
 
   closeDialog(): void {
     this.dialogOpen.set(false);
     this.resetForm();
   }
+
 
   submit(): void {
     if (this.form.invalid) {
@@ -137,11 +146,13 @@ export class SuppliesComponent {
       .subscribe(() => {
         this.closeDialog();
       });
+r
   }
 
   trackBySupplyId(_: number, row: SupplyRow): string {
     return row.id;
   }
+
 
   getStatusLabel(status: SupplyStatus): string {
     return this.statusLabels[status];
@@ -163,5 +174,6 @@ export class SuppliesComponent {
     });
     this.form.markAsPristine();
     this.form.markAsUntouched();
+
   }
 }

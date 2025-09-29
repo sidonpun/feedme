@@ -1,0 +1,202 @@
+<section class="catalog">
+  <header class="catalog__header">
+    <div>
+      <h1 class="catalog__title">Каталог</h1>
+      <p class="catalog__subtitle">{{ productsCount() }} позиций</p>
+    </div>
+    <button type="button" class="button button--primary" (click)="openDialog()">
+      + Новый товар
+    </button>
+  </header>
+
+  <div class="table-wrapper" *ngIf="products().length; else emptyCatalog">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Название</th>
+          <th>Тип</th>
+          <th class="is-mono">SKU</th>
+          <th>Категория</th>
+          <th class="is-centered">Ед. изм.</th>
+          <th class="is-right">Цена закупки</th>
+          <th class="is-right">Цена продажи</th>
+          <th>Поставщик</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products(); trackBy: trackByProductId">
+          <td>
+            <div class="truncate" [title]="product.name">{{ product.name }}</div>
+          </td>
+          <td>{{ product.type }}</td>
+          <td class="is-mono">
+            <span class="truncate" [title]="product.sku">{{ product.sku }}</span>
+          </td>
+          <td>
+            <div class="truncate" [title]="product.category">{{ product.category }}</div>
+          </td>
+          <td class="is-centered">{{ product.unit }}</td>
+          <td class="is-right">
+            {{ product.purchasePrice ?? '—' }}
+          </td>
+          <td class="is-right">
+            {{ product.salePrice ?? '—' }}
+          </td>
+          <td>
+            <div class="truncate" [title]="product.supplierMain || '—'">
+              {{ product.supplierMain || '—' }}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ng-template #emptyCatalog>
+    <div class="catalog__empty">Каталог пока пуст. Добавьте первую позицию.</div>
+  </ng-template>
+
+  <div class="dialog-backdrop" *ngIf="dialogOpen()">
+    <form class="dialog" [formGroup]="productForm" (ngSubmit)="submit()">
+      <header class="dialog__header">
+        <h2 class="dialog__title">Новый товар</h2>
+        <button type="button" class="dialog__close" aria-label="Закрыть" (click)="closeDialog()">×</button>
+      </header>
+
+      <section class="dialog__section">
+        <h3 class="dialog__section-title">Основная информация</h3>
+        <div class="form-grid">
+          <label class="field" [ngClass]="{ 'field--invalid': productForm.controls.name.touched && productForm.controls.name.invalid }">
+            <span class="field__label">Название товара *</span>
+            <input class="field__control" type="text" formControlName="name" placeholder="Например, Курица гриль" />
+            <span class="field__error" *ngIf="productForm.controls.name.touched && productForm.controls.name.invalid">
+              Укажите название товара
+            </span>
+          </label>
+
+          <label class="field">
+            <span class="field__label">Тип номенклатуры</span>
+            <select class="field__control" formControlName="type">
+              <option value="Товар">Товар</option>
+              <option value="Заготовка">Заготовка</option>
+              <option value="Полуфабрикат">Полуфабрикат</option>
+            </select>
+          </label>
+
+          <label class="field" [ngClass]="{ 'field--invalid': productForm.controls.sku.touched && productForm.controls.sku.invalid }">
+            <span class="field__label">Номенклатурный код *</span>
+            <input class="field__control" type="text" formControlName="sku" placeholder="MEAT-003" />
+            <span class="field__error" *ngIf="productForm.controls.sku.touched && productForm.controls.sku.invalid">
+              Укажите SKU
+            </span>
+          </label>
+
+          <label class="field" [ngClass]="{ 'field--invalid': productForm.controls.category.touched && productForm.controls.category.invalid }">
+            <span class="field__label">Категория *</span>
+            <input class="field__control" type="text" formControlName="category" placeholder="Мясные блюда" />
+            <span class="field__error" *ngIf="productForm.controls.category.touched && productForm.controls.category.invalid">
+              Укажите категорию
+            </span>
+          </label>
+
+          <label class="field" [ngClass]="{ 'field--invalid': productForm.controls.unit.touched && productForm.controls.unit.invalid }">
+            <span class="field__label">Единица измерения *</span>
+            <select class="field__control" formControlName="unit">
+              <option value="кг">кг</option>
+              <option value="л">л</option>
+              <option value="шт">шт</option>
+            </select>
+            <span class="field__error" *ngIf="productForm.controls.unit.touched && productForm.controls.unit.invalid">
+              Укажите единицу измерения
+            </span>
+          </label>
+
+          <label class="field">
+            <span class="field__label">Вес единицы, кг</span>
+            <input class="field__control" type="number" formControlName="unitWeight" min="0" step="0.01" />
+          </label>
+
+          <label class="field">
+            <span class="field__label">Метод списания</span>
+            <select class="field__control" formControlName="writeoff">
+              <option value="FIFO">FIFO</option>
+              <option value="FEFO">FEFO</option>
+              <option value="LIFO">LIFO</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span class="field__label">Аллергены</span>
+            <input class="field__control" type="text" formControlName="allergens" placeholder="Например, молоко" />
+          </label>
+
+          <label class="checkbox">
+            <input type="checkbox" formControlName="needsPacking" />
+            <span>Требует фасовки</span>
+          </label>
+
+          <label class="checkbox">
+            <input type="checkbox" formControlName="perishableAfterOpen" />
+            <span>Портится после вскрытия</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="dialog__section">
+        <h3 class="dialog__section-title">Закупка и логистика</h3>
+        <div class="form-grid">
+          <label class="field">
+            <span class="field__label">Поставщик (основной)</span>
+            <input class="field__control" type="text" formControlName="supplierMain" placeholder="ООО Курица Дуо" />
+          </label>
+
+          <label class="field">
+            <span class="field__label">Срок поставки, дней</span>
+            <input class="field__control" type="number" formControlName="leadTimeDays" min="0" />
+          </label>
+
+          <label class="field">
+            <span class="field__label">Оценочная себестоимость</span>
+            <input class="field__control" type="number" formControlName="costEst" min="0" step="0.01" />
+          </label>
+
+          <label class="field">
+            <span class="field__label">Ставка НДС</span>
+            <input class="field__control" type="text" formControlName="vat" placeholder="Без НДС / 10% / 20%" />
+          </label>
+
+          <label class="field">
+            <span class="field__label">Цена закупки</span>
+            <input class="field__control" type="number" formControlName="purchasePrice" min="0" step="0.01" />
+          </label>
+
+          <label class="field">
+            <span class="field__label">Цена продажи</span>
+            <input class="field__control" type="number" formControlName="salePrice" min="0" step="0.01" />
+          </label>
+
+          <label class="field">
+            <span class="field__label">Код ТН ВЭД</span>
+            <input class="field__control" type="text" formControlName="tnvCode" placeholder="1602310000" />
+          </label>
+
+          <label class="checkbox">
+            <input type="checkbox" formControlName="marked" />
+            <span>Маркируемый товар</span>
+          </label>
+
+          <label class="checkbox">
+            <input type="checkbox" formControlName="alcohol" />
+            <span>Алкогольная продукция</span>
+          </label>
+        </div>
+      </section>
+
+      <footer class="dialog__actions">
+        <button type="button" class="button" (click)="closeDialog()">Отмена</button>
+        <button type="submit" class="button button--primary" [disabled]="submitting()">
+          {{ submitting() ? 'Сохранение…' : 'Сохранить' }}
+        </button>
+      </footer>
+    </form>
+  </div>
+</section>

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 
+
 import { SupplyProduct, SupplyRow } from '../shared/models';
 import { computeExpiryStatus } from '../shared/status.util';
 
@@ -126,5 +127,6 @@ export class SuppliesService {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+
   }
 }

@@ -1,9 +1,11 @@
 export type SupplyStatus = 'ok' | 'warning' | 'expired';
 
+
 export interface SupplyRow {
   id: string;
   docNo: string;
   arrivalDate: string; // YYYY-MM-DD
+
   warehouse: string;
   responsible?: string;
   productId: string;
@@ -11,6 +13,7 @@ export interface SupplyRow {
   name: string;
   qty: number;
   unit: string;
+
   expiryDate: string; // YYYY-MM-DD
   supplier?: string;
   status: SupplyStatus;
@@ -23,3 +26,4 @@ export interface SupplyProduct {
   unit: string;
   supplier?: string;
 }
+

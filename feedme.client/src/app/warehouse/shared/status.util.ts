@@ -1,6 +1,8 @@
+
 export function computeExpiryStatus(expiryISO: string, warnDays = 14): 'ok' | 'warning' | 'expired' {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+
 
   const expiry = new Date(expiryISO);
   expiry.setHours(0, 0, 0, 0);
