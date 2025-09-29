@@ -63,6 +63,29 @@
   border: 1px solid #e5e7eb;
 }
 
+.period {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: 0.25rem;
+}
+
+.chip {
+  height: 28px;
+  padding: 0 0.5rem;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  border-radius: 0;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.chip--active {
+  border-color: var(--brand);
+  color: var(--brand);
+  background: rgba(255, 106, 0, 0.08);
+}
+
 .fm-input {
   height: 36px;
   padding: 0 0.5rem;

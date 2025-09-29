@@ -5,6 +5,39 @@
   </div>
   <div class="fm-topbar__actions">
 
+
+  <section class="filters">
+    <input class="fm-input w-280" placeholder="Поиск по номеру, SKU или названию" />
+    <input
+      class="fm-input w-140"
+      type="date"
+      [ngModel]="dateFrom"
+      (ngModelChange)="onDateFromChange($event)"
+      ngModelOptions="{ standalone: true }"
+    />
+    <input
+      class="fm-input w-140"
+      type="date"
+      [ngModel]="dateTo"
+      (ngModelChange)="onDateToChange($event)"
+      ngModelOptions="{ standalone: true }"
+    />
+
+    <div class="period" aria-label="Быстрый выбор периода">
+      <button
+        *ngFor="let option of quickPeriods"
+        type="button"
+        class="chip"
+        [class.chip--active]="period === option.id"
+        (click)="setPeriod(option.id)"
+      >
+        {{ option.label }}
+      </button>
+    </div>
+
+    <button class="btn btn-outline" type="button" (click)="resetFilters()">Сброс</button>
+    <button class="btn btn-secondary" type="button">Экспорт</button>
+
     <button class="btn btn-primary" type="button" (click)="openDialog()">+ Новая поставка</button>
   </div>
 </header>
