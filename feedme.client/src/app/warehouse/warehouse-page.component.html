@@ -22,63 +22,53 @@
   </aside>
 
   <main class="warehouse-page__content">
-
-    <header class="warehouse-page__top-bar">
-      <div class="warehouse-page__breadcrumbs">
-        Главный склад / <span class="warehouse-page__breadcrumb-current">Поставки</span>
-      </div>
-      <div class="warehouse-page__actions">
-        <div class="density-switch" role="group" aria-label="Плотность строк">
-          <button
-            type="button"
-            class="density-switch__btn density-switch__btn--active"
-            aria-pressed="true"
-          >
-            <span aria-hidden="true" class="density-switch__icon density-switch__icon--compact"></span>
-            <span class="sr-only">Compact</span>
-          </button>
-          <button type="button" class="density-switch__btn" aria-pressed="false">
-            <span
-              aria-hidden="true"
-              class="density-switch__icon density-switch__icon--comfortable"
-            ></span>
-            <span class="sr-only">Comfortable</span>
-          </button>
+    <section class="warehouse-page__overview" aria-label="Обзор склада">
+      <div class="warehouse-page__header">
+        <div class="warehouse-page__header-context">
+          <h1 class="warehouse-page__title">Поставки</h1>
+          <p class="warehouse-page__subtitle">Контролируйте движение товаров и запасы</p>
         </div>
-        <div class="warehouse-page__actions-buttons">
-          <button type="button" class="btn btn-outline" (click)="openCreateDialog()">
-            + Новая поставка
-          </button>
-          <button type="button" class="btn btn-ghost">Ещё</button>
-        </div>
+        <label class="warehouse-page__warehouse-picker">
+          <span class="warehouse-page__warehouse-picker-label">Склад</span>
+          <div class="warehouse-page__warehouse-picker-control">
+            <select
+              #activeWarehouse
+              class="warehouse-page__warehouse-select"
+              [value]="selectedWarehouse()"
+              (change)="selectWarehouse(activeWarehouse.value)"
+              aria-label="Выбор активного склада"
+            >
+              <option *ngFor="let warehouseName of warehouses()" [value]="warehouseName">
+                {{ warehouseName }}
+              </option>
+            </select>
+          </div>
+        </label>
       </div>
 
-    </header>
-
-    <section class="warehouse-page__body">
       <section
-        *ngIf="metrics() as snapshot"
+        *ngIf="overviewMetrics() as snapshot"
         class="warehouse-page__snapshot"
         aria-label="Ключевые показатели склада"
       >
-        <article class="square warehouse-page__metric-card" aria-live="polite">
+        <article class="warehouse-page__metric-card" aria-live="polite">
           <p class="warehouse-page__metric-label">Поставок за 7 дней</p>
           <p class="warehouse-page__metric-value">{{ snapshot.suppliesLastWeek }}</p>
         </article>
 
-        <article class="square warehouse-page__metric-card" aria-live="polite">
+        <article class="warehouse-page__metric-card" aria-live="polite">
           <p class="warehouse-page__metric-label">Сумма закупок / 7 дн.</p>
           <p class="warehouse-page__metric-value warehouse-page__metric-value--currency">
             {{ formatCurrency(snapshot.purchaseAmountLastWeek) }}
           </p>
         </article>
 
-        <article class="square warehouse-page__metric-card" aria-live="polite">
+        <article class="warehouse-page__metric-card" aria-live="polite">
           <p class="warehouse-page__metric-label">Позиций на складе</p>
           <p class="warehouse-page__metric-value">{{ snapshot.positions }}</p>
         </article>
 
-        <article class="square warehouse-page__metric-card warehouse-page__metric-card--expired" aria-live="polite">
+        <article class="warehouse-page__metric-card warehouse-page__metric-card--expired" aria-live="polite">
           <p class="warehouse-page__metric-label">Просрочено</p>
           <p class="warehouse-page__metric-value">
             <span class="warehouse-page__metric-badge">{{ snapshot.expired }}</span>
@@ -86,22 +76,30 @@
         </article>
       </section>
 
-      <nav class="warehouse-page__tabs tabs-underline" role="tablist">
-        <button
-          type="button"
-          *ngFor="let entry of tabKeys"
-          class="warehouse-page__tab tabs-underline__btn"
-          [class.warehouse-page__tab--active]="activeTab() === entry"
-          [class.is-active]="activeTab() === entry"
-          (click)="selectTab(entry)"
-          role="tab"
-          [attr.aria-selected]="activeTab() === entry ? 'true' : 'false'"
-        >
-          {{ tabLabels[entry] }}
-        </button>
-      </nav>
+      <div class="warehouse-page__overview-footer">
+        <nav class="warehouse-page__tabs" role="tablist" aria-label="Разделы склада">
+          <button
+            type="button"
+            *ngFor="let entry of tabKeys"
+            class="warehouse-page__tab"
+            [class.warehouse-page__tab--active]="activeTab() === entry"
+            (click)="selectTab(entry)"
+            role="tab"
+            [attr.aria-selected]="activeTab() === entry ? 'true' : 'false'"
+          >
+            {{ tabLabels[entry] }}
+          </button>
+        </nav>
+        <div class="warehouse-page__header-actions">
+          <button type="button" class="btn btn-secondary">Экспорт</button>
+          <button type="button" class="btn btn-primary" (click)="openCreateDialog()">
+            + Новая поставка
+          </button>
+        </div>
+      </div>
+    </section>
 
-      <section *ngIf="activeTab() === 'supplies'" class="warehouse-page__tab-panel">
+    <section *ngIf="activeTab() === 'supplies'" class="warehouse-page__tab-panel">
         <div class="card warehouse-page__filters-card">
           <form
             class="warehouse-page__filters card__content p-4 flex flex-wrap items-center gap-3"
@@ -151,23 +149,6 @@
                   <option value="">Все поставщики</option>
                   <option *ngFor="let supplierName of suppliers()" [value]="supplierName">
                     {{ supplierName }}
-                  </option>
-                </select>
-              </label>
-            </div>
-            <div class="warehouse-page__filters-control warehouse-page__filters-control--select">
-              <label class="warehouse-page__filters-field">
-                <span class="warehouse-page__filters-label">Склад</span>
-                <select
-                  #warehouseSelect
-                  class="select"
-                  [value]="warehouseFilter()"
-                  (change)="updateWarehouse(warehouseSelect.value)"
-                  aria-label="Фильтр по складу"
-                >
-                  <option value="">Все склады</option>
-                  <option *ngFor="let warehouseName of warehouses()" [value]="warehouseName">
-                    {{ warehouseName }}
                   </option>
                 </select>
               </label>
@@ -382,7 +363,6 @@
       <section *ngIf="activeTab() === 'inventory'" class="warehouse-page__empty">
         <app-empty title="Инвентаризация" subtitle="Создайте обход или запустите экспресс-пересчёт"></app-empty>
       </section>
-    </section>
   </main>
 
   <aside class="warehouse-page__drawer" *ngIf="drawerOpen() && selectedRow() as row">
