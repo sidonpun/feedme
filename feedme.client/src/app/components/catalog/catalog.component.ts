@@ -8,6 +8,7 @@ import { FilterPipe } from '../../pipes/filter.pipe';
 import { NewProductFormValues } from '../catalog-new-product-popup/catalog-new-product-popup.component';
 import { CatalogItem, CatalogService } from '../../services/catalog.service';
 import { EmptyStateComponent } from '../../warehouse/ui/empty-state.component';
+import { CatalogNewProductPopupComponent } from '../catalog-new-product-popup/catalog-new-product-popup.component';
 
 @Pipe({
   name: 'booleanLabel',
@@ -26,7 +27,14 @@ export class BooleanLabelPipe implements PipeTransform {
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, FilterPipe, BooleanLabelPipe, EmptyStateComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    FilterPipe,
+    BooleanLabelPipe,
+    EmptyStateComponent,
+    CatalogNewProductPopupComponent,
+  ],
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.css']
 })
@@ -35,6 +43,9 @@ export class CatalogComponent implements OnInit {
 
   activeTab: 'info' | 'logistics' = 'info';
   filter = '';
+
+  showNewProductPopup = false;
+  createErrorMessage: string | null = null;
 
   private readonly catalogDataSubject = new BehaviorSubject<CatalogItem[]>([]);
   readonly catalogData$ = this.catalogDataSubject.asObservable();
@@ -54,6 +65,18 @@ export class CatalogComponent implements OnInit {
 
   }
 
+  /** Открывает модальное окно создания товара */
+  openNewProductPopup(): void {
+    this.createErrorMessage = null;
+    this.showNewProductPopup = true;
+  }
+
+  /** Закрывает модальное окно создания товара */
+  closeNewProductPopup(): void {
+    this.showNewProductPopup = false;
+    this.createErrorMessage = null;
+  }
+
   /** Добавляет новый товар в каталог */
   addProduct(item: NewProductFormValues): void {
     this.catalogService
@@ -65,8 +88,10 @@ export class CatalogComponent implements OnInit {
           this.catalogDataSubject.next(updated);
 
           this.errorMessage = null;
+          this.createErrorMessage = null;
+          this.showNewProductPopup = false;
         }),
-        catchError(() => this.handleError('Не удалось сохранить товар. Попробуйте ещё раз.'))
+        catchError(() => this.handleCreateError('Не удалось сохранить товар. Попробуйте ещё раз.'))
       )
       .subscribe();
   }
@@ -75,5 +100,10 @@ export class CatalogComponent implements OnInit {
     this.errorMessage = message;
     return EMPTY;
 
+  }
+
+  private handleCreateError(message: string) {
+    this.createErrorMessage = message;
+    return EMPTY;
   }
 }
