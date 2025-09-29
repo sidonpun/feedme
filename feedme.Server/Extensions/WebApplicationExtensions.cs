@@ -1,4 +1,5 @@
 using feedme.Server.Data;
+using feedme.Server.Data.Seed;
 using feedme.Server.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,5 +27,13 @@ public static class WebApplicationExtensions
             },
             app.Logger,
             cancellationToken);
+    }
+
+    public static async Task SeedDatabaseAsync(this WebApplication app, CancellationToken cancellationToken = default)
+    {
+        await using var scope = app.Services.CreateAsyncScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        await AppDbContextSeeder.SeedAsync(context, cancellationToken).ConfigureAwait(false);
     }
 }
