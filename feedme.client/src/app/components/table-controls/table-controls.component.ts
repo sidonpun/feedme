@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 export class TableControlsComponent {
   @Input() searchQuery: string = '';
   @Input() rowsPerPage: number = 10;
+  @Input() showRowsSelector = true;
 
   @Output() searchQueryChange = new EventEmitter<string>();
   @Output() rowsPerPageChange = new EventEmitter<number>();

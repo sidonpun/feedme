@@ -96,8 +96,40 @@ export class WarehouseService {
 
   readonly list = () => this.rowsSignal.asReadonly();
 
-  private readonly metricsSignal = computed<WarehouseMetrics>(() => {
+  private readonly metricsSignal = computed<WarehouseMetrics>(() =>
+    this.computeMetrics(this.rowsSignal()),
+  );
+
+  readonly metrics = () => this.metricsSignal;
+
+  metricsForWarehouse(warehouse: string | null): WarehouseMetrics {
     const rows = this.rowsSignal();
+    if (!warehouse) {
+      return this.computeMetrics(rows);
+    }
+
+    return this.computeMetrics(rows.filter((row) => row.warehouse === warehouse));
+  }
+
+  addRow(row: Omit<SupplyRow, 'id'>): void {
+    this.rowsSignal.update((rows) => {
+      const nextId = rows.reduce((max, current) => Math.max(max, current.id), 0) + 1;
+      return [...rows, { id: nextId, ...row }];
+    });
+  }
+
+  updateRow(updatedRow: SupplyRow): void {
+    this.rowsSignal.update((rows) =>
+      rows.map((row) => (row.id === updatedRow.id ? { ...updatedRow } : row)),
+    );
+  }
+
+  removeRowsById(ids: readonly number[]): void {
+    const idSet = new Set(ids);
+    this.rowsSignal.update((rows) => rows.filter((row) => !idSet.has(row.id)));
+  }
+
+  private computeMetrics(rows: readonly SupplyRow[]): WarehouseMetrics {
     const skuSet = new Set<string>();
 
     const today = new Date();
@@ -130,26 +162,6 @@ export class WarehouseService {
       positions: skuSet.size,
       expired,
     } satisfies WarehouseMetrics;
-  });
-
-  readonly metrics = () => this.metricsSignal;
-
-  addRow(row: Omit<SupplyRow, 'id'>): void {
-    this.rowsSignal.update((rows) => {
-      const nextId = rows.reduce((max, current) => Math.max(max, current.id), 0) + 1;
-      return [...rows, { id: nextId, ...row }];
-    });
-  }
-
-  updateRow(updatedRow: SupplyRow): void {
-    this.rowsSignal.update((rows) =>
-      rows.map((row) => (row.id === updatedRow.id ? { ...updatedRow } : row)),
-    );
-  }
-
-  removeRowsById(ids: readonly number[]): void {
-    const idSet = new Set(ids);
-    this.rowsSignal.update((rows) => rows.filter((row) => !idSet.has(row.id)));
   }
 
   private parseDate(value: string): Date {
