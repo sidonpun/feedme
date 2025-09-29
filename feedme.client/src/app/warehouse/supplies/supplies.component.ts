@@ -146,7 +146,6 @@ export class SuppliesComponent {
       .subscribe(() => {
         this.closeDialog();
       });
-r
   }
 
   trackBySupplyId(_: number, row: SupplyRow): string {
