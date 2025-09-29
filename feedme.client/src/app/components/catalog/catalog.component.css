@@ -3,6 +3,11 @@
   align-items: center;
   gap: 8px;
 }
+
+:host {
+  --catalog-focus-ring: rgba(37, 99, 235, 0.4);
+  --ring: var(--catalog-focus-ring);
+}
 .tabs button {
   padding: 6px 12px;
   border: none;
@@ -10,6 +15,12 @@
   cursor: pointer;
   font-weight: 500;
   font-size: 16px;
+}
+.tabs button:focus-visible {
+  outline: 2px solid rgba(37, 99, 235, 0.8);
+  outline-offset: 2px;
+  box-shadow: none;
+  border-radius: 6px;
 }
 .tabs button.active {
   border-bottom: 2px solid #007bff;
