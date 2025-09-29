@@ -1,30 +1,13 @@
 <section class="supplies">
 
-  <div class="card supplies__toolbar">
-    <form class="supplies__filters" (submit)="$event.preventDefault()">
-      <div class="supplies__filters-group">
-        <label class="supplies__field">
-          <span class="supplies__label">Поиск</span>
-          <input type="search" class="supplies__input supplies__input--wide" placeholder="Поиск по номеру, SKU или названию" />
-        </label>
-        <label class="supplies__field">
-          <span class="supplies__label">Дата от</span>
-          <input type="date" class="supplies__input" />
-        </label>
-        <label class="supplies__field">
-          <span class="supplies__label">Дата до</span>
-          <input type="date" class="supplies__input" />
-        </label>
-      </div>
-
-      <div class="supplies__filters-actions">
-        <button type="button" class="supplies__btn supplies__btn--outline">Сброс</button>
-        <button type="button" class="supplies__btn supplies__btn--outline">Импорт</button>
-        <button type="button" class="supplies__btn supplies__btn--secondary">Экспорт</button>
-        <button type="button" class="supplies__btn supplies__btn--primary" (click)="openDialog()">+ Новая поставка</button>
-      </div>
-    </form>
-  </div>
+  <section class="filters">
+    <input class="fm-input w-280" placeholder="Поиск по номеру, SKU или названию" />
+    <input class="fm-input w-140" type="date" />
+    <input class="fm-input w-140" type="date" />
+    <button class="btn btn-outline" type="button">Сброс</button>
+    <button class="btn btn-secondary" type="button">Экспорт</button>
+    <button class="btn btn-primary" type="button" (click)="openDialog()">+ Новая поставка</button>
+  </section>
 
   <div class="card supplies__table-card">
     <div class="card__content supplies__table-wrapper">
