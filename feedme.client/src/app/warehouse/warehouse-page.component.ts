@@ -21,6 +21,7 @@ import { FieldComponent } from './ui/field.component';
 import { StatusBadgeClassPipe } from '../pipes/status-badge-class.pipe';
 import { StatusBadgeLabelPipe } from '../pipes/status-badge-label.pipe';
 import { SupplyControlsComponent } from '../components/supply-controls/supply-controls.component';
+import { CatalogComponent } from './catalog/catalog.component';
 
 const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
@@ -51,6 +52,7 @@ type SupplyHistoryEntry = {
     StatusBadgeClassPipe,
     StatusBadgeLabelPipe,
     SupplyControlsComponent,
+    CatalogComponent,
   ],
   templateUrl: './warehouse-page.component.html',
   styleUrl: './warehouse-page.component.css',
