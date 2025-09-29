@@ -1,5 +1,6 @@
 
 import { CommonModule } from '@angular/common';
+import { animate, query, stagger, style, transition, trigger } from '@angular/animations';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -21,15 +22,18 @@ type SupplyFormValue = {
   expiryDate: string;
 };
 
-type QuickPeriod = 'today' | '7d' | '30d';
-
-type Period = QuickPeriod | '';
-
-interface QuickPeriodOption {
-  readonly id: QuickPeriod;
-  readonly label: string;
-  readonly days: number;
-}
+type SortDirection = 'asc' | 'desc';
+type SortKey =
+  | 'docNo'
+  | 'arrivalDate'
+  | 'warehouse'
+  | 'responsible'
+  | 'sku'
+  | 'name'
+  | 'qty'
+  | 'expiryDate'
+  | 'supplier'
+  | 'status';
 
 @Component({
   standalone: true,
@@ -37,53 +41,44 @@ interface QuickPeriodOption {
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './supplies.component.html',
   styleUrl: './supplies.component.scss',
-
+  animations: [
+    trigger('list', [
+      transition('* => *', [query('@row', stagger(40, []), { optional: true })]),
+    ]),
+    trigger('row', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-6px)' }),
+        animate('180ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+      ]),
+      transition(':leave', [
+        animate('150ms ease-in', style({ opacity: 0, transform: 'translateY(6px)' })),
+      ]),
+    ]),
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SuppliesComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly suppliesService = inject(SuppliesService);
 
-
   readonly rowsReady = signal(false);
-
   readonly rows = toSignal(
     this.suppliesService.getAll().pipe(tap(() => this.rowsReady.set(true))),
     { initialValue: [] as SupplyRow[] },
   );
-
-  readonly supplyKpis = computed(() => {
-    const rows = this.rows();
-
-    let warning = 0;
-    let expired = 0;
-
-    for (const row of rows) {
-      if (row.status === 'warning') {
-        warning += 1;
-      } else if (row.status === 'expired') {
-        expired += 1;
-      }
-    }
-
-    const ok = rows.length - warning - expired;
-
-    return {
-      total: rows.length,
-      ok: ok < 0 ? 0 : ok,
-      warning,
-      expired,
-    } as const;
-  });
   readonly products$ = this.suppliesService.getProducts();
-
-  private readonly rowsSignal = toSignal(this.rows$, { initialValue: [] as SupplyRow[] });
   private readonly productsSignal = toSignal(this.products$, { initialValue: [] as SupplyProduct[] });
 
   readonly dialogOpen = signal(false);
-  readonly importDialogOpen = signal(false);
-  readonly selectedFileName = signal<string | null>(null);
 
+  query = '';
+  dateFrom = '';
+  dateTo = '';
+
+  sortKey: SortKey = 'docNo';
+  sortDir: SortDirection = 'asc';
+
+  private readonly statusOrder: Record<SupplyStatus, number> = { ok: 1, warning: 2, expired: 3 };
 
   readonly form = this.fb.group({
     docNo: this.fb.control('', { validators: [Validators.required] }),
@@ -111,7 +106,7 @@ export class SuppliesComponent {
   });
 
   readonly kpi = computed((): { weekSupplies: number; weekSpend: number; items: number; expired: number } => {
-    const rows = this.rowsSignal();
+    const rows = this.rows();
     const products = this.productsSignal();
 
     const today = new Date();
@@ -158,6 +153,32 @@ export class SuppliesComponent {
     };
   });
 
+  get sortedRows(): SupplyRow[] {
+    const rows = this.rows();
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return [];
+    }
+
+    const filtered = rows.filter(row => this.matchesFilters(row));
+    const key = this.sortKey;
+    const multiplier = this.sortDir === 'asc' ? 1 : -1;
+
+    return [...filtered].sort((a, b) => {
+      const left = this.valueForSort(a, key);
+      const right = this.valueForSort(b, key);
+
+      if (left < right) {
+        return -1 * multiplier;
+      }
+
+      if (left > right) {
+        return 1 * multiplier;
+      }
+
+      return 0;
+    });
+  }
+
   openDialog(): void {
     this.dialogOpen.set(true);
   }
@@ -166,16 +187,6 @@ export class SuppliesComponent {
     this.dialogOpen.set(false);
     this.resetForm();
   }
-
-  openImportDialog(): void {
-    this.importDialogOpen.set(true);
-  }
-
-  closeImportDialog(): void {
-    this.importDialogOpen.set(false);
-    this.selectedFileName.set(null);
-  }
-
 
   submit(): void {
     if (this.form.invalid) {
@@ -237,7 +248,95 @@ export class SuppliesComponent {
       });
   }
 
-  trackBySupplyId(_: number, row: SupplyRow): string {
+  openNewSupply(): void {
+    this.openDialog();
+  }
+
+  onReset(): void {
+    this.query = '';
+    this.dateFrom = '';
+    this.dateTo = '';
+  }
+
+  onExport(): void {
+    const rows = this.sortedRows;
+    if (rows.length === 0 || typeof document === 'undefined') {
+      return;
+    }
+
+    const header = [
+      '№ док.',
+      'Дата прихода',
+      'Склад',
+      'Ответственный',
+      'SKU',
+      'Название',
+      'Количество',
+      'Срок годности',
+      'Поставщик',
+      'Статус',
+    ];
+
+    const rowsData = rows.map(row => [
+      row.docNo ?? '',
+      row.arrivalDate ?? '',
+      row.warehouse ?? '',
+      row.responsible ?? '',
+      row.sku ?? '',
+      row.name ?? '',
+      `${row.qty} ${row.unit ?? ''}`.trim(),
+      row.expiryDate ?? '',
+      row.supplier ?? '',
+      this.statusText(row.status),
+    ]);
+
+    const csv = [header, ...rowsData]
+      .map(columns =>
+        columns
+          .map(value => {
+            const normalized = value.toString().replace(/"/g, '""');
+            return `"${normalized}"`;
+          })
+          .join(';'),
+      )
+      .join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `supplies-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  toggleSort(key: SortKey): void {
+    if (this.sortKey === key) {
+      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+      return;
+    }
+
+    this.sortKey = key;
+    this.sortDir = 'asc';
+  }
+
+  ariaSort(key: SortKey): 'ascending' | 'descending' | 'none' {
+    if (this.sortKey !== key) {
+      return 'none';
+    }
+
+    return this.sortDir === 'asc' ? 'ascending' : 'descending';
+  }
+
+  sortIcon(key: SortKey): string {
+    if (this.sortKey !== key) {
+      return '↕';
+    }
+
+    return this.sortDir === 'asc' ? '▲' : '▼';
+  }
+
+  trackByRowId(_: number, row: SupplyRow): string {
     return row.id;
   }
 
@@ -271,36 +370,6 @@ export class SuppliesComponent {
     return new Date(year, month - 1, day);
   }
 
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-  }
-
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-    const file = event.dataTransfer?.files?.item(0);
-
-    if (file) {
-      this.selectedFileName.set(file.name);
-    }
-  }
-
-  onFile(event: Event): void {
-    const input = event.target as HTMLInputElement | null;
-    const file = input?.files?.item(0);
-
-    if (file) {
-      this.selectedFileName.set(file.name);
-    }
-
-    if (input) {
-      input.value = '';
-    }
-  }
-
-  mockImport(): void {
-    this.closeImportDialog();
-  }
-
   private resetForm(): void {
     this.form.reset({
       docNo: '',
@@ -316,14 +385,65 @@ export class SuppliesComponent {
 
   }
 
-  private createToday(): Date {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return today;
+  private matchesFilters(row: SupplyRow): boolean {
+    if (!this.matchesQuery(row)) {
+      return false;
+    }
+
+    const from = this.toDateOrNull(this.dateFrom);
+    const to = this.toDateOrNull(this.dateTo);
+    const arrival = this.toDateOrNull(row.arrivalDate);
+
+    if (from && arrival && arrival < from) {
+      return false;
+    }
+
+    if (to && arrival && arrival > to) {
+      return false;
+    }
+
+    return true;
   }
 
-  private formatDate(date: Date): string {
-    const normalized = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-    return normalized.toISOString().slice(0, 10);
+  private matchesQuery(row: SupplyRow): boolean {
+    const term = this.query.trim().toLowerCase();
+    if (!term) {
+      return true;
+    }
+
+    return [row.docNo, row.sku, row.name]
+      .filter((value): value is string => typeof value === 'string' && value.length > 0)
+      .some(value => value.toLowerCase().includes(term));
+  }
+
+  private valueForSort(row: SupplyRow, key: SortKey): number | string {
+    if (key === 'qty') {
+      return Number(row.qty);
+    }
+
+    if (key === 'arrivalDate' || key === 'expiryDate') {
+      const parsed = this.toDateOrNull(row[key]);
+      return parsed ? parsed.getTime() : 0;
+    }
+
+    if (key === 'status') {
+      return this.statusOrder[row.status] ?? 99;
+    }
+
+    const value = row[key];
+    if (value == null) {
+      return '';
+    }
+
+    return value.toString().toLowerCase();
+  }
+
+  private toDateOrNull(value: string | undefined): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    const parsed = this.parseIsoDate(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
   }
 }
