@@ -3,70 +3,13 @@
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;
-  overflow: hidden;
+  background-color: #ffffff;
 }
 
 .content {
   flex: 1 1 auto;
   display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-
-  padding: 0;
-  background-color: #ffffff;
-  position: relative;
-}
-
-.container {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  height: 60px;
-  background-color: transparent;
-  box-shadow: none;
-  width: 100%;
-}
-
-  .container + .container {
-    border-top: 1px solid #e6e6e6;
-  }
-
-.item {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  color: #8c8c8c;
-  cursor: pointer;
-  margin-right: 20px;
-  margin-left: 10px;
-  position: relative;
-  padding: 5px 0;
-  transition: color 0.3s ease;
-}
-
-  .item.selected {
-    color: #0056b3;
-    font-weight: 500;
-  }
-
-    .item.selected::after {
-      content: "";
-      position: absolute;
-      bottom: -2px;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background-color: #0056b3;
-    }
-
-  .item img {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-  }
-
-.error-message {
-  color: #dc3545;
-  margin: 8px 0;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px;
 }

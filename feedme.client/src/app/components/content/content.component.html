@@ -1,54 +1,6 @@
 <div class="content">
-  <app-warehouse-tabs [selectedTab]="selectedTab"
-                      (selectedTabChange)="setSelectedTab($event)">
-  </app-warehouse-tabs>
-
-  <app-supply-controls [(selectedSupply)]="selectedSupply"
-                       (goToCatalog)="goToCatalog()"
-                       (addSupply)="openNewProductPopup()">
-  </app-supply-controls>
-
-  <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
-
-  <app-new-product *ngIf="showPopup && selectedSupply !== 'catalog'"
-                  [warehouse]="selectedTab"
-                  (onSubmit)="onNewProductSubmit($event)"
-                  (onCancel)="showPopup = false">
-  </app-new-product>
-
-  <app-catalog-new-product-popup *ngIf="showPopup && selectedSupply === 'catalog'"
-                                 (save)="onNewProductSubmit($event)"
-                                 (cancel)="closeNewProductPopup()"
-
-                                 [errorMessage]="errorMessage">
-
-  </app-catalog-new-product-popup>
-
-  <app-info-cards-wrapper *ngIf="selectedSupply !== 'catalog' && selectedItem"
-                          [item]="selectedItem"
-                          (onClose)="closeInfoCards()">
-  </app-info-cards-wrapper>
-
-  <!-- Таблица Поставок -->
-  <app-supply-table *ngIf="selectedSupply === 'supplies'"
-                    [data]="supplyData"
-                    (onAddSupply)="openNewProductPopup()"
-                    (onSettingsClick)="handleSettingsClick($event)">
-  </app-supply-table>
-
-  <!-- Таблица Остатков -->
-  <app-stock-table *ngIf="selectedSupply === 'stock'"
-                   [data]="stockData"
-                   (onSettingsClick)="handleSettingsClick($event)">
-  </app-stock-table>
-
-  <!-- Таблица Каталога -->
-  <app-catalog-table *ngIf="selectedSupply === 'catalog'"
-                     [data]="catalogData"
-                     (onAddSupply)="openNewProductPopup()"
-
-                     (deleteRow)="onCatalogRemove($event)">
-
-
-  </app-catalog-table>
+  <app-warehouse-tabs
+    [selectedTab]="selectedWarehouse()"
+    (selectedTabChange)="selectWarehouse($event)"
+  ></app-warehouse-tabs>
 </div>
