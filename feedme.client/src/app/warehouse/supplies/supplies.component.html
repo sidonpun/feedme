@@ -12,10 +12,10 @@
   <div class="card supplies__table-card">
     <div class="card__content supplies__table-wrapper">
       <ng-container *ngIf="rows$ | async as rows; else loading">
-        <table class="supplies-table" *ngIf="rows.length > 0; else empty">
+        <table class="fm-table" *ngIf="rows.length > 0; else empty">
           <thead>
             <tr>
-              <th class="supplies-table__checkbox">
+              <th class="text-center">
                 <input type="checkbox" aria-label="Выбрать все" />
               </th>
               <th>№ док.</th>
@@ -24,31 +24,35 @@
               <th>Ответственный</th>
               <th>SKU</th>
               <th>Название</th>
-              <th class="supplies-table__numeric">Кол-во</th>
-              <th class="supplies-table__center">Срок годности</th>
-              <th class="supplies-table__truncate">Поставщик</th>
+              <th class="text-right">Кол-во</th>
+              <th class="text-center">Срок годности</th>
+              <th>Поставщик</th>
               <th>Статус</th>
-              <th class="supplies-table__actions" aria-label="Действия"></th>
+              <th class="text-right">Действия</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let row of rows; trackBy: trackBySupplyId">
-              <td class="supplies-table__checkbox">
+              <td class="text-center">
                 <input type="checkbox" [attr.aria-label]="'Выбрать поставку ' + row.docNo" />
               </td>
-              <td class="supplies-table__mono">{{ row.docNo }}</td>
-              <td>{{ row.arrivalDate | date: 'dd.MM.yyyy' }}</td>
+              <td class="mono">{{ row.docNo }}</td>
+              <td class="text-center">{{ row.arrivalDate | date: 'dd.MM.yyyy' }}</td>
               <td>{{ row.warehouse }}</td>
               <td>{{ row.responsible || '—' }}</td>
-              <td class="supplies-table__mono">{{ row.sku }}</td>
-              <td>{{ row.name }}</td>
-              <td class="supplies-table__numeric">{{ row.qty | number: '1.0-2' }} {{ row.unit }}</td>
-              <td class="supplies-table__center">{{ row.expiryDate | date: 'dd.MM.yyyy' }}</td>
-              <td class="supplies-table__truncate" [title]="row.supplier || '—'">{{ row.supplier || '—' }}</td>
+              <td class="mono">{{ row.sku }}</td>
+              <td class="truncate" [title]="row.name">{{ row.name }}</td>
+              <td class="text-right">{{ row.qty | number: '1.0-2' }} {{ row.unit }}</td>
+              <td class="text-center">{{ row.expiryDate | date: 'dd.MM.yyyy' }}</td>
+              <td class="truncate" [title]="row.supplier || '—'">{{ row.supplier || '—' }}</td>
               <td>
-                <span [class]="getStatusClass(row.status)">{{ getStatusLabel(row.status) }}</span>
+                <span [ngClass]="statusClass(row.status)">{{ statusText(row.status) }}</span>
               </td>
-              <td class="supplies-table__actions">⋯</td>
+              <td class="text-right">
+                <button class="icon-btn" type="button" aria-label="Списать">🗑</button>
+                <button class="icon-btn" type="button" aria-label="Переместить">⇄</button>
+                <button class="icon-btn" type="button" aria-label="Печать">🖨</button>
+              </td>
             </tr>
           </tbody>
         </table>

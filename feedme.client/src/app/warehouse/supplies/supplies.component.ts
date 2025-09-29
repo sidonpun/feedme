@@ -40,18 +40,6 @@ export class SuppliesComponent {
 
   readonly dialogOpen = signal(false);
 
-  private readonly statusLabels: Record<SupplyStatus, string> = {
-    ok: 'Ок',
-    warning: 'Скоро срок',
-    expired: 'Просрочено',
-  };
-
-  private readonly statusClasses: Record<SupplyStatus, string> = {
-    ok: 'supplies-status supplies-status--ok',
-    warning: 'supplies-status supplies-status--warning',
-    expired: 'supplies-status supplies-status--expired',
-  };
-
   readonly form = this.fb.group({
     docNo: this.fb.control('', { validators: [Validators.required] }),
     arrivalDate: this.fb.control('', { validators: [Validators.required] }),
@@ -79,14 +67,12 @@ export class SuppliesComponent {
 
   openDialog(): void {
     this.dialogOpen.set(true);
-
   }
 
   closeDialog(): void {
     this.dialogOpen.set(false);
     this.resetForm();
   }
-
 
   submit(): void {
     if (this.form.invalid) {
@@ -152,13 +138,25 @@ export class SuppliesComponent {
     return row.id;
   }
 
-
-  getStatusLabel(status: SupplyStatus): string {
-    return this.statusLabels[status];
+  statusClass(status: SupplyStatus): Record<string, boolean> {
+    return {
+      'status-pill': true,
+      'status-ok': status === 'ok',
+      'status-warn': status === 'warning',
+      'status-expired': status === 'expired',
+    };
   }
 
-  getStatusClass(status: SupplyStatus): string {
-    return this.statusClasses[status];
+  statusText(status: SupplyStatus): string {
+    if (status === 'ok') {
+      return 'Ок';
+    }
+
+    if (status === 'warning') {
+      return 'Скоро срок';
+    }
+
+    return 'Просрочено';
   }
 
   private resetForm(): void {
