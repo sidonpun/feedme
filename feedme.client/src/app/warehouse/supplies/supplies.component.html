@@ -1,61 +1,189 @@
-<div class="card supplies__filters-card">
-  <form class="card__content p-4 flex flex-wrap items-center gap-3" (submit)="$event.preventDefault()">
-    <div class="supplies__filters-control">
-      <label class="supplies__filters-field">
-        <span class="supplies__filters-label">Поиск</span>
-        <input
-          type="search"
-          class="input w-[320px]"
-          placeholder="Поиск по номеру, SKU или названию"
-          aria-label="Поиск по поставкам"
-        />
-      </label>
-    </div>
-
-    <div class="supplies__filters-control">
-      <label class="supplies__filters-field">
-        <span class="supplies__filters-label">Дата от</span>
-        <input type="date" class="input w-[160px]" aria-label="Дата прихода от" />
-      </label>
-    </div>
-
-    <div class="supplies__filters-control">
-      <label class="supplies__filters-field">
-        <span class="supplies__filters-label">Дата до</span>
-        <input type="date" class="input w-[160px]" aria-label="Дата прихода до" />
-      </label>
-    </div>
-
-    <div class="supplies__filters-control supplies__filters-control--chips">
-      <span class="sr-only">Склад</span>
-      <div class="chips" aria-label="Фильтр по складам">
-        <div class="chip chip--filled">Главный склад</div>
+<section class="supplies">
+  <div class="card supplies__toolbar">
+    <form class="supplies__filters" (submit)="$event.preventDefault()">
+      <div class="supplies__filters-group">
+        <label class="supplies__field">
+          <span class="supplies__label">Поиск</span>
+          <input type="search" class="supplies__input supplies__input--wide" placeholder="Поиск по номеру, SKU или названию" />
+        </label>
+        <label class="supplies__field">
+          <span class="supplies__label">Дата от</span>
+          <input type="date" class="supplies__input" />
+        </label>
+        <label class="supplies__field">
+          <span class="supplies__label">Дата до</span>
+          <input type="date" class="supplies__input" />
+        </label>
       </div>
-    </div>
 
-    <div class="supplies__filters-control supplies__filters-control--chips">
-      <span class="sr-only">Статус</span>
-      <div class="chips" aria-label="Фильтр по статусам">
-        <div class="chip">Ок</div>
-        <div class="chip chip--danger">Просрочено</div>
-        <div class="chip chip--draft">Черновик</div>
-        <div class="chip chip--transit">В пути</div>
+      <div class="supplies__filters-actions">
+        <button type="button" class="supplies__btn supplies__btn--outline">Сброс</button>
+        <button type="button" class="supplies__btn supplies__btn--outline">Импорт</button>
+        <button type="button" class="supplies__btn supplies__btn--secondary">Экспорт</button>
+        <button type="button" class="supplies__btn supplies__btn--primary" (click)="openDialog()">+ Новая поставка</button>
       </div>
-    </div>
-
-    <button type="button" class="btn btn--outline">Сброс</button>
-    <button type="button" class="btn btn-brand-outline">Импорт</button>
-    <button type="button" class="btn btn--secondary">Экспорт</button>
-    <button type="button" class="btn btn--primary ml-auto">+ Новая поставка</button>
-  </form>
-</div>
-
-<div class="bulkbar"> <!-- TODO: show on selection -->
-  <span class="bulkbar__hint">Выбрано: 3</span>
-  <div class="bulkbar__actions">
-    <button class="btn btn--outline btn-sm" type="button">Списать</button>
-    <button class="btn btn--outline btn-sm" type="button">Переместить</button>
-    <button class="btn btn--outline btn-sm" type="button">Печать</button>
-    <button class="btn btn-danger btn-sm" type="button">Удалить</button>
+    </form>
   </div>
-</div>
+
+  <div class="card supplies__table-card">
+    <div class="card__content supplies__table-wrapper">
+      <ng-container *ngIf="rows$ | async as rows; else loading">
+        <table class="supplies-table" *ngIf="rows.length > 0; else empty">
+          <thead>
+            <tr>
+              <th class="supplies-table__checkbox">
+                <input type="checkbox" aria-label="Выбрать все" />
+              </th>
+              <th>№ док.</th>
+              <th>Дата прихода</th>
+              <th>Склад</th>
+              <th>Ответственный</th>
+              <th>SKU</th>
+              <th>Название</th>
+              <th class="supplies-table__numeric">Кол-во</th>
+              <th class="supplies-table__center">Срок годности</th>
+              <th class="supplies-table__truncate">Поставщик</th>
+              <th>Статус</th>
+              <th class="supplies-table__actions" aria-label="Действия"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of rows; trackBy: trackBySupplyId">
+              <td class="supplies-table__checkbox">
+                <input type="checkbox" [attr.aria-label]="'Выбрать поставку ' + row.docNo" />
+              </td>
+              <td class="supplies-table__mono">{{ row.docNo }}</td>
+              <td>{{ row.arrivalDate | date: 'dd.MM.yyyy' }}</td>
+              <td>{{ row.warehouse }}</td>
+              <td>{{ row.responsible || '—' }}</td>
+              <td class="supplies-table__mono">{{ row.sku }}</td>
+              <td>{{ row.name }}</td>
+              <td class="supplies-table__numeric">{{ row.qty | number: '1.0-2' }} {{ row.unit }}</td>
+              <td class="supplies-table__center">{{ row.expiryDate | date: 'dd.MM.yyyy' }}</td>
+              <td class="supplies-table__truncate" [title]="row.supplier || '—'">{{ row.supplier || '—' }}</td>
+              <td>
+                <span [class]="getStatusClass(row.status)">{{ getStatusLabel(row.status) }}</span>
+              </td>
+              <td class="supplies-table__actions">⋯</td>
+            </tr>
+          </tbody>
+        </table>
+        <ng-template #empty>
+          <div class="supplies__empty">Поставки пока не добавлены</div>
+        </ng-template>
+      </ng-container>
+      <ng-template #loading>
+        <div class="supplies__empty">Загрузка...</div>
+      </ng-template>
+    </div>
+  </div>
+</section>
+
+<section class="supplies-dialog" *ngIf="dialogOpen()">
+  <div class="supplies-dialog__backdrop" (click)="closeDialog()"></div>
+  <div
+    class="supplies-dialog__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="supplies-dialog-title"
+    (click)="$event.stopPropagation()"
+  >
+    <form class="supplies-dialog__form" (ngSubmit)="submit()" novalidate>
+      <header class="supplies-dialog__header">
+        <h2 id="supplies-dialog-title">Новая поставка</h2>
+      </header>
+
+      <div class="supplies-dialog__body">
+        <section class="supplies-dialog__section">
+          <h3 class="supplies-dialog__section-title">Детали документа</h3>
+          <div class="supplies-dialog__grid">
+            <label class="supplies-field">
+              <span class="supplies-field__label">Номер документа *</span>
+              <input
+                class="supplies-field__input"
+                type="text"
+                formControlName="docNo"
+                placeholder="Например, PO-001234"
+              />
+              <span class="supplies-field__error" *ngIf="form.controls.docNo.touched && form.controls.docNo.invalid">
+                Укажите номер документа
+              </span>
+            </label>
+            <label class="supplies-field">
+              <span class="supplies-field__label">Дата прихода *</span>
+              <input class="supplies-field__input" type="date" formControlName="arrivalDate" />
+              <span class="supplies-field__error" *ngIf="form.controls.arrivalDate.touched && form.controls.arrivalDate.invalid">
+                Выберите дату прихода
+              </span>
+            </label>
+            <label class="supplies-field">
+              <span class="supplies-field__label">Склад *</span>
+              <input class="supplies-field__input" type="text" formControlName="warehouse" placeholder="Например, Главный склад" />
+              <span class="supplies-field__error" *ngIf="form.controls.warehouse.touched && form.controls.warehouse.invalid">
+                Укажите склад
+              </span>
+            </label>
+            <label class="supplies-field">
+              <span class="supplies-field__label">Ответственный</span>
+              <input class="supplies-field__input" type="text" formControlName="responsible" placeholder="ФИО" />
+            </label>
+          </div>
+        </section>
+
+        <section class="supplies-dialog__section">
+          <h3 class="supplies-dialog__section-title">Товар</h3>
+          <div class="supplies-dialog__grid">
+            <label class="supplies-field supplies-field--full">
+              <span class="supplies-field__label">Позиция каталога *</span>
+              <select class="supplies-field__input" formControlName="productId">
+                <option value="">Выберите товар</option>
+                <option *ngFor="let product of products$ | async" [value]="product.id">
+                  {{ product.name }} ({{ product.sku }})
+                </option>
+              </select>
+              <span class="supplies-field__error" *ngIf="form.controls.productId.touched && form.controls.productId.invalid">
+                Выберите товар из каталога
+              </span>
+            </label>
+            <label class="supplies-field">
+              <span class="supplies-field__label">Количество *</span>
+              <input class="supplies-field__input" type="number" min="0.01" step="0.01" formControlName="qty" />
+              <span class="supplies-field__error" *ngIf="form.controls.qty.touched && form.controls.qty.invalid">
+                Количество должно быть больше нуля
+              </span>
+            </label>
+            <label class="supplies-field">
+              <span class="supplies-field__label">Срок годности *</span>
+              <input class="supplies-field__input" type="date" formControlName="expiryDate" />
+              <span class="supplies-field__error" *ngIf="form.controls.expiryDate.touched && form.controls.expiryDate.invalid">
+                Укажите срок годности
+              </span>
+            </label>
+          </div>
+
+          <ng-container *ngIf="selectedProduct() as product">
+            <dl class="supplies-dialog__product-meta">
+              <div class="supplies-dialog__meta-row">
+                <dt>SKU</dt>
+                <dd>{{ product.sku }}</dd>
+              </div>
+              <div class="supplies-dialog__meta-row">
+                <dt>Ед. изм.</dt>
+                <dd>{{ product.unit }}</dd>
+              </div>
+              <div class="supplies-dialog__meta-row">
+                <dt>Поставщик</dt>
+                <dd>{{ product.supplier || '—' }}</dd>
+              </div>
+            </dl>
+          </ng-container>
+        </section>
+      </div>
+
+      <footer class="supplies-dialog__footer">
+        <button type="button" class="supplies__btn supplies__btn--outline" (click)="closeDialog()">Отмена</button>
+        <button type="submit" class="supplies__btn supplies__btn--primary">Сохранить</button>
+      </footer>
+    </form>
+  </div>
+</section>
