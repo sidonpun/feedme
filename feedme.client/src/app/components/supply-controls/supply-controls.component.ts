@@ -19,7 +19,6 @@ type SupplyTab = {
 export class SupplyControlsComponent {
   @Input() activeTab: SupplySection = 'supplies';
   @Output() activeTabChange = new EventEmitter<SupplySection>();
-  @Output() createSupply = new EventEmitter<void>();
 
   readonly tabs: ReadonlyArray<SupplyTab> = [
     { key: 'supplies', label: 'Поставки' },
@@ -34,10 +33,6 @@ export class SupplyControlsComponent {
     }
 
     this.activeTabChange.emit(tab);
-  }
-
-  onCreateSupply(): void {
-    this.createSupply.emit();
   }
 
   trackByTab = (_: number, tab: SupplyTab) => tab.key;

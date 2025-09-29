@@ -47,26 +47,9 @@
   box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
 }
 
-.supply-controls__actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-}
-
 @media (max-width: 768px) {
   .supply-controls {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .supply-controls__actions {
-    width: 100%;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .supply-controls__actions .btn {
-    width: 100%;
-    justify-content: center;
   }
 }
