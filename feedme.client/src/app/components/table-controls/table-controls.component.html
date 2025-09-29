@@ -1,5 +1,5 @@
 <div class="table-controls">
-  <div class="rows-selector-container">
+  <div class="rows-selector-container" *ngIf="showRowsSelector">
     <span class="rows-label">Строк:</span>
     <select [value]="rowsPerPage"
             (change)="onRowsPerPageChange($event.target.value)"

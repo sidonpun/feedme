@@ -1,7 +1,17 @@
-.content {
-  flex-grow: 1;
+:host {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 
   padding: 0;
   background-color: #ffffff;

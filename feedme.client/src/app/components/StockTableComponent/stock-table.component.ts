@@ -31,11 +31,6 @@ interface StockTableItem {
   stock?: string | number;
 }
 
-interface FilterOptions {
-  justAdded?: boolean;
-  preservePage?: boolean;
-}
-
 interface StockColumn {
   label: string;
   field: keyof StockTableItem;
@@ -54,8 +49,6 @@ export class StockTableComponent implements OnChanges {
   @Output() onSettingsClick = new EventEmitter<StockTableItem>();
 
   searchQuery = '';
-  rowsPerPage = 10;
-  currentPage = 1;
   filteredData: StockTableItem[] = [];
 
   private expiryInfoCache = new WeakMap<StockTableItem, ExpiryInfo>();
@@ -102,29 +95,14 @@ export class StockTableComponent implements OnChanges {
     'stock',
   ];
 
-  private previousLength = 0;
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data']) {
-      const { firstChange } = changes['data'];
-      const newLength = this.data.length;
-      const justAdded = !firstChange && newLength > this.previousLength;
-      this.previousLength = newLength;
-
-      this.applyFilters({
-        justAdded,
-        preservePage: true,
-      });
+      this.applyFilters();
     }
   }
 
   onSearchChange(query: string): void {
     this.searchQuery = query;
-    this.applyFilters();
-  }
-
-  onRowsChange(rows: number): void {
-    this.rowsPerPage = rows;
     this.applyFilters();
   }
 
@@ -136,7 +114,7 @@ export class StockTableComponent implements OnChanges {
       this.sortDirection = 'asc';
     }
 
-    this.applyFilters({ preservePage: true });
+    this.applyFilters();
   }
 
   getAriaSort(field: keyof StockTableItem): 'none' | 'ascending' | 'descending' {
@@ -157,29 +135,11 @@ export class StockTableComponent implements OnChanges {
 
   }
 
-  get paginatedData(): StockTableItem[] {
-    const start = (this.currentPage - 1) * this.rowsPerPage;
-    return this.filteredData.slice(start, start + this.rowsPerPage);
+  get visibleData(): StockTableItem[] {
+    return this.filteredData;
   }
 
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.filteredData.length / this.rowsPerPage));
-  }
-
-  nextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-    }
-  }
-
-  prevPage(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
-  }
-
-  private applyFilters(options: FilterOptions = {}): void {
-    const { justAdded = false, preservePage = false } = options;
+  private applyFilters(): void {
     const normalizedQuery = this.normalize(this.searchQuery);
 
     this.expiryInfoCache = new WeakMap();
@@ -193,18 +153,6 @@ export class StockTableComponent implements OnChanges {
       : nonEmptyItems;
 
     this.filteredData = this.sortData(matches);
-
-    if (justAdded && !normalizedQuery) {
-      this.currentPage = this.totalPages;
-      return;
-    }
-
-    if (preservePage) {
-      this.currentPage = Math.min(this.currentPage, this.totalPages);
-      return;
-    }
-
-    this.currentPage = 1;
   }
 
   private matchesQuery(item: StockTableItem, query: string): boolean {
