@@ -10,6 +10,24 @@
   gap: 1.5rem;
 }
 
+.fm-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.crumbs {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.crumbs b {
+  color: #111827;
+}
+
 .card {
   border-radius: 0;
   box-shadow: none;
