@@ -1,44 +1,58 @@
-<div class="popup-backdrop">
-  <div class="popup-content">
-    <button class="close-btn" (click)="cancel()">×</button>
-    <h2>Новый товар</h2>
-    <form [formGroup]="form">
-      <div class="form-grid">
-        <div class="input-container">
-          <label>Название товара</label>
-          <input type="text"
-                 formControlName="productName"
-                 autocomplete="off">
-          <ng-container *ngIf="!selectedProduct && (suggestions$ | async) as suggestions">
-            <div class="suggestions-container" *ngIf="suggestions.length">
-              <div class="suggestion-item" *ngFor="let item of suggestions" (click)="selectSuggestion(item)">
-                {{ item.name }}
-              </div>
-            </div>
-          </ng-container>
-        </div>
-
-        <ng-container *ngIf="selectedProduct">
-          <div class="input-container">
-            <label>Количество</label>
-            <input type="number" formControlName="stock" required>
-          </div>
-
-          <div class="input-container">
-            <label>Срок годности</label>
-            <input type="date" formControlName="expiryDate" required>
-          </div>
-        </ng-container>
+<div class="dialog-backdrop">
+  <div class="dialog">
+    <form [formGroup]="form" class="npd">
+      <div class="npd__header">
+        <h2 class="npd__title">Новый товар</h2>
+        <button type="button" class="npd__close" (click)="cancel()" aria-label="Закрыть диалог">
+          ×
+        </button>
       </div>
 
-      <div class="popup-buttons">
-        <button type="button" class="cancel-btn" (click)="cancel()">Отмена</button>
+      <section class="npd__section">
+        <div class="npd__section-title">Основная информация</div>
+        <div class="npd__grid">
+          <label class="field field--full">
+            <span class="field__label">Название товара</span>
+            <input class="field__control"
+                   type="text"
+                   formControlName="productName"
+                   autocomplete="off"
+                   placeholder="Напр. Курица гриль">
+            <ng-container *ngIf="!selectedProduct && (suggestions$ | async) as suggestions">
+              <div class="field__suggestions" *ngIf="suggestions.length">
+                <button type="button"
+                        class="field__suggestion"
+                        *ngFor="let item of suggestions"
+                        (click)="selectSuggestion(item)">
+                  {{ item.name }}
+                </button>
+              </div>
+            </ng-container>
+          </label>
+        </div>
+      </section>
 
+      <section class="npd__section" *ngIf="selectedProduct">
+        <div class="npd__section-title">Закупка и логистика</div>
+        <div class="npd__grid">
+          <label class="field">
+            <span class="field__label">Количество</span>
+            <input class="field__control" type="number" formControlName="stock" required>
+          </label>
+
+          <label class="field">
+            <span class="field__label">Срок годности</span>
+            <input class="field__control" type="date" formControlName="expiryDate" required>
+          </label>
+        </div>
+      </section>
+
+      <div class="npd__footer">
+        <button type="button" class="btn btn--outline" (click)="cancel()">Отмена</button>
         <button type="button"
-                class="save-btn"
+                class="btn btn--primary"
                 [disabled]="!selectedProduct || form.invalid"
                 (click)="handleSubmit()">Сохранить</button>
-
       </div>
     </form>
   </div>
