@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { startWith, take } from 'rxjs';
+import { startWith, take, tap } from 'rxjs';
 
 import { SupplyProduct, SupplyRow, SupplyStatus } from '../shared/models';
 import { computeExpiryStatus } from '../shared/status.util';
@@ -45,7 +45,36 @@ export class SuppliesComponent {
   private readonly suppliesService = inject(SuppliesService);
 
 
-  readonly rows$ = this.suppliesService.getAll();
+  readonly rowsReady = signal(false);
+
+  readonly rows = toSignal(
+    this.suppliesService.getAll().pipe(tap(() => this.rowsReady.set(true))),
+    { initialValue: [] as SupplyRow[] },
+  );
+
+  readonly supplyKpis = computed(() => {
+    const rows = this.rows();
+
+    let warning = 0;
+    let expired = 0;
+
+    for (const row of rows) {
+      if (row.status === 'warning') {
+        warning += 1;
+      } else if (row.status === 'expired') {
+        expired += 1;
+      }
+    }
+
+    const ok = rows.length - warning - expired;
+
+    return {
+      total: rows.length,
+      ok: ok < 0 ? 0 : ok,
+      warning,
+      expired,
+    } as const;
+  });
   readonly products$ = this.suppliesService.getProducts();
 
   readonly dialogOpen = signal(false);
