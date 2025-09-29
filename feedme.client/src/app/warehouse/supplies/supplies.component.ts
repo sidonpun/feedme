@@ -77,6 +77,9 @@ export class SuppliesComponent {
   });
   readonly products$ = this.suppliesService.getProducts();
 
+  private readonly rowsSignal = toSignal(this.rows$, { initialValue: [] as SupplyRow[] });
+  private readonly productsSignal = toSignal(this.products$, { initialValue: [] as SupplyProduct[] });
+
   readonly dialogOpen = signal(false);
 
   readonly quickPeriods: ReadonlyArray<QuickPeriodOption> = [
@@ -124,6 +127,54 @@ export class SuppliesComponent {
     }
 
     return this.suppliesService.getProductById(id) ?? null;
+  });
+
+  readonly kpi = computed((): { weekSupplies: number; weekSpend: number; items: number; expired: number } => {
+    const rows = this.rowsSignal();
+    const products = this.productsSignal();
+
+    const today = new Date();
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const endOfToday = new Date(startOfToday);
+    endOfToday.setDate(endOfToday.getDate() + 1);
+    endOfToday.setMilliseconds(endOfToday.getMilliseconds() - 1);
+
+    const weekStart = new Date(startOfToday);
+    weekStart.setDate(weekStart.getDate() - 6);
+
+    const priceByProduct = new Map<string, number>();
+    for (const product of products) {
+      priceByProduct.set(product.id, product.purchasePrice ?? 0);
+    }
+
+    let weekSupplies = 0;
+    let weekSpend = 0;
+    let expired = 0;
+    const uniqueProductIds = new Set<string>();
+
+    for (const row of rows) {
+      uniqueProductIds.add(row.productId);
+
+      if (row.status === 'expired') {
+        expired += 1;
+      }
+
+      const arrival = this.parseIsoDate(row.arrivalDate);
+      if (!Number.isNaN(arrival.getTime()) && arrival >= weekStart && arrival <= endOfToday) {
+        weekSupplies += 1;
+        const price = priceByProduct.get(row.productId) ?? 0;
+        weekSpend += price * row.qty;
+      }
+    }
+
+    const normalizedWeekSpend = Math.round(weekSpend * 100) / 100;
+
+    return {
+      weekSupplies,
+      weekSpend: normalizedWeekSpend,
+      items: uniqueProductIds.size,
+      expired,
+    };
   });
 
   openDialog(): void {
@@ -246,6 +297,15 @@ export class SuppliesComponent {
 
   getStatusClass(status: SupplyStatus): string {
     return this.statusClasses[status];
+  }
+
+  private parseIsoDate(value: string): Date {
+    const [year, month, day] = value.split('-').map(part => Number.parseInt(part, 10));
+    if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
+      return new Date(NaN);
+    }
+
+    return new Date(year, month - 1, day);
   }
 
   private resetForm(): void {

@@ -1,9 +1,23 @@
-<header class="fm-topbar">
 
-  <div>
-    <h1 class="fm-topbar__title">Поставки</h1>
-  </div>
-  <div class="fm-topbar__actions">
+<section class="supplies">
+  <section class="kpis" *ngIf="kpi() as metrics">
+    <div class="kpi">
+      <div class="kpi__label">Поставок за 7 дней</div>
+      <div class="kpi__value">{{ metrics.weekSupplies }}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__label">Сумма закупок / 7 дн.</div>
+      <div class="kpi__value">{{ metrics.weekSpend | currency: 'RUB' }}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__label">Позиций на складе</div>
+      <div class="kpi__value">{{ metrics.items }}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__label">Просрочено</div>
+      <div class="kpi__value kpi__value--danger">{{ metrics.expired }}</div>
+    </div>
+  </section>
 
 
   <section class="filters">

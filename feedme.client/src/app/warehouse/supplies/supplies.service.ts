@@ -147,6 +147,7 @@ export class SuppliesService {
       name: product.name,
       unit: product.unit,
       supplier: product.supplierMain ?? undefined,
+      purchasePrice: product.purchasePrice,
     } satisfies SupplyProduct;
   }
 }
