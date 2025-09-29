@@ -1,7 +1,7 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { startWith, take } from 'rxjs';
 
@@ -21,10 +21,20 @@ type SupplyFormValue = {
   expiryDate: string;
 };
 
+type QuickPeriod = 'today' | '7d' | '30d';
+
+type Period = QuickPeriod | '';
+
+interface QuickPeriodOption {
+  readonly id: QuickPeriod;
+  readonly label: string;
+  readonly days: number;
+}
+
 @Component({
   standalone: true,
   selector: 'app-supplies',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './supplies.component.html',
   styleUrl: './supplies.component.scss',
 
@@ -39,6 +49,16 @@ export class SuppliesComponent {
   readonly products$ = this.suppliesService.getProducts();
 
   readonly dialogOpen = signal(false);
+
+  readonly quickPeriods: ReadonlyArray<QuickPeriodOption> = [
+    { id: 'today', label: 'Сегодня', days: 0 },
+    { id: '7d', label: '7 дней', days: 7 },
+    { id: '30d', label: '30 дней', days: 30 },
+  ];
+
+  dateFrom = '';
+  dateTo = '';
+  period: Period = '';
 
   private readonly statusLabels: Record<SupplyStatus, string> = {
     ok: 'Ок',
@@ -85,6 +105,44 @@ export class SuppliesComponent {
   closeDialog(): void {
     this.dialogOpen.set(false);
     this.resetForm();
+  }
+
+
+  setPeriod(period: QuickPeriod): void {
+    const option = this.quickPeriods.find(({ id }) => id === period);
+
+    if (!option) {
+      return;
+    }
+
+    this.period = option.id;
+
+    const today = this.createToday();
+    const toDate = this.formatDate(today);
+    const fromDate = new Date(today);
+
+    if (option.days > 0) {
+      fromDate.setDate(fromDate.getDate() - option.days);
+    }
+
+    this.dateFrom = this.formatDate(fromDate);
+    this.dateTo = toDate;
+  }
+
+  onDateFromChange(value: string): void {
+    this.dateFrom = value;
+    this.period = '';
+  }
+
+  onDateToChange(value: string): void {
+    this.dateTo = value;
+    this.period = '';
+  }
+
+  resetFilters(): void {
+    this.period = '';
+    this.dateFrom = '';
+    this.dateTo = '';
   }
 
 
@@ -174,5 +232,16 @@ export class SuppliesComponent {
     this.form.markAsPristine();
     this.form.markAsUntouched();
 
+  }
+
+  private createToday(): Date {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today;
+  }
+
+  private formatDate(date: Date): string {
+    const normalized = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return normalized.toISOString().slice(0, 10);
   }
 }
