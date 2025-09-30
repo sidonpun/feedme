@@ -1,55 +1,219 @@
-<div class="popup-backdrop">
-  <div class="popup-content">
-    <h2>Новая поставка</h2>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+<div class="nd-backdrop is-open" (click)="onClose()">
+  <div
+    class="nd-modal is-open"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="add-receipt-title"
+    aria-describedby="add-receipt-description"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="nd-head">
+      <div>
+        <h2 id="add-receipt-title" class="nd-title">Новая поставка</h2>
+        <p id="add-receipt-description" class="nd-sub">
+          Выберите товар из каталога, укажите количество и даты поставки.
+        </p>
+      </div>
+      <button
+        type="button"
+        class="nd-btn nd-btn-quiet"
+        aria-label="Закрыть диалог"
+        (click)="onClose()"
+      >
+        <span aria-hidden="true" class="nd-ico nd-ico-close"></span>
+      </button>
+    </div>
 
-      <label>Товар</label>
-      <select formControlName="productId">
-        <option value="">— Выберите —</option>
-        <option *ngFor="let p of catalog" [value]="p.id">{{ p.name }}</option>
-      </select>
+    <form class="nd-body" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="nd-field nd-with-icon">
+        <label class="nd-label" for="add-receipt-product">Товар</label>
+        <div class="nd-input-wrap">
+          <select id="add-receipt-product" class="nd-input" formControlName="productId">
+            <option value="">Начните вводить название или SKU</option>
+            <option *ngFor="let item of catalog" [value]="item.id">
+              {{ item.name }} · {{ item.code }}
+            </option>
+          </select>
+          <span aria-hidden="true" class="nd-ico nd-ico-search"></span>
+        </div>
+      </div>
 
-      <label>Поставщик</label>
-      <input formControlName="supplier" disabled />
+      <div class="nd-grid-2">
+        <div class="nd-field">
+          <label class="nd-label" for="add-receipt-quantity">Количество</label>
+          <div class="nd-input-wrap">
+            <input
+              id="add-receipt-quantity"
+              type="number"
+              class="nd-input"
+              formControlName="quantity"
+              min="0"
+              step="0.01"
+              inputmode="decimal"
+            />
+          </div>
+        </div>
+        <div class="nd-field nd-with-icon">
+          <label class="nd-label" for="add-receipt-received-at">Дата прихода</label>
+          <div class="nd-input-wrap">
+            <input
+              id="add-receipt-received-at"
+              type="date"
+              class="nd-input"
+              formControlName="receivedAt"
+            />
+            <span aria-hidden="true" class="nd-ico nd-ico-calendar"></span>
+          </div>
+        </div>
+      </div>
 
-      <label>Код ТН ВЭД</label>
-      <input formControlName="tnvedCode" disabled />
+      <div class="nd-grid-2">
+        <div class="nd-field">
+          <label class="nd-label" for="add-receipt-warehouse">Склад</label>
+          <div class="nd-input-wrap">
+            <input
+              id="add-receipt-warehouse"
+              type="text"
+              class="nd-input"
+              formControlName="warehouse"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+        <div class="nd-field">
+          <label class="nd-label" for="add-receipt-number">Номер документа</label>
+          <div class="nd-input-wrap">
+            <input
+              id="add-receipt-number"
+              type="text"
+              class="nd-input"
+              formControlName="number"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+      </div>
 
-      <label>Метод списания</label>
-      <input formControlName="writeoffMethod" disabled />
+      <div class="nd-grid-2">
+        <div class="nd-field">
+          <label class="nd-label" for="add-receipt-unit">Единица измерения</label>
+          <div class="nd-input-wrap">
+            <select id="add-receipt-unit" class="nd-input" formControlName="unit">
+              <option *ngFor="let u of units" [value]="u">{{ u }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="nd-field nd-with-icon">
+          <label class="nd-label" for="add-receipt-expiry">Срок годности</label>
+          <div class="nd-input-wrap">
+            <input
+              id="add-receipt-expiry"
+              type="date"
+              class="nd-input"
+              formControlName="expiryDate"
+            />
+            <span aria-hidden="true" class="nd-ico nd-ico-calendar"></span>
+          </div>
+        </div>
+      </div>
 
-      <label>Цена закупки за единицу</label>
-      <input formControlName="unitPrice" disabled />
+      <div class="nd-grid-2 nd-meta-grid">
+        <div class="nd-field">
+          <label class="nd-label" for="add-receipt-supplier">Поставщик</label>
+          <div class="nd-input-wrap">
+            <input
+              id="add-receipt-supplier"
+              type="text"
+              class="nd-input"
+              formControlName="supplier"
+              disabled
+              tabindex="-1"
+            />
+          </div>
+        </div>
+        <div class="nd-field">
+          <label class="nd-label" for="add-receipt-tnved">Код ТН ВЭД</label>
+          <div class="nd-input-wrap">
+            <input
+              id="add-receipt-tnved"
+              type="text"
+              class="nd-input"
+              formControlName="tnvedCode"
+              disabled
+              tabindex="-1"
+            />
+          </div>
+        </div>
+      </div>
 
-      <label>Склад</label>
-      <input type="text" formControlName="warehouse" />
+      <div class="nd-grid-2 nd-meta-grid">
+        <div class="nd-field">
+          <label class="nd-label" for="add-receipt-writeoff">Метод списания</label>
+          <div class="nd-input-wrap">
+            <input
+              id="add-receipt-writeoff"
+              type="text"
+              class="nd-input"
+              formControlName="writeoffMethod"
+              disabled
+              tabindex="-1"
+            />
+          </div>
+        </div>
+        <div class="nd-field">
+          <label class="nd-label" for="add-receipt-unit-price">Цена закупки за единицу</label>
+          <div class="nd-input-wrap">
+            <input
+              id="add-receipt-unit-price"
+              type="number"
+              class="nd-input"
+              formControlName="unitPrice"
+              disabled
+              tabindex="-1"
+            />
+          </div>
+        </div>
+      </div>
 
-      <label>Дата приёмки</label>
-      <input type="date" formControlName="receivedAt" />
+      <div class="nd-field">
+        <label class="nd-label" for="add-receipt-total-cost">Общая сумма</label>
+        <div class="nd-input-wrap">
+          <input
+            id="add-receipt-total-cost"
+            type="number"
+            class="nd-input"
+            formControlName="totalCost"
+            disabled
+            tabindex="-1"
+          />
+        </div>
+      </div>
 
-      <label>Номер документа</label>
-      <input type="text" formControlName="number" />
+      <div class="nd-field">
+        <label class="nd-label" for="add-receipt-batch">Номер партии</label>
+        <div class="nd-input-wrap">
+          <input
+            id="add-receipt-batch"
+            type="text"
+            class="nd-input"
+            formControlName="batchCode"
+            autocomplete="off"
+          />
+        </div>
+      </div>
 
-      <label>Количество</label>
-      <input type="number" formControlName="quantity" />
-
-      <label>Ед. изм.</label>
-      <select formControlName="unit">
-        <option *ngFor="let u of units" [value]="u">{{ u }}</option>
-      </select>
-
-      <label>Общая сумма</label>
-      <input formControlName="totalCost" disabled />
-
-      <label>Срок годности</label>
-      <input type="date" formControlName="expiryDate" />
-
-      <label>Номер партии</label>
-      <input type="text" formControlName="batchCode" />
-
-      <div class="popup-buttons">
-        <button type="button" class="cancel-btn" (click)="onClose()">Отмена</button>
-        <button type="submit" class="save-btn" [disabled]="form.invalid">Сохранить</button>
+      <div class="nd-foot">
+        <button
+          type="button"
+          class="nd-btn nd-btn-outline"
+          data-testid="cancel-button"
+          (click)="onClose()"
+        >
+          Отмена
+        </button>
+        <button type="submit" class="nd-btn nd-btn-primary" [disabled]="form.invalid">
+          Добавить
+        </button>
       </div>
     </form>
   </div>
