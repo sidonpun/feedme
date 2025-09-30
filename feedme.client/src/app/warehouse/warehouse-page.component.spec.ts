@@ -96,11 +96,16 @@ class InMemoryWarehouseService {
 
   readonly list = () => this.rowsSignal.asReadonly();
 
-  addRow(row: Omit<SupplyRow, 'id'>): void {
+  addRow(row: Omit<SupplyRow, 'id'>): SupplyRow {
+    let created: SupplyRow | null = null;
+
     this.rowsSignal.update((rows) => {
       const nextId = rows.reduce((max, current) => Math.max(max, current.id), 0) + 1;
-      return [...rows, { id: nextId, ...row }];
+      created = { id: nextId, ...row } satisfies SupplyRow;
+      return [created, ...rows];
     });
+
+    return created!;
   }
 
   updateRow(updatedRow: SupplyRow): void {
@@ -285,7 +290,7 @@ describe('WarehousePageComponent', () => {
     const rows = service.list()();
     expect(rows.length).toBe(initialLength + 1);
 
-    const created = rows[rows.length - 1];
+    const created = rows[0];
     expect(created.docNo).toBe('PO-000856');
     expect(created.qty).toBe(5);
     expect(created.warehouse).toBe('Главный склад');
@@ -294,7 +299,19 @@ describe('WarehousePageComponent', () => {
 
     fixture.detectChanges();
     const tableRows = getTableRows(fixture.nativeElement);
-    expect(tableRows[0].textContent).toContain('PO-000856');
+    const [tableRow] = tableRows;
+    const cells = Array.from(tableRow.querySelectorAll('td')).map((cell) =>
+      cell.textContent?.replace(/\s+/g, ' ').trim() ?? '',
+    );
+
+    expect(cells[1]).toBe('PO-000856');
+    expect(cells[2]).toContain('01.10.2025');
+    expect(cells[3]).toBe('Главный склад');
+    expect(cells[4]).toBe('Не назначен');
+    expect(cells[6]).toBe('Картофель');
+    expect(cells[7]).toContain('5');
+    expect(cells[7]).toContain('кг');
+    expect(cells[8]).toContain('12.10.2025');
   });
 
   it('shows row sum calculated from qty and price', () => {

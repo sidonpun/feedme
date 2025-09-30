@@ -350,29 +350,34 @@ export class WarehousePageComponent {
       this.selectedWarehouse() || this.warehouses()[0] || 'Главный склад',
     );
     const responsible = 'Не назначен';
-    const supplier = (product.supplierMain ?? '').trim() || 'Не указан';
-    const category = product.category?.trim() || 'Без категории';
-    const unit = product.unit?.trim() || 'шт';
+    const supplier = this.normalizeText(product.supplierMain, 'Не указан');
+    const category = this.normalizeText(product.category, 'Без категории');
+    const unit = this.normalizeUnit(product.unit);
     const price = Number(product.purchasePrice ?? 0);
     const status = this.mapExpiryStatus(result.arrivalDate, result.expiryDate);
+    const arrivalDate = result.arrivalDate.trim();
+    const expiryDate = result.expiryDate.trim();
+    const name = this.normalizeText(product.name, 'Без названия');
+    const sku = this.normalizeText(product.sku, '—');
 
     const payload: Omit<SupplyRow, 'id'> = {
       docNo,
-      arrivalDate: result.arrivalDate,
+      arrivalDate,
       warehouse,
       responsible,
-      sku: product.sku,
-      name: product.name,
+      sku,
+      name,
       category,
-      qty: result.quantity,
+      qty: Number(result.quantity),
       unit,
       price,
-      expiry: result.expiryDate,
+      expiry: expiryDate,
       supplier,
       status,
     };
 
-    this.warehouseService.addRow(payload);
+    const created = this.warehouseService.addRow(payload);
+    this.selectedWarehouse.set(created.warehouse);
     this.createDialogOpen.set(false);
   }
 
@@ -406,6 +411,15 @@ export class WarehousePageComponent {
       return 'warning';
     }
     return 'ok';
+  }
+
+  private normalizeText(value: string | null | undefined, fallback: string): string {
+    const normalized = value?.trim();
+    return normalized && normalized.length > 0 ? normalized : fallback;
+  }
+
+  private normalizeUnit(unit: string | null | undefined): string {
+    return this.normalizeText(unit, 'шт');
   }
 
   startEdit(row: SupplyRow): void {
