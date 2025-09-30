@@ -139,7 +139,7 @@ export class WarehousePageComponent {
     const from = this.dateFrom();
     const to = this.dateTo();
 
-    return this.rows().filter((row) => {
+    const filtered = this.rows().filter((row) => {
       const matchesStatus = statusFilter ? row.status === statusFilter : true;
       const matchesSupplier = supplierFilter ? row.supplier === supplierFilter : true;
       const matchesWarehouse = warehouseFilter ? row.warehouse === warehouseFilter : true;
@@ -154,6 +154,8 @@ export class WarehousePageComponent {
         matchesTo
       );
     });
+
+    return this.sortRowsByRecency(filtered);
   });
 
   readonly totalSum = computed(() =>
@@ -526,6 +528,61 @@ export class WarehousePageComponent {
 
   getRowById(id: number): SupplyRow | undefined {
     return this.rows().find((row) => row.id === id);
+  }
+
+  private sortRowsByRecency(rows: readonly SupplyRow[]): SupplyRow[] {
+    return [...rows].sort((left, right) => this.compareByRecency(left, right));
+  }
+
+  private compareByRecency(left: SupplyRow, right: SupplyRow): number {
+    const arrivalComparison = this.compareIsoDatesDesc(left.arrivalDate, right.arrivalDate);
+    if (arrivalComparison !== 0) {
+      return arrivalComparison;
+    }
+
+    return this.compareDocNumbersDesc(left.docNo, right.docNo);
+  }
+
+  private compareIsoDatesDesc(left: string, right: string): number {
+    const leftTimestamp = this.timestampFromIsoDate(left);
+    const rightTimestamp = this.timestampFromIsoDate(right);
+
+    if (leftTimestamp !== rightTimestamp) {
+      return rightTimestamp - leftTimestamp;
+    }
+
+    return 0;
+  }
+
+  private timestampFromIsoDate(value: string): number {
+    const [year, month, day] = value.split('-').map((part) => Number.parseInt(part, 10));
+
+    if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
+      return Number.NEGATIVE_INFINITY;
+    }
+
+    return new Date(year, month - 1, day).getTime();
+  }
+
+  private compareDocNumbersDesc(left: string, right: string): number {
+    const leftNumber = this.extractDocNumber(left);
+    const rightNumber = this.extractDocNumber(right);
+
+    if (leftNumber !== null && rightNumber !== null && leftNumber !== rightNumber) {
+      return rightNumber - leftNumber;
+    }
+
+    return right.localeCompare(left, 'ru');
+  }
+
+  private extractDocNumber(docNo: string): number | null {
+    const match = /(?<digits>\d+)$/.exec(docNo.trim());
+    if (!match?.groups?.['digits']) {
+      return null;
+    }
+
+    const parsed = Number.parseInt(match.groups['digits'], 10);
+    return Number.isNaN(parsed) ? null : parsed;
   }
 
   private populateEditForm(row: SupplyRow): void {

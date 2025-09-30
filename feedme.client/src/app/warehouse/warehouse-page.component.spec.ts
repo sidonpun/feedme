@@ -291,6 +291,10 @@ describe('WarehousePageComponent', () => {
     expect(created.warehouse).toBe('Главный склад');
     expect(created.status).toBe('ok');
     expect(component.createDialogOpen()).toBe(false);
+
+    fixture.detectChanges();
+    const tableRows = getTableRows(fixture.nativeElement);
+    expect(tableRows[0].textContent).toContain('PO-000856');
   });
 
   it('shows row sum calculated from qty and price', () => {
