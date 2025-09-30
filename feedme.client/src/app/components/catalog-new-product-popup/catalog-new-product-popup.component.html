@@ -38,16 +38,6 @@
             </select>
           </div>
           <div class="input-container">
-            <label for="new-product-weight">Вес/объем единицы</label>
-            <input
-              id="new-product-weight"
-              type="number"
-              formControlName="weight"
-              inputmode="decimal"
-              placeholder="Например, 2.5"
-            />
-          </div>
-          <div class="input-container">
             <label for="new-product-writeoff">Метод списания</label>
             <select id="new-product-writeoff" formControlName="writeoffMethod">
               <option value="FIFO">FIFO</option>
@@ -80,16 +70,6 @@
           <div class="input-container">
             <label for="new-product-supplier">Поставщик (основной)</label>
             <input id="new-product-supplier" formControlName="supplier" autocomplete="off" placeholder="Например, ООО Кури Дурс" />
-          </div>
-          <div class="input-container">
-            <label for="new-product-delivery-time">Срок поставки (дней)</label>
-            <input
-              id="new-product-delivery-time"
-              type="number"
-              formControlName="deliveryTime"
-              inputmode="numeric"
-              placeholder="Например, 2"
-            />
           </div>
           <div class="input-container">
             <label for="new-product-cost">Оценочная себестоимость</label>

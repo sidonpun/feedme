@@ -21,7 +21,6 @@
             <th>Код</th>
             <th>Категория</th>
             <th>Ед.изм.</th>
-            <th>Вес</th>
             <th>Метод списания</th>
             <th>Аллергены</th>
             <th>Флаги</th>
@@ -34,7 +33,6 @@
             <td>{{ item.code }}</td>
             <td>{{ item.category }}</td>
             <td>{{ item.unit }}</td>
-            <td>{{ item.weight }}</td>
             <td>{{ item.writeoffMethod }}</td>
             <td>{{ item.allergens }}</td>
             <td>
@@ -51,7 +49,6 @@
         <thead>
           <tr>
             <th>Поставщик</th>
-            <th>Срок поставки</th>
             <th>Оценочная себестоимость</th>
             <th>Ставка НДС</th>
             <th>Цена за ед.</th>
@@ -63,7 +60,6 @@
         <tbody>
           <tr *ngFor="let item of catalogData | filter:filter">
             <td>{{ item.supplier }}</td>
-            <td>{{ item.deliveryTime }}</td>
             <td>{{ item.costEstimate }}</td>
             <td>{{ item.taxRate }}</td>
             <td>{{ item.unitPrice }}</td>

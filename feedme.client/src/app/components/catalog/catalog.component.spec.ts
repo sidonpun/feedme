@@ -88,11 +88,11 @@ describe('CatalogComponent', () => {
     const rows = fixture.debugElement.queryAll(By.css('tbody tr'));
     expect(rows.length).toBe(mockItems.length);
 
-    const firstFlagCellText = rows[0].query(By.css('td:nth-child(9)'))!.nativeElement.textContent;
+    const firstFlagCellText = rows[0].query(By.css('td:nth-child(8)'))!.nativeElement.textContent;
     expect(firstFlagCellText).toContain('Требует фасовки: Да');
     expect(firstFlagCellText).toContain('Портится после вскрытия: Нет');
 
-    const secondFlagCellText = rows[1].query(By.css('td:nth-child(9)'))!.nativeElement.textContent;
+    const secondFlagCellText = rows[1].query(By.css('td:nth-child(8)'))!.nativeElement.textContent;
     expect(secondFlagCellText).toContain('Требует фасовки: Нет');
     expect(secondFlagCellText).toContain('Портится после вскрытия: Да');
   });

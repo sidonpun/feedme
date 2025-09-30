@@ -18,7 +18,7 @@
         <th
           *ngFor="let col of columns"
           class="text-sm font-medium"
-          [class.text-right]="col.key === 'weight' || col.key === 'deliveryTime' || col.key === 'costEstimate' || col.key === 'taxRate' || col.key === 'unitPrice'"
+          [class.text-right]="col.key === 'costEstimate' || col.key === 'taxRate' || col.key === 'unitPrice'"
           [class.font-mono]="col.key === 'code' || col.key === 'tnved'"
           [class.text-xs]="col.key === 'code' || col.key === 'tnved'"
           [attr.aria-sort]="getAriaSort(col)"
@@ -42,7 +42,7 @@
       <tr *ngFor="let item of paginatedData" class="h-11 align-middle hover:bg-muted/40 odd:bg-muted/10">
         <td
           *ngFor="let col of columns"
-          [class.text-right]="col.key === 'weight' || col.key === 'deliveryTime' || col.key === 'costEstimate' || col.key === 'taxRate' || col.key === 'unitPrice'"
+          [class.text-right]="col.key === 'costEstimate' || col.key === 'taxRate' || col.key === 'unitPrice'"
           [class.font-mono]="col.key === 'code' || col.key === 'tnved'"
           [class.text-xs]="col.key === 'code' || col.key === 'tnved'"
         >
