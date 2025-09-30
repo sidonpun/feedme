@@ -356,11 +356,6 @@
   font-weight: 500;
 }
 
-.warehouse-page__bulk-hint {
-  font-size: 0.875rem;
-  color: #94a3b8;
-}
-
 .warehouse-page__table-card {
   border: 1px solid #e2e8f0;
   border-radius: 12px;

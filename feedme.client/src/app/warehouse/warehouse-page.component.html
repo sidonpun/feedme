@@ -156,7 +156,7 @@
           </form>
         </div>
 
-        <section class="warehouse-page__bulk" *ngIf="hasSelection(); else bulkHint" aria-live="polite">
+        <section class="warehouse-page__bulk" *ngIf="hasSelection()" aria-live="polite">
           <span class="warehouse-page__bulk-count">Выбрано: {{ checkedIds().length }}</span>
           <div class="warehouse-page__bulk-actions">
             <button type="button" class="btn btn-outline btn-sm">Списать</button>
@@ -165,9 +165,6 @@
             <button type="button" class="btn btn-danger btn-sm" (click)="openDeleteDialogForSelection()">Удалить</button>
           </div>
         </section>
-        <ng-template #bulkHint>
-          <p class="warehouse-page__bulk-hint">Выберите строки для массовых действий</p>
-        </ng-template>
 
         <section class="warehouse-page__table-card">
           <header class="warehouse-page__table-header">Последние поставки</header>
