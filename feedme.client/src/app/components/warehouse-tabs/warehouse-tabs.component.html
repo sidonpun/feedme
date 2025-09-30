@@ -1,7 +1,7 @@
 <div class="container warehouse-tabs">
   <div *ngFor="let warehouse of warehouses"
        class="item"
-       [class.selected]="selectedTab === warehouse"
+       [class.selected]="selectedWarehouse === warehouse"
        (click)="selectTab(warehouse)">
     <img src="assets/sklad.svg" alt="{{ warehouse }}">
     <span>{{ warehouse }}</span>

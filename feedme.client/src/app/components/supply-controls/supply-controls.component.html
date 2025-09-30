@@ -15,7 +15,9 @@
     <span>Добавить товар</span>
   </button>
 
-  <div class="item catalog-button" (click)="handleGoToCatalog()">
+  <div class="item catalog-button"
+       [class.selected]="selectedSupply === 'catalog'"
+       (click)="handleGoToCatalog()">
     <img src="assets/catalog.svg" alt="Каталог" class="item-icon">
     <span>Каталог</span>
   </div>

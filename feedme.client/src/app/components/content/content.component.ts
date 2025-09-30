@@ -8,6 +8,8 @@ import { InfoCardsWrapperComponent } from '../info-cards-wrapper/info-cards-wrap
 import { CatalogComponent } from '../catalog/catalog.component';
 import { WarehouseTableComponent } from '../warehouse-table/warehouse-table.component';
 import { PopupComponent } from '../popup/popup.component';
+import { SupplyItem } from '../../models/supply-item.model';
+import { SupplyView, WarehouseSuppliesService } from '../../services/warehouse-supplies.service';
 
 @Component({
   selector: 'app-content',
@@ -26,28 +28,35 @@ import { PopupComponent } from '../popup/popup.component';
   styleUrls: ['./content.component.css']
 })
 export class ContentComponent implements OnInit {
-  selectedTab: string = 'Главный склад';
-  selectedSupply: string = 'supplies';
-  tableData: any[] = [];
-  selectedItem: any = null;
+  selectedWarehouse: string = 'Главный склад';
+  selectedSupply: SupplyView = 'supplies';
+  tableData: SupplyItem[] = [];
+  selectedItem: SupplyItem | null = null;
   showPopup: boolean = false;
 
-  ngOnInit() {
-    const initialData = localStorage.getItem(`warehouseData_${this.selectedTab}`);
-    this.tableData = initialData ? JSON.parse(initialData) : [];
-  }
+  constructor(private readonly warehouseSuppliesService: WarehouseSuppliesService) {}
 
-  setSelectedTab(tab: string) {
-    this.selectedTab = tab;
+  ngOnInit() {
     this.loadTableData();
   }
 
-  loadTableData() {
-    const data = localStorage.getItem(`warehouseData_${this.selectedTab}`);
-    this.tableData = data ? JSON.parse(data) : [];
+  setSelectedWarehouse(warehouse: string) {
+    this.selectedWarehouse = warehouse;
+    this.loadTableData();
   }
 
-  handleSettingsClick(item: any) {
+  onSupplyChange(view: SupplyView) {
+    this.selectedSupply = view;
+    if (view !== 'catalog') {
+      this.loadTableData();
+    }
+  }
+
+  private loadTableData() {
+    this.tableData = this.warehouseSuppliesService.loadSupplies(this.selectedWarehouse);
+  }
+
+  handleSettingsClick(item: SupplyItem) {
     this.selectedItem = item;
   }
 
@@ -60,20 +69,15 @@ export class ContentComponent implements OnInit {
   }
 
   goToCatalog() {
-    this.selectedTab = 'Каталог';
+    this.onSupplyChange('catalog');
   }
 
   closeInfoCards() {
     this.selectedItem = null;
   }
 
-  onAddItem(item: any) {
-    const updatedData = [...this.tableData, item];
-    this.tableData = updatedData;
-    localStorage.setItem(
-      `warehouseData_${this.selectedTab}`,
-      JSON.stringify(updatedData)
-    );
+  onAddItem(item: SupplyItem) {
+    this.tableData = this.warehouseSuppliesService.addSupply(this.selectedWarehouse, item);
     this.closePopup();
   }
 }

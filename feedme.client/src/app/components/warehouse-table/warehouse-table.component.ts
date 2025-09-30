@@ -1,6 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { SupplyItem } from '../../models/supply-item.model';
+
 @Component({
   selector: 'app-warehouse-table',
   standalone: true,
@@ -9,12 +11,12 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./warehouse-table.component.css']
 })
 export class WarehouseTableComponent {
-  @Input() data: any[] = [];
+  @Input() data: SupplyItem[] = [];
 
-  @Output() onSettingsClick = new EventEmitter<any>();
-  @Output() onEditStockClick = new EventEmitter<{ index: number, stock: number }>();
+  @Output() onSettingsClick = new EventEmitter<SupplyItem>();
+  @Output() onEditStockClick = new EventEmitter<{ index: number; stock: number }>();
 
-  handleSettingsClick(item: any, event: MouseEvent) {
+  handleSettingsClick(item: SupplyItem, event: MouseEvent) {
     event.stopPropagation();
     this.onSettingsClick.emit(item);
   }
