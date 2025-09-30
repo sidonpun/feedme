@@ -23,139 +23,106 @@
 
   <main class="warehouse-page__content">
     <section class="warehouse-page__overview" aria-label="Обзор склада">
-      <div class="warehouse-page__header">
-        <div class="warehouse-page__header-context">
-          <h1 class="warehouse-page__title">Поставки</h1>
-          <p class="warehouse-page__subtitle">Контролируйте движение товаров и запасы</p>
+      <header class="header-crumbs">
+        <nav class="breadcrumbs" aria-label="Хлебные крошки">
+          <span>Поставки</span>
+          <span class="sep" aria-hidden="true">/</span>
+          <span>{{ selectedWarehouse() || 'Все склады' }}</span>
+        </nav>
+        <div class="warehouse">
+          <label class="sr-only" for="warehouse-select">Выбор склада</label>
+          <select
+            #activeWarehouse
+            id="warehouse-select"
+            class="select"
+            [value]="selectedWarehouse()"
+            (change)="selectWarehouse(activeWarehouse.value)"
+            aria-label="Выбор активного склада"
+          >
+            <option *ngFor="let warehouseName of warehouses()" [value]="warehouseName">
+              {{ warehouseName }}
+            </option>
+          </select>
+          <button type="button" class="add" (click)="openCreateDialog()">+ Добавить поставку</button>
         </div>
-        <label class="warehouse-page__warehouse-picker">
-          <span class="warehouse-page__warehouse-picker-label">Склад</span>
-          <div class="warehouse-page__warehouse-picker-control">
-            <select
-              #activeWarehouse
-              class="warehouse-page__warehouse-select"
-              [value]="selectedWarehouse()"
-              (change)="selectWarehouse(activeWarehouse.value)"
-              aria-label="Выбор активного склада"
-            >
-              <option *ngFor="let warehouseName of warehouses()" [value]="warehouseName">
-                {{ warehouseName }}
-              </option>
-            </select>
-          </div>
-        </label>
-      </div>
+      </header>
 
-      <section
-        *ngIf="overviewMetrics() as snapshot"
-        class="warehouse-page__snapshot"
-        aria-label="Ключевые показатели склада"
-      >
-        <article class="warehouse-page__metric-card" aria-live="polite">
-          <p class="warehouse-page__metric-label">Поставок за 7 дней</p>
-          <p class="warehouse-page__metric-value">{{ snapshot.suppliesLastWeek }}</p>
+      <section *ngIf="overviewMetrics() as snapshot" class="kpi" aria-label="Ключевые показатели склада">
+        <article class="card" aria-live="polite">
+          <p class="title">Поставок за 7 дней</p>
+          <p class="value">{{ snapshot.suppliesLastWeek }}</p>
         </article>
 
-        <article class="warehouse-page__metric-card" aria-live="polite">
-          <p class="warehouse-page__metric-label">Сумма закупок / 7 дн.</p>
-          <p class="warehouse-page__metric-value warehouse-page__metric-value--currency">
-            {{ formatCurrency(snapshot.purchaseAmountLastWeek) }}
-          </p>
+        <article class="card" aria-live="polite">
+          <p class="title">Сумма закупок / 7 дн.</p>
+          <p class="value">{{ formatCurrency(snapshot.purchaseAmountLastWeek) }}</p>
         </article>
 
-        <article class="warehouse-page__metric-card" aria-live="polite">
-          <p class="warehouse-page__metric-label">Позиций на складе</p>
-          <p class="warehouse-page__metric-value">{{ snapshot.positions }}</p>
+        <article class="card" aria-live="polite">
+          <p class="title">Позиций на складе</p>
+          <p class="value">{{ snapshot.positions }}</p>
         </article>
 
-        <article class="warehouse-page__metric-card warehouse-page__metric-card--expired" aria-live="polite">
-          <p class="warehouse-page__metric-label">Просрочено</p>
-          <p class="warehouse-page__metric-value">
-            <span class="warehouse-page__metric-badge">{{ snapshot.expired }}</span>
-          </p>
+        <article class="card" aria-live="polite">
+          <p class="title">Просрочено</p>
+          <p class="value" [ngClass]="{ neg: snapshot.expired > 0 }">{{ snapshot.expired }}</p>
         </article>
       </section>
-
-      <app-supply-controls
-        [activeTab]="activeTab()"
-        (activeTabChange)="selectTab($event)"
-
-      ></app-supply-controls>
     </section>
 
-    <section *ngIf="activeTab() === 'supplies'" class="warehouse-page__tab-panel">
-        <div class="card warehouse-page__filters-card">
-          <form
-            class="warehouse-page__filters card__content p-4 flex flex-wrap items-center gap-3"
-            (submit)="$event.preventDefault()"
-          >
-            <div class="warehouse-page__filters-control warehouse-page__filters-control--select">
-              <label class="warehouse-page__filters-field">
-                <span class="warehouse-page__filters-label">Статус</span>
-                <select
-                  #statusSelect
-                  class="select"
-                  [value]="status()"
-                  (change)="updateStatus(statusSelect.value)"
-                  aria-label="Фильтр по статусу"
-                >
-                  <option value="">Все статусы</option>
-                  <option *ngFor="let statusOption of statuses" [value]="statusOption">
-                    {{ statusOption | statusBadgeLabel }}
-                  </option>
-                </select>
-              </label>
-            </div>
-            <div class="warehouse-page__filters-control warehouse-page__filters-control--select">
-              <label class="warehouse-page__filters-field">
-                <span class="warehouse-page__filters-label">Поставщик</span>
-                <select
-                  #supplierSelect
-                  class="select"
-                  [value]="supplier()"
-                  (change)="updateSupplier(supplierSelect.value)"
-                  aria-label="Фильтр по поставщику"
-                >
-                  <option value="">Все поставщики</option>
-                  <option *ngFor="let supplierName of suppliers()" [value]="supplierName">
-                    {{ supplierName }}
-                  </option>
-                </select>
-              </label>
-            </div>
-            <div class="warehouse-page__filters-control warehouse-page__filters-control--date w-[160px]">
-              <label class="warehouse-page__filters-field">
-                <span class="warehouse-page__filters-label">Приход от</span>
-                <input
-                  #dateFromInput
-                  class="input"
-                  type="date"
-                  aria-label="Дата прихода от"
-                  [value]="dateFrom()"
-                  (change)="updateDateFrom(dateFromInput.value)"
-                />
-              </label>
-            </div>
-            <div class="warehouse-page__filters-control warehouse-page__filters-control--date w-[160px]">
-              <label class="warehouse-page__filters-field">
-                <span class="warehouse-page__filters-label">Приход до</span>
-                <input
-                  #dateToInput
-                  class="input"
-                  type="date"
-                  aria-label="Дата прихода до"
-                  [value]="dateTo()"
-                  (change)="updateDateTo(dateToInput.value)"
-                />
-              </label>
-            </div>
-            <button type="button" class="btn btn-outline" (click)="clearFilters()">Сброс</button>
-            <button type="button" class="btn btn-brand-outline">Импорт</button>
-            <button type="button" class="btn btn-secondary">Экспорт</button>
-            <button type="button" class="btn ml-auto" (click)="openCreateDialog()">+ Новая поставка</button>
-          </form>
-        </div>
+    <section class="toolbar" aria-label="Фильтры и действия по поставкам">
+      <form class="filters" (submit)="$event.preventDefault()">
+        <label class="sr-only" for="supply-search">Поиск по поставкам</label>
+        <input
+          #searchInput
+          id="supply-search"
+          class="input"
+          type="search"
+          placeholder="Поиск по документу, SKU или названию"
+          [value]="search()"
+          (input)="updateSearch(searchInput.value)"
+          aria-label="Поиск по документу, SKU или названию"
+        />
 
+        <label class="sr-only" for="arrival-from">Дата прихода от</label>
+        <input
+          #dateFromInput
+          id="arrival-from"
+          class="picker"
+          type="date"
+          aria-label="Дата прихода от"
+          [value]="dateFrom()"
+          (change)="updateDateFrom(dateFromInput.value)"
+        />
+
+        <label class="sr-only" for="arrival-to">Дата прихода до</label>
+        <input
+          #dateToInput
+          id="arrival-to"
+          class="picker"
+          type="date"
+          aria-label="Дата прихода до"
+          [value]="dateTo()"
+          (change)="updateDateTo(dateToInput.value)"
+        />
+
+        <button type="button" class="btn btn-outline" (click)="clearFilters()">Сброс</button>
+      </form>
+
+      <div class="actions">
+        <button type="button" class="btn btn-outline">Импорт</button>
+        <button type="button" class="btn btn-blue">Экспорт</button>
+        <button type="button" class="btn btn-orange" (click)="openCreateDialog()">+ Новая поставка</button>
+      </div>
+    </section>
+
+    <app-supply-controls
+      class="warehouse-page__tabs"
+      [activeTab]="activeTab()"
+      (activeTabChange)="selectTab($event)"
+    ></app-supply-controls>
+
+    <section *ngIf="activeTab() === 'supplies'" class="warehouse-page__tab-panel">
         <section class="warehouse-page__bulk" *ngIf="hasSelection()" aria-live="polite">
           <span class="warehouse-page__bulk-count">Выбрано: {{ checkedIds().length }}</span>
           <div class="warehouse-page__bulk-actions">
