@@ -15,7 +15,7 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { SUPPLY_STATUSES, SupplyRow, SupplyStatus, isSupplyStatus } from './models';
+import { SupplyRow, SupplyStatus } from './models';
 import { WarehouseService } from './warehouse.service';
 import { EmptyStateComponent } from './ui/empty-state.component';
 import { FieldComponent } from './ui/field.component';
@@ -72,12 +72,10 @@ export class WarehousePageComponent {
 
   readonly activeTab = signal<'supplies' | 'stock' | 'catalog' | 'inventory'>('supplies');
 
-  readonly status = signal<SupplyStatus | ''>('');
-  readonly statuses = SUPPLY_STATUSES;
-  readonly supplier = signal('');
   readonly selectedWarehouse = signal('');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
+  readonly search = signal('');
   readonly checkedIds = signal<number[]>([]);
   readonly drawerRowId = signal<number | null>(null);
   readonly drawerOpen = signal(false);
@@ -110,12 +108,6 @@ export class WarehousePageComponent {
   ];
 
 
-  readonly suppliers = computed(() =>
-    Array.from(new Set(this.rows().map((row) => row.supplier))).sort((a, b) =>
-      a.localeCompare(b),
-    ),
-  );
-
   readonly warehouses = computed(() =>
     Array.from(new Set(this.rows().map((row) => row.warehouse))).sort((a, b) => {
       if (a === b) {
@@ -133,25 +125,26 @@ export class WarehousePageComponent {
   );
 
   readonly filteredRows = computed(() => {
-    const statusFilter = this.status();
-    const supplierFilter = this.supplier();
     const warehouseFilter = this.selectedWarehouse();
     const from = this.dateFrom();
     const to = this.dateTo();
+    const query = this.search().trim().toLowerCase();
 
     const filtered = this.rows().filter((row) => {
-      const matchesStatus = statusFilter ? row.status === statusFilter : true;
-      const matchesSupplier = supplierFilter ? row.supplier === supplierFilter : true;
       const matchesWarehouse = warehouseFilter ? row.warehouse === warehouseFilter : true;
       const matchesFrom = from ? row.arrivalDate >= from : true;
       const matchesTo = to ? row.arrivalDate <= to : true;
+      const matchesQuery = query
+        ? [row.docNo, row.sku, row.name, row.responsible]
+            .map((value) => value.toLowerCase())
+            .some((value) => value.includes(query))
+        : true;
 
       return (
-        matchesStatus &&
-        matchesSupplier &&
         matchesWarehouse &&
         matchesFrom &&
-        matchesTo
+        matchesTo &&
+        matchesQuery
       );
     });
 
@@ -258,20 +251,12 @@ export class WarehousePageComponent {
     }
   }
 
-  updateStatus(value: string): void {
-    if (isSupplyStatus(value)) {
-      this.status.set(value);
-      return;
-    }
-    this.status.set('');
-  }
-
-  updateSupplier(value: string): void {
-    this.supplier.set(value);
-  }
-
   selectWarehouse(value: string): void {
     this.selectedWarehouse.set(value);
+  }
+
+  updateSearch(value: string): void {
+    this.search.set(value);
   }
 
   updateDateFrom(value: string): void {
@@ -283,10 +268,9 @@ export class WarehousePageComponent {
   }
 
   clearFilters(): void {
-    this.status.set('');
-    this.supplier.set('');
     this.dateFrom.set('');
     this.dateTo.set('');
+    this.search.set('');
   }
 
   toggleRowSelection(id: number, checked: boolean): void {
