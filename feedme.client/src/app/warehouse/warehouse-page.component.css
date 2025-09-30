@@ -141,22 +141,6 @@
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
-.warehouse .add {
-  margin-left: 6px;
-  color: #c2410c;
-  font-weight: 700;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9375rem;
-}
-
-.warehouse .add:hover,
-.warehouse .add:focus-visible {
-  text-decoration: underline;
-  outline: none;
-}
-
 .kpi {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -301,25 +285,31 @@
 }
 
 .btn-blue {
-  background: var(--blue);
+  background: #1e3a8a;
   color: #fff;
-  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.22);
+  box-shadow: none;
+  transform: none;
 }
 
 .btn-blue:hover:not(:disabled),
 .btn-blue:focus-visible:not(:disabled) {
   background: #1e3a8a;
+  box-shadow: none;
+  transform: none;
 }
 
 .btn-orange {
-  background: var(--orange);
+  background: #ea580c;
   color: #fff;
-  box-shadow: 0 10px 20px rgba(249, 115, 22, 0.25);
+  box-shadow: none;
+  transform: none;
 }
 
 .btn-orange:hover:not(:disabled),
 .btn-orange:focus-visible:not(:disabled) {
   background: #ea580c;
+  box-shadow: none;
+  transform: none;
 }
 
 .btn-danger {
