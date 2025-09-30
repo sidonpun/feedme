@@ -89,7 +89,7 @@ describe('AddReceiptPopupComponent', () => {
   it('should emit close on onClose', () => {
     runInContext(() => {
       spyOn(component.close, 'emit');
-      const btn = fixture.debugElement.query(By.css('.cancel-btn'));
+      const btn = fixture.debugElement.query(By.css('[data-testid="cancel-button"]'));
       btn.nativeElement.click();
       expect(component.close.emit).toHaveBeenCalled();
     });
