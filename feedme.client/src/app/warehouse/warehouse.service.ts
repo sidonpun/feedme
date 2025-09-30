@@ -111,11 +111,16 @@ export class WarehouseService {
     return this.computeMetrics(rows.filter((row) => row.warehouse === warehouse));
   }
 
-  addRow(row: Omit<SupplyRow, 'id'>): void {
+  addRow(row: Omit<SupplyRow, 'id'>): SupplyRow {
+    let created: SupplyRow | null = null;
+
     this.rowsSignal.update((rows) => {
       const nextId = rows.reduce((max, current) => Math.max(max, current.id), 0) + 1;
-      return [...rows, { id: nextId, ...row }];
+      created = { id: nextId, ...row } satisfies SupplyRow;
+      return [created, ...rows];
     });
+
+    return created!;
   }
 
   updateRow(updatedRow: SupplyRow): void {
