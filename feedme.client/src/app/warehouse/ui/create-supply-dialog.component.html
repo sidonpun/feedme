@@ -12,16 +12,19 @@
   </header>
 
   <form class="create-supply-dialog__form" [formGroup]="form" (ngSubmit)="submit()">
-    <div class="create-supply-dialog__field">
+    <div class="create-supply-dialog__field create-supply-dialog__field--with-icon">
       <label class="create-supply-dialog__label" for="create-supply-product">Товар</label>
-      <input
-        id="create-supply-product"
-        type="search"
-        class="create-supply-dialog__input"
-        formControlName="productQuery"
-        autocomplete="off"
-        placeholder="Начните вводить название или SKU"
-      />
+      <div class="create-supply-dialog__control">
+        <input
+          id="create-supply-product"
+          type="search"
+          class="create-supply-dialog__input"
+          formControlName="productQuery"
+          autocomplete="off"
+          placeholder="Начните вводить название или SKU"
+        />
+        <span aria-hidden="true" class="create-supply-dialog__icon create-supply-dialog__icon--search"></span>
+      </div>
       <ul
         class="create-supply-dialog__suggestions"
         *ngIf="suggestions().length > 0"
@@ -56,29 +59,37 @@
     <div class="create-supply-dialog__grid">
       <label class="create-supply-dialog__field">
         <span class="create-supply-dialog__label">Количество</span>
-        <input
-          type="number"
-          min="0"
-          step="0.001"
-          formControlName="quantity"
-          class="create-supply-dialog__input"
-        />
+        <div class="create-supply-dialog__control">
+          <input
+            type="number"
+            min="0"
+            step="0.001"
+            formControlName="quantity"
+            class="create-supply-dialog__input"
+          />
+        </div>
         <p class="create-supply-dialog__error" *ngIf="form.controls.quantity.invalid && form.controls.quantity.touched">
           Укажите количество больше нуля.
         </p>
       </label>
 
-      <label class="create-supply-dialog__field">
+      <label class="create-supply-dialog__field create-supply-dialog__field--with-icon">
         <span class="create-supply-dialog__label">Дата прихода</span>
-        <input type="date" formControlName="arrivalDate" class="create-supply-dialog__input" />
+        <div class="create-supply-dialog__control">
+          <input type="date" formControlName="arrivalDate" class="create-supply-dialog__input" />
+          <span aria-hidden="true" class="create-supply-dialog__icon create-supply-dialog__icon--calendar"></span>
+        </div>
         <p class="create-supply-dialog__error" *ngIf="form.controls.arrivalDate.invalid && form.controls.arrivalDate.touched">
           Укажите дату прихода.
         </p>
       </label>
 
-      <label class="create-supply-dialog__field">
+      <label class="create-supply-dialog__field create-supply-dialog__field--with-icon create-supply-dialog__field--full">
         <span class="create-supply-dialog__label">Срок годности</span>
-        <input type="date" formControlName="expiryDate" class="create-supply-dialog__input" />
+        <div class="create-supply-dialog__control">
+          <input type="date" formControlName="expiryDate" class="create-supply-dialog__input" />
+          <span aria-hidden="true" class="create-supply-dialog__icon create-supply-dialog__icon--calendar"></span>
+        </div>
         <p class="create-supply-dialog__error" *ngIf="form.controls.expiryDate.errors?.['dateOrder']">
           Срок годности не может быть раньше даты прихода.
         </p>
