@@ -95,8 +95,14 @@ export class CatalogComponent implements OnInit {
 
   /** Добавляет новый товар в каталог */
   addProduct(item: NewProductFormValues): void {
+    const payload: Omit<CatalogItem, 'id'> = {
+      ...item,
+      weight: 0,
+      deliveryTime: 0,
+    };
+
     this.catalogService
-      .create(item)
+      .create(payload)
       .pipe(
         take(1),
         tap(created => {

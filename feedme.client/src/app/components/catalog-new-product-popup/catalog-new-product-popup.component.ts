@@ -17,16 +17,14 @@ export interface NewProductFormValues {
   type: string;
   code: string;
   category: string;
- 
+
   unit: string;
-  weight: number;
   writeoffMethod: string;
   allergens: string;
   packagingRequired: boolean;
   spoilsAfterOpening: boolean;
 
   supplier: string;
-  deliveryTime: number;
   costEstimate: number;
   taxRate: string;
   unitPrice: number;
@@ -74,14 +72,12 @@ export class CatalogNewProductPopupComponent {
       code: this.fb.nonNullable.control('', Validators.required),
       category: this.fb.nonNullable.control('', Validators.required),
       unit: this.fb.nonNullable.control(this.units[0], Validators.required),
-      weight: this.fb.nonNullable.control(0, Validators.required),
       writeoffMethod: this.fb.nonNullable.control('FIFO'),
       allergens: this.fb.nonNullable.control(''),
       packagingRequired: this.fb.nonNullable.control(false),
       spoilsAfterOpening: this.fb.nonNullable.control(false),
 
       supplier: this.fb.nonNullable.control(''),
-      deliveryTime: this.fb.nonNullable.control(0),
       costEstimate: this.fb.nonNullable.control(0),
       taxRate: this.fb.nonNullable.control(this.taxRates[0], Validators.required),
       unitPrice: this.fb.nonNullable.control(0, Validators.required),

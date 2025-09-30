@@ -65,7 +65,6 @@ export class CatalogTableComponent implements OnChanges {
     { label: 'Номенклатурный код', key: 'code' },
     { label: 'Категория', key: 'category' },
     { label: 'Единица измерения (базовая)', key: 'unit' },
-    { label: 'Вес/объём единицы', key: 'weight' },
     { label: 'Метод списания', key: 'writeoffMethod' },
     { label: 'Аллергены', key: 'allergens' },
     { label: 'Требует фасовки', key: 'packagingRequired' },
@@ -75,7 +74,6 @@ export class CatalogTableComponent implements OnChanges {
   /** Колонки для режима "Закупка и логистика" */
   private readonly logisticsColumns: CatalogColumn[] = [
     { label: 'Поставщик (основной)', key: 'supplier' },
-    { label: 'Срок поставки (дней)', key: 'deliveryTime' },
     { label: 'Оценочная себестоимость', key: 'costEstimate' },
     { label: 'Ставка НДС', key: 'taxRate' },
     { label: 'Цена за единицу', key: 'unitPrice' },
