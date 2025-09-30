@@ -1,6 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { SupplyView } from '../../services/warehouse-supplies.service';
+
 @Component({
   selector: 'app-supply-controls',
   standalone: true,
@@ -9,13 +11,13 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./supply-controls.component.css']
 })
 export class SupplyControlsComponent {
-  @Input() selectedSupply: string = 'supplies';
-  @Output() selectedSupplyChange = new EventEmitter<string>();
+  @Input() selectedSupply: SupplyView = 'supplies';
+  @Output() selectedSupplyChange = new EventEmitter<SupplyView>();
 
   @Output() openPopup = new EventEmitter<void>();
   @Output() goToCatalog = new EventEmitter<void>();
 
-  setSupplyType(type: string) {
+  setSupplyType(type: SupplyView) {
     this.selectedSupply = type;
     this.selectedSupplyChange.emit(this.selectedSupply);
   }
@@ -25,6 +27,8 @@ export class SupplyControlsComponent {
   }
 
   handleGoToCatalog() {
+    this.selectedSupply = 'catalog';
+    this.selectedSupplyChange.emit(this.selectedSupply);
     this.goToCatalog.emit();
   }
 }

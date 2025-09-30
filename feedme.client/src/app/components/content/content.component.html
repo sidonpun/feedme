@@ -1,9 +1,10 @@
 <div class="content">
-  <app-warehouse-tabs [selectedTab]="selectedTab"
-                      (selectedTabChange)="setSelectedTab($event)">
+  <app-warehouse-tabs [selectedWarehouse]="selectedWarehouse"
+                      (selectedWarehouseChange)="setSelectedWarehouse($event)">
   </app-warehouse-tabs>
 
-  <app-supply-controls [(selectedSupply)]="selectedSupply"
+  <app-supply-controls [selectedSupply]="selectedSupply"
+                       (selectedSupplyChange)="onSupplyChange($event)"
                        (openPopup)="openPopup()"
                        (goToCatalog)="goToCatalog()">
   </app-supply-controls>

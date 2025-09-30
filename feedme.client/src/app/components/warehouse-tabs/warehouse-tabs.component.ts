@@ -14,8 +14,8 @@ export class WarehouseTabsComponent implements OnInit {
   showNewWarehousePopup = false;
   newWarehouseName = '';
 
-  @Input() selectedTab: string = 'Главный склад';
-  @Output() selectedTabChange = new EventEmitter<string>();
+  @Input() selectedWarehouse: string = 'Главный склад';
+  @Output() selectedWarehouseChange = new EventEmitter<string>();
 
   ngOnInit() {
     const savedWarehouses = localStorage.getItem('warehouses');
@@ -23,8 +23,8 @@ export class WarehouseTabsComponent implements OnInit {
   }
 
   selectTab(tab: string) {
-    this.selectedTab = tab;
-    this.selectedTabChange.emit(this.selectedTab);
+    this.selectedWarehouse = tab;
+    this.selectedWarehouseChange.emit(this.selectedWarehouse);
   }
 
   handleAddWarehouse() {
@@ -60,7 +60,7 @@ export class WarehouseTabsComponent implements OnInit {
       localStorage.setItem('warehouses', JSON.stringify(this.warehouses));
       localStorage.removeItem(`warehouseData_${name}`);
 
-      if (this.selectedTab === name) {
+      if (this.selectedWarehouse === name) {
         this.selectTab('Главный склад');
       }
     }

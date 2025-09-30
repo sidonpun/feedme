@@ -2,6 +2,7 @@ import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CatalogItem } from '../../models/catalog-item.model';
+import { SupplyItem } from '../../models/supply-item.model';
 import { normalizeCatalogItem, sanitizeNumericValue } from '../../utils/catalog.utils';
 
 @Component({
@@ -13,7 +14,7 @@ import { normalizeCatalogItem, sanitizeNumericValue } from '../../utils/catalog.
 })
 export class PopupComponent implements OnInit {
   @Output() onClose = new EventEmitter<void>();
-  @Output() onAddItem = new EventEmitter<any>();
+  @Output() onAddItem = new EventEmitter<SupplyItem>();
 
   name = '';
   category = '';
@@ -80,7 +81,7 @@ export class PopupComponent implements OnInit {
 
     const id = Date.now().toString();
 
-    const newItem = {
+    const newItem: SupplyItem = {
       id,
       name: this.name,
       category: this.category,
