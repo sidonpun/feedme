@@ -1,0 +1,96 @@
+<section
+  class="create-supply-dialog"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="create-supply-title"
+>
+  <header class="create-supply-dialog__header">
+    <h2 id="create-supply-title">Новая поставка</h2>
+    <p class="create-supply-dialog__subtitle">
+      Выберите товар из каталога, укажите количество и даты поставки.
+    </p>
+  </header>
+
+  <form class="create-supply-dialog__form" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="create-supply-dialog__field">
+      <label class="create-supply-dialog__label" for="create-supply-product">Товар</label>
+      <input
+        id="create-supply-product"
+        type="search"
+        class="create-supply-dialog__input"
+        formControlName="productQuery"
+        autocomplete="off"
+        placeholder="Начните вводить название или SKU"
+      />
+      <ul
+        class="create-supply-dialog__suggestions"
+        *ngIf="suggestions().length > 0"
+      >
+        <li *ngFor="let product of suggestions(); trackBy: trackByProduct">
+          <button type="button" (click)="selectProduct(product)">
+            <span class="create-supply-dialog__suggestion-name">{{ product.name }}</span>
+            <span class="create-supply-dialog__suggestion-meta">SKU {{ product.sku }}</span>
+          </button>
+        </li>
+      </ul>
+      <p class="create-supply-dialog__error" *ngIf="form.controls.productId.invalid && form.controls.productId.touched">
+        Выберите товар из списка.
+      </p>
+    </div>
+
+    <div class="create-supply-dialog__product" *ngIf="selectedProduct() as product">
+      <div class="create-supply-dialog__product-row">
+        <span class="create-supply-dialog__product-label">Поставщик</span>
+        <span class="create-supply-dialog__product-value">{{ product.supplierMain || 'Не указан' }}</span>
+      </div>
+      <div class="create-supply-dialog__product-row">
+        <span class="create-supply-dialog__product-label">Категория</span>
+        <span class="create-supply-dialog__product-value">{{ product.category }}</span>
+      </div>
+      <div class="create-supply-dialog__product-row">
+        <span class="create-supply-dialog__product-label">Ед. изм.</span>
+        <span class="create-supply-dialog__product-value">{{ product.unit }}</span>
+      </div>
+    </div>
+
+    <div class="create-supply-dialog__grid">
+      <label class="create-supply-dialog__field">
+        <span class="create-supply-dialog__label">Количество</span>
+        <input
+          type="number"
+          min="0"
+          step="0.001"
+          formControlName="quantity"
+          class="create-supply-dialog__input"
+        />
+        <p class="create-supply-dialog__error" *ngIf="form.controls.quantity.invalid && form.controls.quantity.touched">
+          Укажите количество больше нуля.
+        </p>
+      </label>
+
+      <label class="create-supply-dialog__field">
+        <span class="create-supply-dialog__label">Дата прихода</span>
+        <input type="date" formControlName="arrivalDate" class="create-supply-dialog__input" />
+        <p class="create-supply-dialog__error" *ngIf="form.controls.arrivalDate.invalid && form.controls.arrivalDate.touched">
+          Укажите дату прихода.
+        </p>
+      </label>
+
+      <label class="create-supply-dialog__field">
+        <span class="create-supply-dialog__label">Срок годности</span>
+        <input type="date" formControlName="expiryDate" class="create-supply-dialog__input" />
+        <p class="create-supply-dialog__error" *ngIf="form.controls.expiryDate.errors?.['dateOrder']">
+          Срок годности не может быть раньше даты прихода.
+        </p>
+        <p class="create-supply-dialog__error" *ngIf="form.controls.expiryDate.invalid && !form.controls.expiryDate.errors?.['dateOrder'] && form.controls.expiryDate.touched">
+          Укажите срок годности.
+        </p>
+      </label>
+    </div>
+
+    <footer class="create-supply-dialog__actions">
+      <button type="button" class="btn btn-outline" (click)="close()">Отмена</button>
+      <button type="submit" class="btn" [disabled]="form.invalid">Добавить</button>
+    </footer>
+  </form>
+</section>

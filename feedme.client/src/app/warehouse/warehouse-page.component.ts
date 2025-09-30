@@ -23,6 +23,8 @@ import { StatusBadgeClassPipe } from '../pipes/status-badge-class.pipe';
 import { StatusBadgeLabelPipe } from '../pipes/status-badge-label.pipe';
 import { SupplyControlsComponent } from '../components/supply-controls/supply-controls.component';
 import { CatalogComponent as LegacyCatalogComponent } from '../components/catalog/catalog.component';
+import { CreateSupplyDialogComponent, CreateSupplyDialogResult } from './ui/create-supply-dialog.component';
+import { computeExpiryStatus } from './shared/status.util';
 
 const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
@@ -54,6 +56,7 @@ type SupplyHistoryEntry = {
     StatusBadgeLabelPipe,
     SupplyControlsComponent,
     LegacyCatalogComponent,
+    CreateSupplyDialogComponent,
   ],
   templateUrl: './warehouse-page.component.html',
   styleUrl: './warehouse-page.component.css',
@@ -79,6 +82,7 @@ export class WarehousePageComponent {
   readonly drawerRowId = signal<number | null>(null);
   readonly drawerOpen = signal(false);
   readonly editDialogOpen = signal(false);
+  readonly createDialogOpen = signal(false);
   readonly deleteDialogOpen = signal(false);
   readonly editingRowId = signal<number | null>(null);
   readonly deleteTargetIds = signal<number[]>([]);
@@ -329,26 +333,77 @@ export class WarehousePageComponent {
   }
 
   openCreateDialog(): void {
-    this.editForm.reset({
-      docNo: '',
-      arrivalDate: '',
-      warehouse: '',
-      responsible: '',
-      supplier: '',
-      sku: '',
-      name: '',
-      category: '',
-      qty: 0,
-      unit: '',
-      price: 0,
-      expiry: '',
-      status: 'ok' as SupplyStatus,
-    });
-    this.clearDateOrderError();
-    this.editingRowId.set(null);
-    this.editDialogOpen.set(true);
+    this.createDialogOpen.set(true);
     this.menuRowId.set(null);
-    this.editDialogTab.set('details');
+  }
+
+  closeCreateDialog(): void {
+    this.createDialogOpen.set(false);
+  }
+
+  handleCreateSupply(result: CreateSupplyDialogResult): void {
+    const product = result.product;
+    const docNo = this.generateDocumentNumber();
+    const warehouse = this.normalizeWarehouse(
+      this.selectedWarehouse() || this.warehouses()[0] || 'Главный склад',
+    );
+    const responsible = 'Не назначен';
+    const supplier = (product.supplierMain ?? '').trim() || 'Не указан';
+    const category = product.category?.trim() || 'Без категории';
+    const unit = product.unit?.trim() || 'шт';
+    const price = Number(product.purchasePrice ?? 0);
+    const status = this.mapExpiryStatus(result.arrivalDate, result.expiryDate);
+
+    const payload: Omit<SupplyRow, 'id'> = {
+      docNo,
+      arrivalDate: result.arrivalDate,
+      warehouse,
+      responsible,
+      sku: product.sku,
+      name: product.name,
+      category,
+      qty: result.quantity,
+      unit,
+      price,
+      expiry: result.expiryDate,
+      supplier,
+      status,
+    };
+
+    this.warehouseService.addRow(payload);
+    this.createDialogOpen.set(false);
+  }
+
+  private normalizeWarehouse(value: string): string {
+    const normalized = value.trim();
+    return normalized || 'Главный склад';
+  }
+
+  private generateDocumentNumber(): string {
+    const rows = this.rows();
+    const highest = rows.reduce((max, row) => {
+      const match = /PO-(\d+)$/.exec(row.docNo);
+      if (!match) {
+        return max;
+      }
+
+      const number = Number.parseInt(match[1], 10);
+      return Number.isNaN(number) ? max : Math.max(max, number);
+    }, 0);
+
+    const next = highest + 1;
+    return `PO-${String(next).padStart(6, '0')}`;
+  }
+
+  private mapExpiryStatus(arrival: string, expiry: string): SupplyStatus {
+    const status = computeExpiryStatus(expiry, arrival);
+    if (status === 'expired') {
+      return 'danger';
+    }
+    if (status === 'warning') {
+      return 'warning';
+    }
+    return 'ok';
   }
 
   startEdit(row: SupplyRow): void {

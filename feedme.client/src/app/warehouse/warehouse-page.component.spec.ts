@@ -1,9 +1,12 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 
 import { WarehousePageComponent } from './warehouse-page.component';
 import { SupplyRow } from './models';
 import { WarehouseService } from './warehouse.service';
+import { WarehouseCatalogService } from './catalog/catalog.service';
+import { Product } from './shared/models';
 
 class InMemoryWarehouseService {
   private readonly initialRows: SupplyRow[] = [
@@ -116,6 +119,44 @@ class InMemoryWarehouseService {
   }
 }
 
+function buildProduct(): Product {
+  return {
+    id: 'prod-1',
+    name: 'Картофель',
+    type: 'ingredient',
+    sku: 'VEG-001',
+    category: 'Овощи',
+    unit: 'кг',
+    unitWeight: null,
+    writeoff: 'fifo',
+    allergens: null,
+    needsPacking: false,
+    perishableAfterOpen: false,
+    supplierMain: 'ОвощБаза',
+    leadTimeDays: 2,
+    costEst: 40,
+    vat: 'Без НДС',
+    purchasePrice: 60,
+    salePrice: 90,
+    tnvCode: null,
+    marked: false,
+    alcohol: false,
+    alcoholCode: null,
+    alcoholStrength: null,
+    alcoholVolume: null,
+  } satisfies Product;
+}
+
+class StubWarehouseCatalogService {
+  getAll() {
+    return of([buildProduct()]);
+  }
+
+  refresh() {
+    return of([buildProduct()]);
+  }
+}
+
 function getTableRows(nativeElement: HTMLElement): HTMLTableRowElement[] {
   return Array.from(nativeElement.querySelectorAll('tbody tr')) as HTMLTableRowElement[];
 }
@@ -133,6 +174,10 @@ describe('WarehousePageComponent', () => {
         {
           provide: WarehouseService,
           useExisting: InMemoryWarehouseService,
+        },
+        {
+          provide: WarehouseCatalogService,
+          useClass: StubWarehouseCatalogService,
         },
       ],
     }).compileComponents();
@@ -216,6 +261,36 @@ describe('WarehousePageComponent', () => {
     const rows = getTableRows(fixture.nativeElement);
     expect(rows.length).toBe(1);
     expect(rows[0].textContent).toContain('27.09.2025');
+  });
+
+  it('opens legacy create supply popup when requested', () => {
+    const button = fixture.nativeElement.querySelector('.btn.ml-auto') as HTMLButtonElement;
+    button.click();
+    fixture.detectChanges();
+
+    const dialog = fixture.nativeElement.querySelector('app-create-supply-dialog');
+    expect(dialog).toBeTruthy();
+  });
+
+  it('creates a new supply row from popup payload', () => {
+    const initialLength = service.list()().length;
+
+    component.handleCreateSupply({
+      product: buildProduct(),
+      quantity: 5,
+      arrivalDate: '2025-10-01',
+      expiryDate: '2025-10-12',
+    });
+
+    const rows = service.list()();
+    expect(rows.length).toBe(initialLength + 1);
+
+    const created = rows[rows.length - 1];
+    expect(created.docNo).toBe('PO-000856');
+    expect(created.qty).toBe(5);
+    expect(created.warehouse).toBe('Главный склад');
+    expect(created.status).toBe('ok');
+    expect(component.createDialogOpen()).toBe(false);
   });
 
   it('shows row sum calculated from qty and price', () => {

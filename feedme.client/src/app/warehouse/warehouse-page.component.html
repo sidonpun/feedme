@@ -366,6 +366,13 @@
     </section>
   </aside>
 
+  <div class="warehouse-page__dialog-backdrop" *ngIf="createDialogOpen()">
+    <app-create-supply-dialog
+      (cancel)="closeCreateDialog()"
+      (create)="handleCreateSupply($event)"
+    ></app-create-supply-dialog>
+  </div>
+
   <div class="warehouse-page__dialog-backdrop" *ngIf="editDialogOpen()">
     <section class="warehouse-page__dialog" role="dialog" aria-modal="true" aria-labelledby="edit-supply-title">
       <header class="warehouse-page__dialog-header" id="edit-supply-title">
