@@ -6,6 +6,7 @@ import { combineLatest, startWith } from 'rxjs';
 
 import { CatalogService, CatalogItem } from '../../services/catalog.service';
 import { CreateReceipt, ReceiptService } from '../../services/receipt.service';
+import { computeExpiryStatus } from '../../warehouse/shared/status.util';
 
 type AddReceiptFormControls = {
   productId: FormControl<string>;
@@ -158,19 +159,25 @@ export class AddReceiptPopupComponent implements OnInit {
 
     const expiryIso = rawValue.expiryDate ? this.toIsoDate(rawValue.expiryDate) : null;
 
+    const status = computeExpiryStatus(expiryIso, rawValue.receivedAt) ?? 'ok';
+
     const payload: CreateReceipt = {
       number,
       supplier: rawValue.supplier?.trim() || product.supplier,
       warehouse,
+      responsible: 'Не назначен',
       receivedAt: this.toIsoDate(rawValue.receivedAt),
       items: [
         {
           catalogItemId: product.id,
+          sku: product.code,
           itemName: product.name,
+          category: product.category,
           quantity,
           unit,
           unitPrice: product.unitPrice,
           expiryDate: expiryIso,
+          status,
         }
       ]
     };

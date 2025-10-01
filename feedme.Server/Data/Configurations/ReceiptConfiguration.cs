@@ -31,6 +31,10 @@ public class ReceiptConfiguration : IEntityTypeConfiguration<Receipt>
             .HasColumnName("warehouse")
             .HasMaxLength(128);
 
+        builder.Property(receipt => receipt.Responsible)
+            .HasColumnName("responsible")
+            .HasMaxLength(128);
+
         builder.Property(receipt => receipt.ReceivedAt)
             .HasColumnName("received_at")
             .IsRequired();
@@ -60,8 +64,18 @@ public class ReceiptConfiguration : IEntityTypeConfiguration<Receipt>
                 .HasMaxLength(64)
                 .IsRequired();
 
+            items.Property(line => line.Sku)
+                .HasColumnName("sku")
+                .HasMaxLength(64)
+                .IsRequired();
+
             items.Property(line => line.ItemName)
                 .HasColumnName("item_name")
+                .HasMaxLength(128)
+                .IsRequired();
+
+            items.Property(line => line.Category)
+                .HasColumnName("category")
                 .HasMaxLength(128)
                 .IsRequired();
 
@@ -82,6 +96,11 @@ public class ReceiptConfiguration : IEntityTypeConfiguration<Receipt>
 
             items.Property(line => line.ExpiryDate)
                 .HasColumnName("expiry_date");
+
+            items.Property(line => line.Status)
+                .HasColumnName("status")
+                .HasMaxLength(32)
+                .IsRequired();
 
             items.Ignore(line => line.TotalCost);
 

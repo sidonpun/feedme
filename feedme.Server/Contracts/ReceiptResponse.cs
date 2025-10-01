@@ -8,6 +8,7 @@ public sealed record ReceiptResponse(
     string Number,
     string Supplier,
     string Warehouse,
+    string Responsible,
     DateTime ReceivedAt,
     IReadOnlyList<ReceiptLineResponse> Items,
     decimal TotalAmount

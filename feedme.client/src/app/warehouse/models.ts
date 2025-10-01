@@ -1,11 +1,9 @@
-export type SupplyStatus = 'ok' | 'warning' | 'danger' | 'draft' | 'transit';
+export type SupplyStatus = 'ok' | 'warning' | 'expired';
 
 export const SUPPLY_STATUSES: ReadonlyArray<SupplyStatus> = [
   'ok',
   'warning',
-  'danger',
-  'draft',
-  'transit',
+  'expired',
 ];
 
 export function isSupplyStatus(value: string): value is SupplyStatus {
@@ -13,7 +11,8 @@ export function isSupplyStatus(value: string): value is SupplyStatus {
 }
 
 export interface SupplyRow {
-  readonly id: number;
+  readonly id: string;
+  readonly productId: string;
   readonly docNo: string;
   readonly arrivalDate: string;
   readonly warehouse: string;

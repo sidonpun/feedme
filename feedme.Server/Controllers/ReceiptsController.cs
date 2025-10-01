@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using feedme.Server.Contracts;
@@ -41,6 +42,30 @@ public class ReceiptsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
     }
 
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ReceiptResponse>> Update(string id, [FromBody] Receipt receipt)
+    {
+        if (receipt is null)
+        {
+            return BadRequest();
+        }
+
+        if (!string.Equals(id, receipt.Id, StringComparison.OrdinalIgnoreCase))
+        {
+            receipt.Id = id;
+        }
+
+        var updated = await _repository.UpdateAsync(receipt);
+        return updated is null ? NotFound() : Ok(MapReceipt(updated));
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var removed = await _repository.RemoveAsync(id);
+        return removed ? NoContent() : NotFound();
+    }
+
     private static ReceiptResponse MapReceipt(Receipt receipt)
     {
         var lines = (receipt.Items ?? Enumerable.Empty<ReceiptLine>())
@@ -52,6 +77,7 @@ public class ReceiptsController : ControllerBase
             receipt.Number,
             receipt.Supplier,
             receipt.Warehouse,
+            receipt.Responsible,
             receipt.ReceivedAt,
             lines,
             receipt.TotalAmount);
@@ -59,13 +85,17 @@ public class ReceiptsController : ControllerBase
 
     private static ReceiptLineResponse MapLine(ReceiptLine line, DateTime receivedAt)
     {
-        var status = line.ExpiryDate.HasValue
-            ? ShelfLifeStatusCalculator.Evaluate(receivedAt, line.ExpiryDate.Value).ToCode()
-            : ShelfLifeState.Ok.ToCode();
+        var status = string.IsNullOrWhiteSpace(line.Status)
+            ? (line.ExpiryDate.HasValue
+                ? ShelfLifeStatusCalculator.Evaluate(receivedAt, line.ExpiryDate.Value).ToCode()
+                : ShelfLifeState.Ok.ToCode())
+            : line.Status;
 
         return new ReceiptLineResponse(
             line.CatalogItemId,
+            line.Sku,
             line.ItemName,
+            line.Category,
             line.Quantity,
             line.Unit,
             line.UnitPrice,

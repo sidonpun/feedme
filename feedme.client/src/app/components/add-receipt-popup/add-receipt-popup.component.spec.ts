@@ -4,13 +4,15 @@ import { of } from 'rxjs';
 
 import { AddReceiptPopupComponent } from './add-receipt-popup.component';
 import { CatalogService, CatalogItem } from '../../services/catalog.service';
-import { Receipt, ReceiptService } from '../../services/receipt.service';
+import { Receipt, ReceiptService, ShelfLifeStatus } from '../../services/receipt.service';
+import { computeExpiryStatus } from '../../warehouse/shared/status.util';
 
 describe('AddReceiptPopupComponent', () => {
   let component: AddReceiptPopupComponent;
   let fixture: ComponentFixture<AddReceiptPopupComponent>;
   let catalogService: jasmine.SpyObj<CatalogService>;
   let receiptService: jasmine.SpyObj<ReceiptService>;
+  let expectedStatus: ShelfLifeStatus;
   const runInContext = <T>(fn: () => T): T => TestBed.runInInjectionContext(fn);
 
   const catalogItem: CatalogItem = {
@@ -46,22 +48,27 @@ describe('AddReceiptPopupComponent', () => {
     catalogService.getAll.and.returnValue(of([catalogItem]));
     catalogService.getById.and.returnValue(of(catalogItem));
 
+    expectedStatus = computeExpiryStatus('2024-04-25T00:00:00.000Z', '2024-04-15');
+
     const createdReceipt: Receipt = {
       id: 'receipt-1',
       number: 'RCPT-001',
       supplier: catalogItem.supplier,
       warehouse: 'Главный склад',
+      responsible: 'Не назначен',
       receivedAt: '2024-04-15T00:00:00.000Z',
       items: [
         {
           catalogItemId: catalogItem.id,
+          sku: catalogItem.code,
           itemName: catalogItem.name,
+          category: catalogItem.category,
           quantity: 5,
           unit: 'кг',
           unitPrice: catalogItem.unitPrice,
           totalCost: catalogItem.unitPrice * 5,
           expiryDate: '2024-04-25T00:00:00.000Z',
-          status: 'warning'
+          status: expectedStatus
         }
       ],
       totalAmount: catalogItem.unitPrice * 5
@@ -113,15 +120,19 @@ describe('AddReceiptPopupComponent', () => {
         number: 'RCPT-001',
         supplier: catalogItem.supplier,
         warehouse: 'Главный склад',
+        responsible: 'Не назначен',
         receivedAt: '2024-04-15T00:00:00.000Z',
         items: [
           {
             catalogItemId: catalogItem.id,
+            sku: catalogItem.code,
             itemName: catalogItem.name,
+            category: catalogItem.category,
             quantity: 5,
             unit: 'кг',
             unitPrice: catalogItem.unitPrice,
-            expiryDate: '2024-04-25T00:00:00.000Z'
+            expiryDate: '2024-04-25T00:00:00.000Z',
+            status: expectedStatus
           }
         ]
       });

@@ -176,6 +176,12 @@ namespace feedme.Server.Data.Migrations
                         .HasColumnType("character varying(128)")
                         .HasColumnName("warehouse");
 
+                    b.Property<string>("Responsible")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("responsible");
+
                     b.HasKey("Id");
 
                     b.ToTable("receipts", (string)null);
@@ -203,11 +209,23 @@ namespace feedme.Server.Data.Migrations
                                 .HasColumnType("character varying(64)")
                                 .HasColumnName("catalog_item_id");
 
+                            b1.Property<string>("Sku")
+                                .IsRequired()
+                                .HasMaxLength(64)
+                                .HasColumnType("character varying(64)")
+                                .HasColumnName("sku");
+
                             b1.Property<string>("ItemName")
                                 .IsRequired()
                                 .HasMaxLength(128)
                                 .HasColumnType("character varying(128)")
                                 .HasColumnName("item_name");
+
+                            b1.Property<string>("Category")
+                                .IsRequired()
+                                .HasMaxLength(128)
+                                .HasColumnType("character varying(128)")
+                                .HasColumnName("category");
 
                             b1.Property<decimal>("Quantity")
                                 .HasPrecision(18, 4)
@@ -224,6 +242,16 @@ namespace feedme.Server.Data.Migrations
                                 .HasPrecision(18, 4)
                                 .HasColumnType("numeric(18,4)")
                                 .HasColumnName("unit_price");
+
+                            b1.Property<DateTime?>("ExpiryDate")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("expiry_date");
+
+                            b1.Property<string>("Status")
+                                .IsRequired()
+                                .HasMaxLength(32)
+                                .HasColumnType("character varying(32)")
+                                .HasColumnName("status");
 
                             b1.HasKey("receipt_id", "Id");
 

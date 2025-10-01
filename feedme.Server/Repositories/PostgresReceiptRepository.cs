@@ -12,7 +12,7 @@ public class PostgresReceiptRepository(AppDbContext context) : IReceiptRepositor
     {
         return await _context.Receipts
             .AsNoTracking()
-            .OrderBy(receipt => receipt.ReceivedAt)
+            .OrderByDescending(receipt => receipt.ReceivedAt)
             .ToListAsync();
     }
 
@@ -38,6 +38,55 @@ public class PostgresReceiptRepository(AppDbContext context) : IReceiptRepositor
         return (await GetByIdAsync(normalized.Id))!;
     }
 
+    public async Task<Receipt?> UpdateAsync(Receipt receipt)
+    {
+        var normalized = NormalizeReceipt(receipt);
+
+        var existing = await _context.Receipts
+            .Include(r => r.Items)
+            .SingleOrDefaultAsync(r => r.Id == normalized.Id);
+
+        if (existing is null)
+        {
+            return null;
+        }
+
+        existing.Number = normalized.Number;
+        existing.Supplier = normalized.Supplier;
+        existing.Warehouse = normalized.Warehouse;
+        existing.Responsible = normalized.Responsible;
+        existing.ReceivedAt = normalized.ReceivedAt;
+
+        existing.Items.Clear();
+        foreach (var item in normalized.Items)
+        {
+            existing.Items.Add(item);
+        }
+
+        await _context.SaveChangesAsync();
+
+        return (await GetByIdAsync(existing.Id))!;
+    }
+
+    public async Task<bool> RemoveAsync(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return false;
+        }
+
+        var receipt = await _context.Receipts.FindAsync(id);
+        if (receipt is null)
+        {
+            return false;
+        }
+
+        _context.Receipts.Remove(receipt);
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
     private static Receipt NormalizeReceipt(Receipt receipt)
     {
         if (receipt is null)
@@ -51,6 +100,7 @@ public class PostgresReceiptRepository(AppDbContext context) : IReceiptRepositor
             Number = Sanitize(receipt.Number),
             Supplier = Sanitize(receipt.Supplier),
             Warehouse = Sanitize(receipt.Warehouse),
+            Responsible = Sanitize(receipt.Responsible),
             ReceivedAt = NormalizeTimestamp(receipt.ReceivedAt),
             Items = (receipt.Items ?? new List<ReceiptLine>())
                 .Select(NormalizeItem)
@@ -62,14 +112,23 @@ public class PostgresReceiptRepository(AppDbContext context) : IReceiptRepositor
 
     private static ReceiptLine NormalizeItem(ReceiptLine item)
     {
+        var status = Sanitize(item.Status);
+        if (string.IsNullOrEmpty(status))
+        {
+            status = ShelfLifeState.Ok.ToCode();
+        }
+
         return new ReceiptLine
         {
             CatalogItemId = Sanitize(item.CatalogItemId),
+            Sku = Sanitize(item.Sku),
             ItemName = Sanitize(item.ItemName),
+            Category = Sanitize(item.Category),
             Quantity = item.Quantity,
             Unit = Sanitize(item.Unit),
             UnitPrice = item.UnitPrice,
-            ExpiryDate = NormalizeDate(item.ExpiryDate)
+            ExpiryDate = NormalizeDate(item.ExpiryDate),
+            Status = status
         };
     }
 
