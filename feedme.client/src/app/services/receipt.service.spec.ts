@@ -30,15 +30,19 @@ describe('ReceiptService', () => {
       number: 'RCPT-100',
       supplier: 'ООО Поставщик',
       warehouse: 'Главный склад',
+      responsible: 'Не назначен',
       receivedAt: '2024-04-15T00:00:00.000Z',
       items: [
         {
           catalogItemId: 'product-1',
+          sku: 'PRD-001',
           itemName: 'Помидоры',
+          category: 'Овощи',
           quantity: 5,
           unit: 'кг',
           unitPrice: 150,
-          expiryDate: '2024-04-25T00:00:00.000Z'
+          expiryDate: '2024-04-25T00:00:00.000Z',
+          status: 'warning'
         }
       ]
     };
@@ -48,6 +52,7 @@ describe('ReceiptService', () => {
       number: payload.number,
       supplier: payload.supplier,
       warehouse: payload.warehouse,
+      responsible: payload.responsible,
       receivedAt: payload.receivedAt,
       items: [
         {

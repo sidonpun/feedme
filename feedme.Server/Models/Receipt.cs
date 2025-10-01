@@ -18,6 +18,9 @@ public class Receipt
     [MaxLength(128)]
     public string Warehouse { get; set; } = string.Empty;
 
+    [MaxLength(128)]
+    public string Responsible { get; set; } = string.Empty;
+
     public DateTime ReceivedAt { get; set; } = DateTime.UtcNow;
 
     [MinLength(1, ErrorMessage = "A receipt must contain at least one item.")]

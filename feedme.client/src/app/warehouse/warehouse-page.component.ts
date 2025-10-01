@@ -15,7 +15,7 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { SupplyRow, SupplyStatus } from './models';
+import { SupplyRow, SupplyStatus, SUPPLY_STATUSES } from './models';
 import { WarehouseService } from './warehouse.service';
 import { EmptyStateComponent } from './ui/empty-state.component';
 import { FieldComponent } from './ui/field.component';
@@ -76,15 +76,15 @@ export class WarehousePageComponent {
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
   readonly search = signal('');
-  readonly checkedIds = signal<number[]>([]);
-  readonly drawerRowId = signal<number | null>(null);
+  readonly checkedIds = signal<string[]>([]);
+  readonly drawerRowId = signal<string | null>(null);
   readonly drawerOpen = signal(false);
   readonly editDialogOpen = signal(false);
   readonly createDialogOpen = signal(false);
   readonly deleteDialogOpen = signal(false);
-  readonly editingRowId = signal<number | null>(null);
-  readonly deleteTargetIds = signal<number[]>([]);
-  readonly menuRowId = signal<number | null>(null);
+  readonly editingRowId = signal<string | null>(null);
+  readonly deleteTargetIds = signal<string[]>([]);
+  readonly menuRowId = signal<string | null>(null);
   readonly editDialogTab = signal<EditDialogTab>('details');
 
   readonly rows = this.warehouseService.list();
@@ -106,6 +106,8 @@ export class WarehousePageComponent {
     { date: '15.03.2025 18:45', operation: 'Списание', quantity: '−2 кг' },
     { date: '18.03.2025 11:05', operation: 'Приход', quantity: '+18 кг' },
   ];
+
+  readonly statuses = SUPPLY_STATUSES;
 
 
   readonly warehouses = computed(() =>
@@ -273,14 +275,14 @@ export class WarehousePageComponent {
     this.search.set('');
   }
 
-  toggleRowSelection(id: number, checked: boolean): void {
+  toggleRowSelection(id: string, checked: boolean): void {
     const selection = new Set(this.checkedIds());
     if (checked) {
       selection.add(id);
     } else {
       selection.delete(id);
     }
-    this.checkedIds.set(Array.from(selection).sort((a, b) => a - b));
+    this.checkedIds.set(Array.from(selection).sort((left, right) => left.localeCompare(right)));
   }
 
   toggleAll(checked: boolean): void {
@@ -296,7 +298,7 @@ export class WarehousePageComponent {
     this.toggleAll(checkbox?.checked ?? false);
   }
 
-  handleRowCheckbox(id: number, event: Event): void {
+  handleRowCheckbox(id: string, event: Event): void {
     const checkbox = event.target as HTMLInputElement | null;
     this.toggleRowSelection(id, checkbox?.checked ?? false);
   }
@@ -312,7 +314,7 @@ export class WarehousePageComponent {
     this.drawerRowId.set(null);
   }
 
-  toggleRowMenu(rowId: number, event: MouseEvent): void {
+  toggleRowMenu(rowId: string, event: MouseEvent): void {
     event.stopPropagation();
     const current = this.menuRowId();
     this.menuRowId.set(current === rowId ? null : rowId);
@@ -327,7 +329,7 @@ export class WarehousePageComponent {
     this.createDialogOpen.set(false);
   }
 
-  handleCreateSupply(result: CreateSupplyDialogResult): void {
+  async handleCreateSupply(result: CreateSupplyDialogResult): Promise<void> {
     const product = result.product;
     const docNo = this.generateDocumentNumber();
     const warehouse = this.normalizeWarehouse(
@@ -344,11 +346,13 @@ export class WarehousePageComponent {
     const name = this.normalizeText(product.name, 'Без названия');
     const sku = this.normalizeText(product.sku, '—');
 
-    const payload: Omit<SupplyRow, 'id'> = {
+    const payload = {
       docNo,
       arrivalDate,
       warehouse,
       responsible,
+      supplier,
+      productId: product.id,
       sku,
       name,
       category,
@@ -356,11 +360,10 @@ export class WarehousePageComponent {
       unit,
       price,
       expiry: expiryDate,
-      supplier,
       status,
     };
 
-    const created = this.warehouseService.addRow(payload);
+    const created = await this.warehouseService.addRow(payload);
     this.selectedWarehouse.set(created.warehouse);
     this.createDialogOpen.set(false);
   }
@@ -388,11 +391,11 @@ export class WarehousePageComponent {
 
   private mapExpiryStatus(arrival: string, expiry: string): SupplyStatus {
     const status = computeExpiryStatus(expiry, arrival);
-    if (status === 'expired') {
-      return 'danger';
-    }
     if (status === 'warning') {
       return 'warning';
+    }
+    if (status === 'expired') {
+      return 'expired';
     }
     return 'ok';
   }
@@ -437,7 +440,7 @@ export class WarehousePageComponent {
     this.editDialogTab.set('details');
   }
 
-  submitEdit(): void {
+  async submitEdit(): Promise<void> {
     this.clearDateOrderError();
 
     const raw = this.editForm.getRawValue();
@@ -464,17 +467,29 @@ export class WarehousePageComponent {
       price: Number(raw.price),
       expiry: raw.expiry,
       status: raw.status,
-    } satisfies Omit<SupplyRow, 'id'>;
+    };
 
-    if (this.editingRowId() === null) {
-      this.warehouseService.addRow(base);
-    } else {
-      const updated: SupplyRow = { id: this.editingRowId()!, ...base };
-      this.warehouseService.updateRow(updated);
+    const editingId = this.editingRowId();
+    if (editingId === null) {
+      this.closeEditDialog();
+      return;
+    }
 
-      if (this.drawerOpen() && this.drawerRowId() === updated.id) {
-        this.drawerRowId.set(updated.id);
-      }
+    const existing = this.getRowById(editingId);
+    if (!existing) {
+      this.closeEditDialog();
+      return;
+    }
+
+    const updated: SupplyRow = {
+      ...existing,
+      ...base,
+    };
+
+    await this.warehouseService.updateRow(updated);
+
+    if (this.drawerOpen() && this.drawerRowId() === updated.id) {
+      this.drawerRowId.set(updated.id);
     }
 
     this.closeEditDialog();
@@ -499,13 +514,13 @@ export class WarehousePageComponent {
     this.deleteTargetIds.set([]);
   }
 
-  confirmDelete(): void {
+  async confirmDelete(): Promise<void> {
     const ids = this.deleteTargetIds();
     if (!ids.length) {
       return;
     }
 
-    this.warehouseService.removeRowsById(ids);
+    await this.warehouseService.removeRowsById(ids);
     const remainingSelection = this.checkedIds().filter((id) => !ids.includes(id));
     this.checkedIds.set(remainingSelection);
 
@@ -524,7 +539,7 @@ export class WarehousePageComponent {
     return row.qty * row.price;
   }
 
-  getRowById(id: number): SupplyRow | undefined {
+  getRowById(id: string): SupplyRow | undefined {
     return this.rows().find((row) => row.id === id);
   }
 

@@ -9,8 +9,16 @@ public class ReceiptLine
     public string CatalogItemId { get; set; } = string.Empty;
 
     [Required]
+    [MaxLength(64)]
+    public string Sku { get; set; } = string.Empty;
+
+    [Required]
     [MaxLength(128)]
     public string ItemName { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(128)]
+    public string Category { get; set; } = string.Empty;
 
     [Range(typeof(decimal), "0.01", "79228162514264337593543950335", ErrorMessage = "Quantity must be greater than zero.")]
     public decimal Quantity { get; set; }
@@ -23,6 +31,10 @@ public class ReceiptLine
     public decimal UnitPrice { get; set; }
 
     public DateTime? ExpiryDate { get; set; }
+
+    [Required]
+    [MaxLength(32)]
+    public string Status { get; set; } = ShelfLifeState.Ok.ToCode();
 
     public decimal TotalCost => UnitPrice * Quantity;
 }

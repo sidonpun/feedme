@@ -53,6 +53,7 @@ namespace feedme.Server.Data.Migrations
                     number = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     supplier = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     warehouse = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    responsible = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     received_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -68,10 +69,14 @@ namespace feedme.Server.Data.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     catalog_item_id = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    sku = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     item_name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    category = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     quantity = table.Column<decimal>(type: "numeric(18,4)", precision: 18, scale: 4, nullable: false),
                     unit = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
-                    unit_price = table.Column<decimal>(type: "numeric(18,4)", precision: 18, scale: 4, nullable: false)
+                    unit_price = table.Column<decimal>(type: "numeric(18,4)", precision: 18, scale: 4, nullable: false),
+                    expiry_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    status = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false)
                 },
                 constraints: table =>
                 {
