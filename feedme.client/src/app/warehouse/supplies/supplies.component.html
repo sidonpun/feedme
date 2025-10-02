@@ -162,6 +162,9 @@
       </header>
 
       <div class="supplies-dialog__body">
+        <p class="supplies-dialog__alert" *ngIf="submissionError() as error" role="alert">
+          {{ error }}
+        </p>
         <section class="supplies-dialog__section">
           <h3 class="supplies-dialog__section-title">Детали документа</h3>
           <div class="supplies-dialog__grid">
@@ -250,7 +253,9 @@
 
       <footer class="supplies-dialog__footer">
         <button type="button" class="btn btn-outline" (click)="closeDialog()">Отмена</button>
-        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Сохранение…' : 'Сохранить' }}
+        </button>
       </footer>
     </form>
   </div>

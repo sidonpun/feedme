@@ -12,6 +12,7 @@ class MockSuppliesService {
       sku: 'MEAT-001',
       name: 'Курица охлаждённая',
       unit: 'кг',
+      category: 'Мясо',
       supplier: 'ООО Куры Дуры',
       purchasePrice: 210,
     },
