@@ -70,6 +70,8 @@ export class SuppliesComponent {
   private readonly productsSignal = toSignal(this.products$, { initialValue: [] as SupplyProduct[] });
 
   readonly dialogOpen = signal(false);
+  readonly submissionError = signal<string | null>(null);
+  readonly isSubmitting = signal(false);
 
   private readonly selectedWarehouse = signal<string | null>(null);
 
@@ -222,6 +224,10 @@ export class SuppliesComponent {
   }
 
   submit(): void {
+    if (this.isSubmitting()) {
+      return;
+    }
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -273,12 +279,23 @@ export class SuppliesComponent {
       status: computeExpiryStatus(value.expiryDate, value.arrivalDate),
     };
 
+    this.submissionError.set(null);
+    this.isSubmitting.set(true);
+
     this.suppliesService
       .add(payload)
       .pipe(take(1))
-      .subscribe(() => {
-        this.selectedWarehouse.set(warehouse);
-        this.closeDialog();
+      .subscribe({
+        next: () => {
+          this.selectedWarehouse.set(warehouse);
+          this.closeDialog();
+          this.isSubmitting.set(false);
+        },
+        error: () => {
+          this.isSubmitting.set(false);
+          this.submissionError.set('Не удалось сохранить поставку. Попробуйте ещё раз.');
+          this.form.setErrors({ submissionFailed: true });
+        },
       });
   }
 
@@ -427,6 +444,9 @@ export class SuppliesComponent {
     });
     this.form.markAsPristine();
     this.form.markAsUntouched();
+    this.form.setErrors(null);
+    this.submissionError.set(null);
+    this.isSubmitting.set(false);
 
   }
 

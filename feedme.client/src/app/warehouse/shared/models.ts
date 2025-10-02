@@ -23,6 +23,7 @@ export interface SupplyProduct {
   sku: string;
   name: string;
   unit: string;
+  category: string;
   supplier?: string;
   purchasePrice: number | null;
 }
