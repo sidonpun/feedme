@@ -1,10 +1,11 @@
 // src/environments/environment.ts
 //
-// Локальная сборка использует относительный путь к backend (`/api`).
-// Angular dev-server автоматически проксирует такие запросы на ASP.NET API,
-// поэтому не возникает проблем с CORS и не нужно открывать удалённый порт.
+// Локальная сборка обращается напрямую к удалённому backend.
+// Это гарантирует, что разработка ведётся в тех же условиях, что и production,
+// и запросы не будут направляться на несуществующий локальный сервер.
 import type { EnvironmentConfig } from './environment.model';
 
 export const environment: EnvironmentConfig = {
-  production: false
+  production: false,
+  apiBaseUrl: 'http://185.251.90.40:8080'
 };
