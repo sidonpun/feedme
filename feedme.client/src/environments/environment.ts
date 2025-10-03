@@ -1,11 +1,10 @@
 // src/environments/environment.ts
 //
-// Локальная сборка обращается напрямую к удалённому backend.
-// Это гарантирует, что разработка ведётся в тех же условиях, что и production,
-// и запросы не будут направляться на несуществующий локальный сервер.
+// Локальная сборка использует origin приложения и проксируется до нужного backend
+// через `proxy.conf.js`. Благодаря этому браузер всегда обращается к API с того же
+// домена, что и фронтенд, и проблемы с CORS не возникают даже при разработке.
 import type { EnvironmentConfig } from './environment.model';
 
 export const environment: EnvironmentConfig = {
-  production: false,
-  apiBaseUrl: 'http://185.251.90.40:8080'
+  production: false
 };
