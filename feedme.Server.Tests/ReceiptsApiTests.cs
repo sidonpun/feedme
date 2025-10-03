@@ -113,4 +113,42 @@ public class ReceiptsApiTests
         var response = await client.GetAsync($"/api/receipts/{Guid.NewGuid()}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
+
+    [Fact]
+    public async Task GetReceipts_ReturnsLinesForStoredReceipts()
+    {
+        await using var factory = new FeedmeApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var createResponse = await client.PostAsJsonAsync("/api/receipts", new
+        {
+            number = "RCPT-2001",
+            supplier = "Supply Co",
+            warehouse = "South Warehouse",
+            receivedAt = DateTime.UtcNow.AddDays(-2),
+            items = new[]
+            {
+                new
+                {
+                    catalogItemId = "CAT-500",
+                    itemName = "Roasted Chicken",
+                    category = "Prepared",
+                    quantity = 3.0m,
+                    unit = "pcs",
+                    unitPrice = 250.0m,
+                    expiryDate = DateTime.UtcNow.AddDays(5)
+                }
+            }
+        });
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+
+        var listResponse = await client.GetFromJsonAsync<ReceiptResponse[]>("/api/receipts");
+        Assert.NotNull(listResponse);
+
+        Assert.Contains(
+            listResponse!,
+            receipt => receipt.Items.Any(item => item.CatalogItemId == "CAT-500")
+        );
+    }
 }
