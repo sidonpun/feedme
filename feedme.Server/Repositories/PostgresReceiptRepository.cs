@@ -11,6 +11,7 @@ public class PostgresReceiptRepository(AppDbContext context) : IReceiptRepositor
     public async Task<IEnumerable<Receipt>> GetAllAsync()
     {
         return await _context.Receipts
+            .Include(receipt => receipt.Items)
             .AsNoTracking()
             .OrderByDescending(receipt => receipt.ReceivedAt)
             .ToListAsync();
@@ -24,6 +25,7 @@ public class PostgresReceiptRepository(AppDbContext context) : IReceiptRepositor
         }
 
         return await _context.Receipts
+            .Include(receipt => receipt.Items)
             .AsNoTracking()
             .SingleOrDefaultAsync(receipt => receipt.Id == id);
     }
