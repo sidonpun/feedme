@@ -5,6 +5,8 @@
     "module": "ES2022",
     "useDefineForClassFields": false,
     "moduleResolution": "node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "baseUrl": "./",
     "paths": {
       "@app/*": ["src/app/*"]
