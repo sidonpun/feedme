@@ -7,7 +7,9 @@ const FALLBACK_ENDPOINTS = [
   'https://localhost:8081',
   'https://localhost:7221',
   'http://localhost:8080',
-  'http://localhost:5016'
+  'http://localhost:5016',
+  // Обращение к удалённому стенду, используемому в production.
+  'http://185.251.90.40:8080'
 ];
 
 const { endpoint: target, attemptedEndpoints } = resolveFirstReachableEndpoint([
