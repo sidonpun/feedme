@@ -2,12 +2,16 @@ const net = require('node:net');
 const { URL } = require('node:url');
 const { env } = require('process');
 
+const CUSTOM_ENDPOINTS = resolveFromUrlsVariable('FEEDME_DEV_BACKEND');
+
 const FALLBACK_ENDPOINTS = [
   // HTTPS ports are listed first so that secure endpoints take precedence.
   'https://localhost:8081',
   'https://localhost:7221',
   'http://localhost:8080',
-  'http://localhost:5016'
+  'http://localhost:5016',
+  'https://185.251.90.40:8081',
+  'http://185.251.90.40:8080'
 ];
 
 const { endpoint: target, attemptedEndpoints } = resolveFirstReachableEndpoint([
@@ -18,6 +22,7 @@ const { endpoint: target, attemptedEndpoints } = resolveFirstReachableEndpoint([
   () => resolveFromUrlsVariable('ASPNETCORE_URLS'),
   () => resolveFromPorts('ASPNETCORE_HTTPS_PORTS', 'https'),
   () => resolveFromPorts('ASPNETCORE_HTTP_PORTS', 'http'),
+  () => CUSTOM_ENDPOINTS,
   () => FALLBACK_ENDPOINTS
 ]);
 
