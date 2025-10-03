@@ -10,7 +10,7 @@ const FALLBACK_ENDPOINTS = [
   'http://localhost:5016'
 ];
 
-const target = resolveFirstReachableEndpoint([
+const { endpoint: target, attemptedEndpoints } = resolveFirstReachableEndpoint([
   () => resolvePreferredEndpoint([
     'services__feedme-server__https__0',
     'services__feedme-server__http__0'
@@ -18,15 +18,15 @@ const target = resolveFirstReachableEndpoint([
   () => resolveFromUrlsVariable('ASPNETCORE_URLS'),
   () => resolveFromPorts('ASPNETCORE_HTTPS_PORTS', 'https'),
   () => resolveFromPorts('ASPNETCORE_HTTP_PORTS', 'http'),
-  ...FALLBACK_ENDPOINTS.map((endpoint) => () => normalizeUrl(endpoint))
+  () => FALLBACK_ENDPOINTS
 ]);
 
 if (!target) {
-  throw new Error('Unable to determine the backend endpoint for the development proxy.');
+  throw new Error(createResolutionErrorMessage(attemptedEndpoints));
 }
 
 function resolveFirstReachableEndpoint(resolvers) {
-  let fallbackCandidate;
+  const attemptedEndpoints = [];
 
   for (const resolveCandidate of resolvers) {
     const value = resolveCandidate();
@@ -48,17 +48,37 @@ function resolveFirstReachableEndpoint(resolvers) {
         continue;
       }
 
-      if (!fallbackCandidate) {
-        fallbackCandidate = normalized;
+      if (isEndpointReachable(normalized)) {
+        attemptedEndpoints.push(normalized);
+
+        return {
+          endpoint: normalized,
+          attemptedEndpoints
+        };
       }
 
-      if (isEndpointReachable(normalized)) {
-        return normalized;
-      }
+      attemptedEndpoints.push(normalized);
     }
   }
 
-  return fallbackCandidate;
+  return {
+    endpoint: undefined,
+    attemptedEndpoints
+  };
+}
+
+function createResolutionErrorMessage(endpoints) {
+  if (!endpoints.length) {
+    return 'Unable to determine the backend endpoint for the development proxy.';
+  }
+
+  const joinedEndpoints = endpoints.join(', ');
+
+  return [
+    'Unable to determine the backend endpoint for the development proxy.',
+    'Verify that the FeedMe backend is running and exposes one of the following endpoints:',
+    joinedEndpoints
+  ].join(' ');
 }
 
 /**
