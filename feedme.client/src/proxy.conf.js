@@ -2,14 +2,16 @@ const net = require('node:net');
 const { URL } = require('node:url');
 const { env } = require('process');
 
+const { baseUrl: REMOTE_BACKEND_BASE_URL } = require('./environments/remote-backend.config.json');
+
 const FALLBACK_ENDPOINTS = [
-  // HTTPS ports are listed first so that secure endpoints take precedence.
+  // Удалённый стенд используется и в разработке, поэтому пробуем его первым.
+  REMOTE_BACKEND_BASE_URL,
+  // Если разработчик поднимает локальный backend, сперва пробуем защищённые HTTPS порты.
   'https://localhost:8081',
   'https://localhost:7221',
   'http://localhost:8080',
-  'http://localhost:5016',
-  // Обращение к удалённому стенду, используемому в production.
-  'http://185.251.90.40:8080'
+  'http://localhost:5016'
 ];
 
 const { endpoint: target, attemptedEndpoints } = resolveFirstReachableEndpoint([

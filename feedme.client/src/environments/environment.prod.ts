@@ -4,8 +4,9 @@
 // Это гарантирует, что опубликованный фронтенд и backend взаимодействуют
 // через один и тот же домен 185.251.90.40:8080.
 import type { EnvironmentConfig } from './environment.model';
+import remoteBackendConfig from './remote-backend.config.json';
 
 export const environment: EnvironmentConfig = {
   production: true,
-  apiBaseUrl: 'http://185.251.90.40:8080'
+  apiBaseUrl: remoteBackendConfig.baseUrl
 };

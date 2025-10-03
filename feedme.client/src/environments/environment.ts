@@ -1,11 +1,12 @@
 // src/environments/environment.ts
 //
-// Локальная сборка использует dev-server proxy, чтобы обращаться к backend
-// через тот же origin (http://localhost:4200). Это избавляет от проблем с CORS,
-// а также позволяет прозрачно подменять целевой сервер (локальный или удалённый)
-// через конфигурацию proxy.conf.js без переписывания клиентского кода.
+// Локальная сборка работает с backend, развёрнутым на удалённом сервере.
+// Чтобы избавить разработчиков от ручной настройки адресов при запуске
+// `ng serve`, сразу используем продакшеновый endpoint.
 import type { EnvironmentConfig } from './environment.model';
+import remoteBackendConfig from './remote-backend.config.json';
 
 export const environment: EnvironmentConfig = {
-  production: false
+  production: false,
+  apiBaseUrl: remoteBackendConfig.baseUrl
 };
