@@ -27,6 +27,9 @@ public class Program
         builder.Services
             .AddOptions<DatabaseOptions>()
             .Bind(builder.Configuration.GetSection(DatabaseOptions.SectionName));
+        builder.Services
+            .AddOptions<CorsSettings>()
+            .Bind(builder.Configuration.GetSection(CorsSettings.SectionName));
 
         builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
         {
@@ -72,11 +75,30 @@ public class Program
 
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy("AllowAll", policy =>
-                policy
-                    .AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod());
+            var corsSettings = builder.Configuration
+                .GetSection(CorsSettings.SectionName)
+                .Get<CorsSettings>() ?? new CorsSettings();
+
+            var allowedOrigins = corsSettings.GetSanitizedOrigins();
+
+            options.AddPolicy(
+                CorsSettings.PolicyName,
+                policy =>
+                {
+                    if (allowedOrigins.Count > 0)
+                    {
+                        policy
+                            .WithOrigins(allowedOrigins.ToArray())
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                        return;
+                    }
+
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
         });
 
         var app = builder.Build();
@@ -92,7 +114,9 @@ public class Program
             app.MapOpenApi();
         }
 
-        app.UseCors("AllowAll");
+        app.UseRouting();
+
+        app.UseCors(CorsSettings.PolicyName);
 
         app.MapControllers();
 
