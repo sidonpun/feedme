@@ -156,7 +156,7 @@
     aria-labelledby="supplies-dialog-title"
     (click)="$event.stopPropagation()"
   >
-    <form class="supplies-dialog__form" (ngSubmit)="submit()" novalidate>
+    <form class="supplies-dialog__form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <header class="supplies-dialog__header">
         <h2 id="supplies-dialog-title">Новая поставка</h2>
       </header>
