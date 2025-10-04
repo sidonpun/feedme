@@ -1,12 +1,9 @@
 // src/environments/environment.prod.ts
 //
-// Продакшен-сборка сразу направляет запросы на внешний backend без прокси.
-// Это гарантирует, что опубликованный фронтенд и backend взаимодействуют
-// через один и тот же домен 185.251.90.40:8080.
+// Продакшен-сборка использует тот же механизм сборки URL, что и dev,
+// но явно включает флаг production.
 import type { EnvironmentConfig } from './environment.model';
+import { buildEnvironmentConfig } from './api-base-url.builder';
 import remoteBackendConfig from './remote-backend.config.json';
 
-export const environment: EnvironmentConfig = {
-  production: true,
-  apiBaseUrl: remoteBackendConfig.baseUrl
-};
+export const environment: EnvironmentConfig = buildEnvironmentConfig(remoteBackendConfig, { production: true });

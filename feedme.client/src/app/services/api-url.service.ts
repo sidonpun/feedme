@@ -11,7 +11,23 @@ export class ApiUrlService {
   private readonly baseUrl = inject(API_BASE_URL);
 
   build(path: string): string {
-    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-    return `${this.baseUrl}${normalizedPath}`;
+    const trimmedPath = path?.trim();
+
+    if (!trimmedPath) {
+      throw new Error('API path segment is required.');
+    }
+
+    const sanitizedBase = this.baseUrl.replace(/\/+$/, '');
+    const sanitizedPath = trimmedPath.replace(/^\/+/, '');
+
+    if (!sanitizedPath) {
+      return sanitizedBase || '/';
+    }
+
+    if (!sanitizedBase) {
+      return `/${sanitizedPath}`;
+    }
+
+    return `${sanitizedBase}/${sanitizedPath}`;
   }
 }

@@ -1,12 +1,10 @@
 // src/environments/environment.ts
 //
-// Локальная сборка работает с backend, развёрнутым на удалённом сервере.
-// Чтобы избавить разработчиков от ручной настройки адресов при запуске
-// `ng serve`, сразу используем продакшеновый endpoint.
+// Dev-окружение тоже обращается к удалённому серверу.
+// Это исключает любые обращения к localhost и позволяет тестировать приложение
+// на том же API, что и в продакшене.
 import type { EnvironmentConfig } from './environment.model';
+import { buildEnvironmentConfig } from './api-base-url.builder';
 import remoteBackendConfig from './remote-backend.config.json';
 
-export const environment: EnvironmentConfig = {
-  production: false,
-  apiBaseUrl: remoteBackendConfig.baseUrl
-};
+export const environment: EnvironmentConfig = buildEnvironmentConfig(remoteBackendConfig);

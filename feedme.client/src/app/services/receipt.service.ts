@@ -44,7 +44,7 @@ export interface CreateReceipt {
 export class ReceiptService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(ApiUrlService);
-  private readonly baseUrl = this.apiUrl.build('/api/receipts');
+  private readonly baseUrl = this.apiUrl.build('receipts');
 
   getAll(): Observable<Receipt[]> {
     return this.http.get<Receipt[]>(this.baseUrl);
