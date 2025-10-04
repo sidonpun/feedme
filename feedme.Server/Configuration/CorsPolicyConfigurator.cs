@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Options;
 
@@ -23,7 +24,23 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
 
         if (allowedOrigins.Count > 0)
         {
-            policyBuilder.WithOrigins(allowedOrigins.ToArray());
+            var originMatchers = allowedOrigins
+                .Select(CorsOriginMatcher.TryCreate)
+                .ToArray();
+
+            if (originMatchers.Any(matcher => matcher is null))
+            {
+                policyBuilder.WithOrigins(allowedOrigins.ToArray());
+            }
+            else
+            {
+                var matchers = originMatchers
+                    .Select(matcher => matcher!)
+                    .ToArray();
+
+                policyBuilder.SetIsOriginAllowed(origin =>
+                    matchers.Any(matcher => matcher.Matches(origin)));
+            }
         }
         else
         {
