@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace feedme.Server.Configuration;
 
@@ -31,7 +32,7 @@ public sealed class CorsOriginRule
 
     public string NormalizedOrigin { get; }
 
-    public static bool TryCreate(string value, out CorsOriginRule? rule)
+    public static bool TryCreate(string value, [NotNullWhen(true)] out CorsOriginRule? rule)
     {
         rule = null;
 
@@ -56,7 +57,7 @@ public sealed class CorsOriginRule
             return false;
         }
 
-        var port = uri.IsDefaultPort ? null : uri.Port;
+        int? port = uri.IsDefaultPort ? null : uri.Port;
 
         rule = new CorsOriginRule(originValue, uri.Scheme, uri.Host, port, allowsAnyPort);
         return true;
