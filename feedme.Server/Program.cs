@@ -5,6 +5,7 @@ using feedme.Server.Configuration;
 using feedme.Server.Data;
 using feedme.Server.Extensions;
 using feedme.Server.Repositories;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,9 @@ public class Program
         builder.Services
             .AddOptions<CorsSettings>()
             .Bind(builder.Configuration.GetSection(CorsSettings.SectionName));
+
+        builder.Services.AddCors();
+        builder.Services.AddSingleton<IConfigureOptions<CorsOptions>, CorsPolicyConfigurator>();
 
         builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
         {
@@ -72,34 +76,6 @@ public class Program
 
         builder.Services.AddHealthChecks()
             .AddDbContextCheck<AppDbContext>();
-
-        builder.Services.AddCors(options =>
-        {
-            var corsSettings = builder.Configuration
-                .GetSection(CorsSettings.SectionName)
-                .Get<CorsSettings>() ?? new CorsSettings();
-
-            var allowedOrigins = corsSettings.GetSanitizedOrigins();
-
-            options.AddPolicy(
-                CorsSettings.PolicyName,
-                policy =>
-                {
-                    if (allowedOrigins.Count > 0)
-                    {
-                        policy
-                            .WithOrigins(allowedOrigins.ToArray())
-                            .AllowAnyHeader()
-                            .AllowAnyMethod();
-                        return;
-                    }
-
-                    policy
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                });
-        });
 
         var app = builder.Build();
 
