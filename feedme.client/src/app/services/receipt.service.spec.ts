@@ -13,7 +13,7 @@ describe('ReceiptService', () => {
       imports: [HttpClientTestingModule],
       providers: [
         ReceiptService,
-        { provide: API_BASE_URL, useValue: 'https://api.test' }
+        { provide: API_BASE_URL, useValue: 'https://api.test/api' }
       ]
     });
 

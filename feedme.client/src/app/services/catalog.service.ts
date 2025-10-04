@@ -33,7 +33,7 @@ export interface CatalogItem {
 export class CatalogService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(ApiUrlService);
-  private readonly baseUrl = this.apiUrl.build('/api/catalog');
+  private readonly baseUrl = this.apiUrl.build('catalog');
   private static readonly retryAttempts = 3;
   private static readonly retryBaseDelayMs = 250;
   private static readonly retryMaxDelayMs = 2000;

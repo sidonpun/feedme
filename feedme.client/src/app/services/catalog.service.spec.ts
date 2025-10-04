@@ -15,7 +15,7 @@ describe('CatalogService', () => {
         {
           provide: ApiUrlService,
           useValue: {
-            build: (path: string) => `https://api.test${path}`
+            build: (path: string) => `https://api.test/api/${path.replace(/^\/+/, '')}`
           }
         }
       ]
