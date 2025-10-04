@@ -1,16 +1,14 @@
 // src/environments/environment.ts
 //
-// Локальная сборка использует относительный URL API, чтобы прокси dev-сервера
-// мог прозрачно перенаправлять запросы на удалённый backend без проблем с CORS.
+
+// Dev-окружение тоже обращается к удалённому серверу.
+// Это исключает любые обращения к localhost и позволяет тестировать приложение
+// на том же API, что и в продакшене.
+
 import type { EnvironmentConfig } from './environment.model';
+import { buildEnvironmentConfig } from './api-base-url.builder';
 import remoteBackendConfig from './remote-backend.config.json';
 
-const fallbackApiPath = '/api';
-const configuredApiPath = remoteBackendConfig.apiPath?.trim() || fallbackApiPath;
 
-export const environment: EnvironmentConfig = {
-  production: false,
-  apiBaseUrl: configuredApiPath.startsWith('/')
-    ? configuredApiPath
-    : `/${configuredApiPath}`
-};
+export const environment: EnvironmentConfig = buildEnvironmentConfig(remoteBackendConfig);
+
