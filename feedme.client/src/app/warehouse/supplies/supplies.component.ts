@@ -9,6 +9,7 @@ import { startWith, take, tap } from 'rxjs';
 import { SupplyProduct, SupplyRow, SupplyStatus } from '../shared/models';
 import { computeExpiryStatus } from '../shared/status.util';
 import { SuppliesService } from './supplies.service';
+import { ApiRequestError } from '../../services/api-request-error';
 
 type SupplyFormValue = {
 
@@ -34,6 +35,11 @@ type SortKey =
   | 'expiryDate'
   | 'supplier'
   | 'status';
+
+interface SubmissionErrorState {
+  readonly title: string;
+  readonly details: readonly string[];
+}
 
 @Component({
   standalone: true,
@@ -70,7 +76,7 @@ export class SuppliesComponent {
   private readonly productsSignal = toSignal(this.products$, { initialValue: [] as SupplyProduct[] });
 
   readonly dialogOpen = signal(false);
-  readonly submissionError = signal<string | null>(null);
+  readonly submissionError = signal<SubmissionErrorState | null>(null);
   readonly isSubmitting = signal(false);
 
   private readonly selectedWarehouse = signal<string | null>(null);
@@ -291,9 +297,9 @@ export class SuppliesComponent {
           this.closeDialog();
           this.isSubmitting.set(false);
         },
-        error: () => {
+        error: cause => {
           this.isSubmitting.set(false);
-          this.submissionError.set('Не удалось сохранить поставку. Попробуйте ещё раз.');
+          this.submissionError.set(this.toSubmissionError(cause));
           this.form.setErrors({ submissionFailed: true });
         },
       });
@@ -447,7 +453,33 @@ export class SuppliesComponent {
     this.form.setErrors(null);
     this.submissionError.set(null);
     this.isSubmitting.set(false);
+  }
 
+  private toSubmissionError(cause: unknown): SubmissionErrorState {
+    if (cause instanceof ApiRequestError) {
+      const base = 'Не удалось сохранить поставку.';
+      const message = cause.userMessage;
+      const title = message.startsWith(base) ? message : `${base} ${message}`;
+      return {
+        title,
+        details:
+          cause.details.length > 0
+            ? cause.details
+            : [`Метод: ${cause.context.method}`, `URL: ${cause.context.url}`],
+      } satisfies SubmissionErrorState;
+    }
+
+    if (cause instanceof Error) {
+      return {
+        title: 'Не удалось сохранить поставку. Попробуйте ещё раз.',
+        details: cause.message ? [`Причина: ${cause.message}`] : [],
+      } satisfies SubmissionErrorState;
+    }
+
+    return {
+      title: 'Не удалось сохранить поставку. Попробуйте ещё раз.',
+      details: [],
+    } satisfies SubmissionErrorState;
   }
 
   private matchesFilters(row: SupplyRow): boolean {

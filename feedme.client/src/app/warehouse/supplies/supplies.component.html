@@ -162,9 +162,12 @@
       </header>
 
       <div class="supplies-dialog__body">
-        <p class="supplies-dialog__alert" *ngIf="submissionError() as error" role="alert">
-          {{ error }}
-        </p>
+        <div class="supplies-dialog__alert" *ngIf="submissionError() as error" role="alert">
+          <span class="supplies-dialog__alert-title">{{ error.title }}</span>
+          <ul class="supplies-dialog__alert-details" *ngIf="error.details.length > 0">
+            <li *ngFor="let detail of error.details">{{ detail }}</li>
+          </ul>
+        </div>
         <section class="supplies-dialog__section">
           <h3 class="supplies-dialog__section-title">Детали документа</h3>
           <div class="supplies-dialog__grid">

@@ -471,6 +471,24 @@
   font-size: 0.875rem;
 }
 
+.supplies-dialog__alert-title {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.supplies-dialog__alert-details {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.25rem;
+  list-style: disc;
+}
+
+.supplies-dialog__alert-details li {
+  margin: 0;
+}
+
 .supplies-dialog__section-title {
   margin: 0 0 1rem;
   font-size: 1rem;
