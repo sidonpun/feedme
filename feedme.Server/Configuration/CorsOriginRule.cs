@@ -56,7 +56,7 @@ public sealed class CorsOriginRule
             return false;
         }
 
-        var port = uri.IsDefaultPort ? null : uri.Port;
+        int? port = uri.IsDefaultPort ? null : uri.Port;
 
         rule = new CorsOriginRule(originValue, uri.Scheme, uri.Host, port, allowsAnyPort);
         return true;

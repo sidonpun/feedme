@@ -60,7 +60,7 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
 
         foreach (var origin in configuredOrigins)
         {
-            if (!CorsOriginRule.TryCreate(origin, out var rule))
+            if (!CorsOriginRule.TryCreate(origin, out var rule) || rule is null)
             {
                 continue;
             }
