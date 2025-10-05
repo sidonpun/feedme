@@ -20,8 +20,8 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        builder.ConfigureServerLogging();
         builder.AddServiceDefaults();
-        builder.Logging.ConfigureServerLogging();
 
         // Add services to the container.
 
