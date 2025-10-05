@@ -1,7 +1,9 @@
+using System;
 using System.Net;
 using System.Net.Http.Json;
 using System.Linq;
 using feedme.Server.Contracts;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace feedme.Server.Tests;
@@ -26,20 +28,26 @@ public class ReceiptsApiTests
                 new
                 {
                     catalogItemId = "CAT-001",
+                    sku = "CAT-001",
                     itemName = "Tomatoes",
+                    category = "Produce",
                     quantity = 10.5m,
                     unit = "kg",
                     unitPrice = 2.75m,
-                    expiryDate = DateTime.UtcNow.AddDays(2)
+                    expiryDate = DateTime.UtcNow.AddDays(2),
+                    status = "warning"
                 },
                 new
                 {
                     catalogItemId = "CAT-002",
+                    sku = "CAT-002",
                     itemName = "Mozzarella",
+                    category = "Dairy",
                     quantity = 4.0m,
                     unit = "kg",
                     unitPrice = 8.10m,
-                    expiryDate = DateTime.UtcNow.AddDays(20)
+                    expiryDate = DateTime.UtcNow.AddDays(20),
+                    status = "ok"
                 }
             }
         };
@@ -81,11 +89,14 @@ public class ReceiptsApiTests
                 new
                 {
                     catalogItemId = "CAT-010",
+                    sku = "CAT-010",
                     itemName = "Basil",
+                    category = "Herbs",
                     quantity = 15.0m,
                     unit = "bunch",
                     unitPrice = 1.20m,
-                    expiryDate = DateTime.UtcNow.AddDays(-1)
+                    expiryDate = DateTime.UtcNow.AddDays(-1),
+                    status = "expired"
                 }
             }
         });
@@ -131,12 +142,14 @@ public class ReceiptsApiTests
                 new
                 {
                     catalogItemId = "CAT-500",
+                    sku = "CAT-500",
                     itemName = "Roasted Chicken",
                     category = "Prepared",
                     quantity = 3.0m,
                     unit = "pcs",
                     unitPrice = 250.0m,
-                    expiryDate = DateTime.UtcNow.AddDays(5)
+                    expiryDate = DateTime.UtcNow.AddDays(5),
+                    status = "warning"
                 }
             }
         });
@@ -150,5 +163,29 @@ public class ReceiptsApiTests
             listResponse!,
             receipt => receipt.Items.Any(item => item.CatalogItemId == "CAT-500")
         );
+    }
+
+    [Fact]
+    public async Task PostReceipt_ReturnsBadRequest_WhenItemsContainNullEntries()
+    {
+        await using var factory = new FeedmeApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync("/api/receipts", new
+        {
+            number = "RCPT-4001",
+            supplier = "Null Supplier",
+            warehouse = "Warehouse 7",
+            responsible = "Manager",
+            receivedAt = DateTime.UtcNow,
+            items = new object?[] { null }
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.NotNull(problem);
+        Assert.True(problem!.Errors.TryGetValue("Items", out var errors));
+        Assert.Contains(errors, message => message.Contains("null", StringComparison.OrdinalIgnoreCase));
     }
 }

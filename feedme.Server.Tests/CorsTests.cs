@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using feedme.Server.Configuration;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace feedme.Server.Tests;
