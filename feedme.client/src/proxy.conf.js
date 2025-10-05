@@ -14,7 +14,10 @@ const FALLBACK_ENDPOINTS = [
   'http://localhost:5016'
 ];
 
-const { endpoint: target, attemptedEndpoints } = resolveFirstReachableEndpoint([
+const {
+  endpoint: target,
+  attemptedEndpoints
+} = resolveFirstReachableEndpoint([
   () => resolvePreferredEndpoint([
     'services__feedme-server__https__0',
     'services__feedme-server__http__0'
@@ -31,6 +34,7 @@ if (!target) {
 
 function resolveFirstReachableEndpoint(resolvers) {
   const attemptedEndpoints = [];
+  let firstCandidate;
 
   for (const resolveCandidate of resolvers) {
     const value = resolveCandidate();
@@ -52,6 +56,10 @@ function resolveFirstReachableEndpoint(resolvers) {
         continue;
       }
 
+      if (!firstCandidate) {
+        firstCandidate = normalized;
+      }
+
       if (isEndpointReachable(normalized)) {
         attemptedEndpoints.push(normalized);
 
@@ -66,7 +74,7 @@ function resolveFirstReachableEndpoint(resolvers) {
   }
 
   return {
-    endpoint: undefined,
+    endpoint: firstCandidate,
     attemptedEndpoints
   };
 }
