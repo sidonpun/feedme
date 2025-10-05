@@ -21,6 +21,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         builder.AddServiceDefaults();
+        builder.Logging.ConfigureServerLogging();
 
         // Add services to the container.
 
