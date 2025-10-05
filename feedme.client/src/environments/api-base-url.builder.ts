@@ -1,6 +1,6 @@
 import type { EnvironmentConfig } from './environment.model';
 
-type RemoteBackendConfig = {
+export type RemoteBackendConfig = {
   baseUrl?: string;
   apiPath?: string;
 };
@@ -15,7 +15,7 @@ const DEFAULT_API_PATH = '/api';
  */
 export function buildEnvironmentConfig(
   config: RemoteBackendConfig,
-  overrides?: Partial<Pick<EnvironmentConfig, 'production'>>
+  overrides?: Partial<EnvironmentConfig>
 ): EnvironmentConfig {
   const apiBaseUrl = composeApiBaseUrl(config);
 
@@ -24,6 +24,10 @@ export function buildEnvironmentConfig(
     apiBaseUrl,
     ...overrides
   };
+}
+
+export function resolveApiPath(config: RemoteBackendConfig): string {
+  return normalizeApiPath(config.apiPath ?? DEFAULT_API_PATH);
 }
 
 function composeApiBaseUrl(config: RemoteBackendConfig): string {

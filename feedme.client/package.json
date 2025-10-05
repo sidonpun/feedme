@@ -5,7 +5,7 @@
   "scripts": {
     "prebuild": "node ./scripts/prepare-build-folders.mjs",
     "pretest": "npm ci || npm i",
-    "start": "npx ng serve --open",
+    "start": "npx ng serve --open --proxy-config proxy.conf.cjs",
     "build": "npx ng build",
     "test": "npx ng test --watch=false --browsers=ChromeHeadlessNoSandbox",
     "lint": "npx ng lint"
