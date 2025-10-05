@@ -8,11 +8,9 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 import { BehaviorSubject, EMPTY, catchError, take, tap } from 'rxjs';
 
-import { FilterPipe } from '../../pipes/filter.pipe';
 import { NewProductFormValues } from '../catalog-new-product-popup/catalog-new-product-popup.component';
 import { CatalogItem, CatalogService } from '../../services/catalog.service';
 import { EmptyStateComponent } from '../../warehouse/ui/empty-state.component';
@@ -37,8 +35,6 @@ export class BooleanLabelPipe implements PipeTransform {
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    FilterPipe,
     BooleanLabelPipe,
     EmptyStateComponent,
     CatalogNewProductPopupComponent,
@@ -51,8 +47,6 @@ export class CatalogComponent implements OnInit {
   private readonly catalogService = inject(CatalogService);
 
   activeTab: 'info' | 'logistics' = 'info';
-  filter = '';
-
   private readonly newProductPopupOpen = signal(false);
   private readonly newProductError = signal<string | null>(null);
   private readonly loadError = signal<string | null>(null);

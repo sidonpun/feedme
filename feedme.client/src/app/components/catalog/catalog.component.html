@@ -1,5 +1,4 @@
 <div class="catalog-header">
-  <input type="text" placeholder="Поиск…" [(ngModel)]="filter" />
   <div class="tabs">
     <button type="button" (click)="activeTab='info'" [class.active]="activeTab==='info'">Основная информация</button>
     <button type="button" (click)="activeTab='logistics'" [class.active]="activeTab==='logistics'">Закупка и логистика</button>
@@ -27,7 +26,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of catalogData | filter:filter">
+          <tr *ngFor="let item of catalogData">
             <td>{{ item.name }}</td>
             <td>{{ item.type }}</td>
             <td>{{ item.code }}</td>
@@ -58,7 +57,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of catalogData | filter:filter">
+          <tr *ngFor="let item of catalogData">
             <td>{{ item.supplier }}</td>
             <td>{{ item.costEstimate }}</td>
             <td>{{ item.taxRate }}</td>

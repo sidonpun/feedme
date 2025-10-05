@@ -37,6 +37,8 @@
   cursor: pointer;
   font-weight: 500;
   font-size: 16px;
+  color: #111827;
+  transition: color 0.2s ease-in-out;
 }
 .tabs button:focus-visible {
   outline: 2px solid rgba(37, 99, 235, 0.8);
@@ -45,8 +47,8 @@
   border-radius: 6px;
 }
 .tabs button.active {
-  border-bottom: 2px solid #007bff;
-  color: #007bff;
+  border-bottom: 2px solid #fa4b00;
+  color: #fa4b00;
 }
 .error-message {
   color: #dc3545;
