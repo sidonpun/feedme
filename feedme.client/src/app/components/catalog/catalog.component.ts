@@ -4,17 +4,26 @@ import {
   OnInit,
   Pipe,
   PipeTransform,
+  effect,
   inject,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { BehaviorSubject, EMPTY, catchError, take, tap } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Store } from '@ngrx/store';
 
 import { NewProductFormValues } from '../catalog-new-product-popup/catalog-new-product-popup.component';
-import { CatalogItem, CatalogService } from '../../services/catalog.service';
+import { CatalogItem } from '../../services/catalog.service';
 import { EmptyStateComponent } from '../../warehouse/ui/empty-state.component';
 import { CatalogNewProductPopupComponent } from '../catalog-new-product-popup/catalog-new-product-popup.component';
+import { catalogActions } from '../../store/catalog/catalog.actions';
+import {
+  selectCatalogCreationError,
+  selectCatalogCreationStatus,
+  selectCatalogItems,
+  selectCatalogLoadError,
+} from '../../store/catalog/catalog.reducer';
 
 @Pipe({
   name: 'booleanLabel',
@@ -44,47 +53,49 @@ export class BooleanLabelPipe implements PipeTransform {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CatalogComponent implements OnInit {
-  private readonly catalogService = inject(CatalogService);
+  private readonly store = inject(Store);
 
   activeTab: 'info' | 'logistics' = 'info';
   private readonly newProductPopupOpen = signal(false);
-  private readonly newProductError = signal<string | null>(null);
-  private readonly loadError = signal<string | null>(null);
 
   readonly isNewProductPopupVisible = this.newProductPopupOpen.asReadonly();
-  readonly creationErrorMessage = this.newProductError.asReadonly();
-  readonly loadErrorMessage = this.loadError.asReadonly();
+  private readonly catalogItems = toSignal(this.store.select(selectCatalogItems), {
+    initialValue: [] as CatalogItem[],
+  });
+  readonly loadErrorMessage = toSignal(this.store.select(selectCatalogLoadError), {
+    initialValue: null,
+  });
+  readonly creationErrorMessage = toSignal(this.store.select(selectCatalogCreationError), {
+    initialValue: null,
+  });
+  private readonly creationStatus = toSignal(
+    this.store.select(selectCatalogCreationStatus),
+    {
+      initialValue: 'idle',
+    }
+  );
 
-  private readonly catalogDataSubject = new BehaviorSubject<CatalogItem[]>([]);
-  readonly catalogData$ = this.catalogDataSubject.asObservable();
+  private readonly closePopupOnSuccess = effect(() => {
+    if (this.creationStatus() === 'success') {
+      this.closeNewProductPopup();
+    }
+  });
 
 
   ngOnInit(): void {
-    this.catalogService
-      .getAll()
-
-      .pipe(
-        take(1),
-        tap(data => {
-          this.loadError.set(null);
-          this.catalogDataSubject.next(data);
-        }),
-        catchError(() => this.handleError('Не удалось загрузить каталог. Попробуйте ещё раз.'))
-      )
-      .subscribe();
-
+    this.store.dispatch(catalogActions.loadCatalog({}));
   }
 
   /** Открывает модальное окно создания товара */
   openNewProductPopup(): void {
-    this.newProductError.set(null);
+    this.store.dispatch(catalogActions.resetCreationState());
     this.newProductPopupOpen.set(true);
   }
 
   /** Закрывает модальное окно создания товара */
   closeNewProductPopup(): void {
     this.newProductPopupOpen.set(false);
-    this.newProductError.set(null);
+    this.store.dispatch(catalogActions.resetCreationState());
   }
 
   /** Добавляет новый товар в каталог */
@@ -95,31 +106,10 @@ export class CatalogComponent implements OnInit {
       deliveryTime: 0,
     };
 
-    this.catalogService
-      .create(payload)
-      .pipe(
-        take(1),
-        tap(created => {
-          const updated = [...this.catalogDataSubject.value, created];
-          this.catalogDataSubject.next(updated);
-
-          this.loadError.set(null);
-          this.newProductError.set(null);
-          this.newProductPopupOpen.set(false);
-        }),
-        catchError(() => this.handleCreateError('Не удалось сохранить товар. Попробуйте ещё раз.'))
-      )
-      .subscribe();
+    this.store.dispatch(catalogActions.createCatalogItem({ item: payload }));
   }
 
-  private handleError(message: string) {
-    this.loadError.set(message);
-    return EMPTY;
-
-  }
-
-  private handleCreateError(message: string) {
-    this.newProductError.set(message);
-    return EMPTY;
+  protected get catalogData(): CatalogItem[] {
+    return this.catalogItems();
   }
 }

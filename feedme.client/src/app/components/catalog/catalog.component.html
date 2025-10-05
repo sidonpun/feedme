@@ -9,7 +9,7 @@
 </div>
 <div class="error-message" *ngIf="loadErrorMessage() as errorMessage">{{ errorMessage }}</div>
 
-<ng-container *ngIf="catalogData$ | async as catalogData">
+<ng-container *ngIf="catalogData as catalogData">
   <ng-container *ngIf="catalogData.length; else emptyCatalog">
     <div *ngIf="activeTab==='info'">
       <table class="catalog-table">
