@@ -1,14 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { of } from 'rxjs';
+import { provideMockStore } from '@ngrx/store/testing';
 
 import { CatalogComponent } from './catalog.component';
-import { CatalogService, CatalogItem } from '../../services/catalog.service';
+import { CatalogItem } from '../../services/catalog.service';
+import { CatalogState, catalogFeatureKey } from '../../store/catalog/catalog.reducer';
 
 describe('CatalogComponent', () => {
   let fixture: ComponentFixture<CatalogComponent>;
   let component: CatalogComponent;
-  let catalogService: jasmine.SpyObj<CatalogService>;
 
   const mockItems: CatalogItem[] = [
     {
@@ -64,13 +64,20 @@ describe('CatalogComponent', () => {
   ];
 
   beforeEach(async () => {
-    catalogService = jasmine.createSpyObj<CatalogService>('CatalogService', ['getAll', 'create', 'getById']);
-    catalogService.getAll.and.returnValue(of(mockItems));
-    catalogService.create.and.returnValue(of(mockItems[0]));
+    const initialState: Record<string, CatalogState> = {
+      [catalogFeatureKey]: {
+        items: mockItems,
+        loading: false,
+        loaded: true,
+        loadError: null,
+        creationStatus: 'idle',
+        creationError: null,
+      },
+    };
 
     await TestBed.configureTestingModule({
       imports: [CatalogComponent],
-      providers: [{ provide: CatalogService, useValue: catalogService }],
+      providers: [provideMockStore({ initialState })],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CatalogComponent);
