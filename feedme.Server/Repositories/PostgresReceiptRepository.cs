@@ -1,92 +1,171 @@
 using feedme.Server.Data;
 using feedme.Server.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace feedme.Server.Repositories;
 
-public class PostgresReceiptRepository(AppDbContext context) : IReceiptRepository
+public partial class PostgresReceiptRepository(AppDbContext context, ILogger<PostgresReceiptRepository> logger) : IReceiptRepository
 {
     private readonly AppDbContext _context = context;
+    private readonly ILogger<PostgresReceiptRepository> _logger = logger;
 
     public async Task<IEnumerable<Receipt>> GetAllAsync()
     {
-        return await _context.Receipts
-            .Include(receipt => receipt.Items)
-            .AsNoTracking()
-            .OrderByDescending(receipt => receipt.ReceivedAt)
-            .ToListAsync();
+        Log.RequestingReceipts(_logger);
+
+        try
+        {
+            var receipts = await _context.Receipts
+                .Include(receipt => receipt.Items)
+                .AsNoTracking()
+                .OrderByDescending(receipt => receipt.ReceivedAt)
+                .ToListAsync();
+
+            Log.ReceiptsRetrieved(_logger, receipts.Count);
+
+            return receipts;
+        }
+        catch (Exception exception)
+        {
+            Log.ReceiptsRetrievalFailed(_logger, exception);
+            throw;
+        }
     }
 
     public async Task<Receipt?> GetByIdAsync(string id)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
+            Log.MissingIdentifier(_logger);
             return null;
         }
 
-        return await _context.Receipts
-            .Include(receipt => receipt.Items)
-            .AsNoTracking()
-            .SingleOrDefaultAsync(receipt => receipt.Id == id);
+        Log.RequestingReceipt(_logger, id);
+
+        try
+        {
+            var receipt = await _context.Receipts
+                .Include(receipt => receipt.Items)
+                .AsNoTracking()
+                .SingleOrDefaultAsync(receipt => receipt.Id == id);
+
+            if (receipt is null)
+            {
+                Log.ReceiptNotFound(_logger, id);
+            }
+            else
+            {
+                Log.ReceiptRetrieved(_logger, id);
+            }
+
+            return receipt;
+        }
+        catch (Exception exception)
+        {
+            Log.ReceiptRetrievalFailed(_logger, id, exception);
+            throw;
+        }
     }
 
     public async Task<Receipt> AddAsync(Receipt receipt)
     {
         var normalized = NormalizeReceipt(receipt);
 
-        _context.Receipts.Add(normalized);
-        await _context.SaveChangesAsync();
+        Log.CreatingReceipt(_logger, normalized.Id);
 
-        return (await GetByIdAsync(normalized.Id))!;
+        try
+        {
+            _context.Receipts.Add(normalized);
+            await _context.SaveChangesAsync();
+
+            Log.ReceiptCreated(_logger, normalized.Id);
+
+            return (await GetByIdAsync(normalized.Id))!;
+        }
+        catch (Exception exception)
+        {
+            Log.ReceiptCreationFailed(_logger, normalized.Id, exception);
+            throw;
+        }
     }
 
     public async Task<Receipt?> UpdateAsync(Receipt receipt)
     {
         var normalized = NormalizeReceipt(receipt);
 
-        var existing = await _context.Receipts
-            .Include(r => r.Items)
-            .SingleOrDefaultAsync(r => r.Id == normalized.Id);
+        Log.UpdatingReceipt(_logger, normalized.Id);
 
-        if (existing is null)
+        try
         {
-            return null;
+            var existing = await _context.Receipts
+                .Include(r => r.Items)
+                .SingleOrDefaultAsync(r => r.Id == normalized.Id);
+
+            if (existing is null)
+            {
+                Log.ReceiptNotFound(_logger, normalized.Id);
+                return null;
+            }
+
+            existing.Number = normalized.Number;
+            existing.Supplier = normalized.Supplier;
+            existing.Warehouse = normalized.Warehouse;
+            existing.Responsible = normalized.Responsible;
+            existing.ReceivedAt = normalized.ReceivedAt;
+
+            existing.Items.Clear();
+            foreach (var item in normalized.Items)
+            {
+                existing.Items.Add(item);
+            }
+
+            await _context.SaveChangesAsync();
+
+            Log.ReceiptUpdated(_logger, normalized.Id);
+
+            return (await GetByIdAsync(existing.Id))!;
         }
-
-        existing.Number = normalized.Number;
-        existing.Supplier = normalized.Supplier;
-        existing.Warehouse = normalized.Warehouse;
-        existing.Responsible = normalized.Responsible;
-        existing.ReceivedAt = normalized.ReceivedAt;
-
-        existing.Items.Clear();
-        foreach (var item in normalized.Items)
+        catch (Exception exception)
         {
-            existing.Items.Add(item);
+            Log.ReceiptUpdateFailed(_logger, normalized.Id, exception);
+            throw;
         }
-
-        await _context.SaveChangesAsync();
-
-        return (await GetByIdAsync(existing.Id))!;
     }
 
     public async Task<bool> RemoveAsync(string id)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
+            Log.MissingIdentifier(_logger);
             return false;
         }
 
-        var receipt = await _context.Receipts.FindAsync(id);
-        if (receipt is null)
+        var normalizedId = id.Trim();
+
+        Log.DeletingReceipt(_logger, normalizedId);
+
+        try
         {
-            return false;
+            var receipt = await _context.Receipts.FindAsync(normalizedId);
+            if (receipt is null)
+            {
+                Log.ReceiptNotFound(_logger, normalizedId);
+                return false;
+            }
+
+            _context.Receipts.Remove(receipt);
+            await _context.SaveChangesAsync();
+
+            Log.ReceiptDeleted(_logger, normalizedId);
+
+            return true;
         }
-
-        _context.Receipts.Remove(receipt);
-        await _context.SaveChangesAsync();
-
-        return true;
+        catch (Exception exception)
+        {
+            Log.ReceiptDeletionFailed(_logger, normalizedId, exception);
+            throw;
+        }
     }
 
     private static Receipt NormalizeReceipt(Receipt receipt)
@@ -169,5 +248,59 @@ public class PostgresReceiptRepository(AppDbContext context) : IReceiptRepositor
             DateTimeKind.Local => date.ToUniversalTime(),
             _ => date
         };
+    }
+
+    private static partial class Log
+    {
+        [LoggerMessage(EventId = 1, Level = LogLevel.Information, Message = "Retrieving receipts from the database.")]
+        public static partial void RequestingReceipts(ILogger logger);
+
+        [LoggerMessage(EventId = 2, Level = LogLevel.Information, Message = "Retrieved {Count} receipts from the database.")]
+        public static partial void ReceiptsRetrieved(ILogger logger, int count);
+
+        [LoggerMessage(EventId = 3, Level = LogLevel.Error, Message = "Failed to retrieve receipts from the database.")]
+        public static partial void ReceiptsRetrievalFailed(ILogger logger, Exception exception);
+
+        [LoggerMessage(EventId = 4, Level = LogLevel.Warning, Message = "Receipt identifier is missing.")]
+        public static partial void MissingIdentifier(ILogger logger);
+
+        [LoggerMessage(EventId = 5, Level = LogLevel.Information, Message = "Retrieving receipt '{ReceiptId}' from the database.")]
+        public static partial void RequestingReceipt(ILogger logger, string receiptId);
+
+        [LoggerMessage(EventId = 6, Level = LogLevel.Warning, Message = "Receipt '{ReceiptId}' was not found in the database.")]
+        public static partial void ReceiptNotFound(ILogger logger, string receiptId);
+
+        [LoggerMessage(EventId = 7, Level = LogLevel.Information, Message = "Receipt '{ReceiptId}' was retrieved from the database.")]
+        public static partial void ReceiptRetrieved(ILogger logger, string receiptId);
+
+        [LoggerMessage(EventId = 8, Level = LogLevel.Error, Message = "Failed to retrieve receipt '{ReceiptId}' from the database.")]
+        public static partial void ReceiptRetrievalFailed(ILogger logger, string receiptId, Exception exception);
+
+        [LoggerMessage(EventId = 9, Level = LogLevel.Information, Message = "Creating receipt '{ReceiptId}'.")]
+        public static partial void CreatingReceipt(ILogger logger, string receiptId);
+
+        [LoggerMessage(EventId = 10, Level = LogLevel.Information, Message = "Receipt '{ReceiptId}' was created in the database.")]
+        public static partial void ReceiptCreated(ILogger logger, string receiptId);
+
+        [LoggerMessage(EventId = 11, Level = LogLevel.Error, Message = "Failed to create receipt '{ReceiptId}'.")]
+        public static partial void ReceiptCreationFailed(ILogger logger, string receiptId, Exception exception);
+
+        [LoggerMessage(EventId = 12, Level = LogLevel.Information, Message = "Updating receipt '{ReceiptId}'.")]
+        public static partial void UpdatingReceipt(ILogger logger, string receiptId);
+
+        [LoggerMessage(EventId = 13, Level = LogLevel.Information, Message = "Receipt '{ReceiptId}' was updated in the database.")]
+        public static partial void ReceiptUpdated(ILogger logger, string receiptId);
+
+        [LoggerMessage(EventId = 14, Level = LogLevel.Error, Message = "Failed to update receipt '{ReceiptId}'.")]
+        public static partial void ReceiptUpdateFailed(ILogger logger, string receiptId, Exception exception);
+
+        [LoggerMessage(EventId = 15, Level = LogLevel.Information, Message = "Deleting receipt '{ReceiptId}'.")]
+        public static partial void DeletingReceipt(ILogger logger, string receiptId);
+
+        [LoggerMessage(EventId = 16, Level = LogLevel.Information, Message = "Receipt '{ReceiptId}' was deleted from the database.")]
+        public static partial void ReceiptDeleted(ILogger logger, string receiptId);
+
+        [LoggerMessage(EventId = 17, Level = LogLevel.Error, Message = "Failed to delete receipt '{ReceiptId}'.")]
+        public static partial void ReceiptDeletionFailed(ILogger logger, string receiptId, Exception exception);
     }
 }
