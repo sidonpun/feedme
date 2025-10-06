@@ -6,12 +6,13 @@ import { catchError, filter, map, of, switchMap, withLatestFrom } from 'rxjs';
 import { catalogActions } from './catalog.actions';
 import { CatalogService } from '../../services/catalog.service';
 import { selectCatalogLoaded } from './catalog.reducer';
+import { AppState } from '../app.state';
 
 @Injectable()
 export class CatalogEffects {
   private readonly actions$ = inject(Actions);
   private readonly catalogService = inject(CatalogService);
-  private readonly store = inject(Store);
+  private readonly store = inject<Store<AppState>>(Store);
 
   readonly loadCatalog$ = createEffect(() =>
     this.actions$.pipe(
