@@ -26,6 +26,8 @@ import {
 } from '../../store/catalog/catalog.reducer';
 import { AppState } from '../../store/app.state';
 
+const EMPTY_CATALOG: readonly CatalogItem[] = [];
+
 @Pipe({
   name: 'booleanLabel',
   standalone: true,
@@ -60,9 +62,12 @@ export class CatalogComponent implements OnInit {
   private readonly newProductPopupOpen = signal(false);
 
   readonly isNewProductPopupVisible = this.newProductPopupOpen.asReadonly();
-  private readonly catalogItems = toSignal(this.store.select(selectCatalogItems), {
-    initialValue: [] as CatalogItem[],
-  });
+  private readonly catalogItems = toSignal<readonly CatalogItem[], readonly CatalogItem[]>(
+    this.store.select(selectCatalogItems),
+    {
+      initialValue: EMPTY_CATALOG,
+    }
+  );
   readonly loadErrorMessage = toSignal(this.store.select(selectCatalogLoadError), {
     initialValue: null,
   });
@@ -81,7 +86,6 @@ export class CatalogComponent implements OnInit {
       this.closeNewProductPopup();
     }
   });
-
 
   ngOnInit(): void {
     this.store.dispatch(catalogActions.loadCatalog({}));
@@ -110,7 +114,7 @@ export class CatalogComponent implements OnInit {
     this.store.dispatch(catalogActions.createCatalogItem({ item: payload }));
   }
 
-  protected get catalogData(): CatalogItem[] {
+  protected get catalogData(): readonly CatalogItem[] {
     return this.catalogItems();
   }
 }
