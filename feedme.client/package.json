@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "prebuild": "node ./scripts/prepare-build-folders.mjs",
+    "prestart": "node ./scripts/verify-dependencies.mjs",
+    "prebuild": "node ./scripts/verify-dependencies.mjs && node ./scripts/prepare-build-folders.mjs",
     "pretest": "npm ci || npm i",
     "start": "npx ng serve --open --proxy-config proxy.conf.cjs",
     "build": "npx ng build",
