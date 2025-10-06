@@ -24,6 +24,7 @@ import {
   selectCatalogItems,
   selectCatalogLoadError,
 } from '../../store/catalog/catalog.reducer';
+import { AppState } from '../../store/app.state';
 
 @Pipe({
   name: 'booleanLabel',
@@ -53,7 +54,7 @@ export class BooleanLabelPipe implements PipeTransform {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CatalogComponent implements OnInit {
-  private readonly store = inject(Store);
+  private readonly store = inject<Store<AppState>>(Store);
 
   activeTab: 'info' | 'logistics' = 'info';
   private readonly newProductPopupOpen = signal(false);
