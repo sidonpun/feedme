@@ -42,14 +42,16 @@ public class Program
             var hostEnvironment = serviceProvider.GetRequiredService<IHostEnvironment>();
             var databaseOptions = serviceProvider.GetRequiredService<IOptions<DatabaseOptions>>().Value;
 
-            var fallbackProvider = DatabaseProvider.InMemory;
+            var fallbackProvider = DatabaseProvider.Postgres;
             var resolvedProvider = databaseOptions.ResolveProvider(fallbackProvider);
 
-            if (!hostEnvironment.IsDevelopment() && string.IsNullOrWhiteSpace(databaseOptions.Provider))
+            if (resolvedProvider == DatabaseProvider.Postgres
+                && string.IsNullOrWhiteSpace(databaseOptions.Provider)
+                && !hostEnvironment.IsDevelopment())
             {
                 var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
                 logger.LogWarning(
-                    "Database provider is not configured. Falling back to the in-memory provider in the '{Environment}' environment.",
+                    "Database provider is not configured. Using the default PostgreSQL provider in the '{Environment}' environment.",
                     hostEnvironment.EnvironmentName);
             }
 
