@@ -1,32 +1,21 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { firstValueFrom, skip, take } from 'rxjs';
 
-import { ReceiptService, CreateReceipt, Receipt } from './receipt.service';
-import { API_BASE_URL } from '../tokens/api-base-url.token';
+import { CreateReceipt, ReceiptService } from './receipt.service';
 
-describe('ReceiptService', () => {
+describe('ReceiptService (in-memory)', () => {
   let service: ReceiptService;
-  let httpMock: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
-        ReceiptService,
-        { provide: API_BASE_URL, useValue: 'https://api.test/api' }
-      ]
+      providers: [ReceiptService],
     });
 
     service = TestBed.inject(ReceiptService);
-    httpMock = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should send typed payload and return created receipt', () => {
-    const payload: CreateReceipt = {
+  function createPayload(overrides: Partial<CreateReceipt> = {}): CreateReceipt {
+    const base: CreateReceipt = {
       number: 'RCPT-100',
       supplier: 'ООО Поставщик',
       warehouse: 'Главный склад',
@@ -42,37 +31,64 @@ describe('ReceiptService', () => {
           unit: 'кг',
           unitPrice: 150,
           expiryDate: '2024-04-25T00:00:00.000Z',
-          status: 'warning'
-        }
-      ]
+          status: 'warning',
+        },
+      ],
     };
 
-    const response: Receipt = {
-      id: 'receipt-1',
-      number: payload.number,
-      supplier: payload.supplier,
-      warehouse: payload.warehouse,
-      responsible: payload.responsible,
-      receivedAt: payload.receivedAt,
+    return { ...base, ...overrides };
+  }
+
+  it('creates receipts in memory and exposes them through the stream', async () => {
+    const payload = createPayload();
+    const emissionPromise = firstValueFrom(service.getAll().pipe(skip(1), take(1)));
+
+    const created = await firstValueFrom(service.saveReceipt(payload));
+    const receipts = await emissionPromise;
+
+    expect(created.totalAmount).toBeCloseTo(750, 5);
+    expect(created.items[0].totalCost).toBeCloseTo(750, 5);
+    expect(receipts).toEqual([created]);
+  });
+
+  it('updates existing receipts by identifier', async () => {
+    const initial = await firstValueFrom(service.saveReceipt(createPayload({ number: 'RCPT-101' })));
+    const updatedPayload = createPayload({
+      number: 'RCPT-101-UPDATED',
+      warehouse: 'Бар',
       items: [
         {
-          ...payload.items[0],
-          totalCost: payload.items[0].quantity * payload.items[0].unitPrice,
-          status: 'warning'
-        }
+          catalogItemId: 'product-1',
+          sku: 'PRD-001',
+          itemName: 'Помидоры',
+          category: 'Овощи',
+          quantity: 3,
+          unit: 'кг',
+          unitPrice: 200,
+          expiryDate: '2024-04-30T00:00:00.000Z',
+          status: 'ok',
+        },
       ],
-      totalAmount: payload.items[0].quantity * payload.items[0].unitPrice
-    };
+    });
 
-    let actual: Receipt | undefined;
-    service.saveReceipt(payload).subscribe(result => (actual = result));
+    const updated = await firstValueFrom(service.updateReceipt(initial.id, updatedPayload));
 
-    const req = httpMock.expectOne('https://api.test/api/receipts');
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(payload);
+    expect(updated.id).toBe(initial.id);
+    expect(updated.number).toBe('RCPT-101-UPDATED');
+    expect(updated.warehouse).toBe('Бар');
+    expect(updated.totalAmount).toBe(600);
 
-    req.flush(response);
+    const receipts = await firstValueFrom(service.getAll().pipe(take(1)));
+    expect(receipts[0]).toEqual(updated);
+  });
 
-    expect(actual).toEqual(response);
+  it('removes receipts and keeps stream consistent', async () => {
+    const first = await firstValueFrom(service.saveReceipt(createPayload({ number: 'RCPT-201' })));
+    const second = await firstValueFrom(service.saveReceipt(createPayload({ number: 'RCPT-202' })));
+
+    await firstValueFrom(service.deleteReceipt(first.id));
+
+    const receipts = await firstValueFrom(service.getAll().pipe(take(1)));
+    expect(receipts).toEqual([second]);
   });
 });
