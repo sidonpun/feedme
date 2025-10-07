@@ -1,9 +1,5 @@
-import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { ApiUrlService } from './api-url.service';
-import { ApiErrorParserService } from './api-error-parser.service';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, defer, of } from 'rxjs';
 
 export type ShelfLifeStatus = 'ok' | 'warning' | 'expired';
 
@@ -44,60 +40,114 @@ export interface CreateReceipt {
 
 @Injectable({ providedIn: 'root' })
 export class ReceiptService {
-  private readonly http = inject(HttpClient);
-  private readonly apiUrl = inject(ApiUrlService);
-  private readonly errorParser = inject(ApiErrorParserService);
-  private readonly baseUrl = this.apiUrl.build('receipts');
+  private readonly receiptsSubject = new BehaviorSubject<Receipt[]>([]);
 
   getAll(): Observable<Receipt[]> {
-    return this.http.get<Receipt[]>(this.baseUrl).pipe(
-      catchError(error =>
-        throwError(() =>
-          this.errorParser.create({ method: 'GET', url: this.baseUrl, error }),
-        ),
-      ),
-    );
+    return this.receiptsSubject.asObservable();
   }
 
   saveReceipt(data: CreateReceipt): Observable<Receipt> {
-    return this.http.post<Receipt>(this.baseUrl, data).pipe(
-      catchError(error =>
-        throwError(() =>
-          this.errorParser.create({
-            method: 'POST',
-            url: this.baseUrl,
-            payload: data,
-            error,
-          }),
-        ),
-      ),
-    );
+    return this.mutate(() => {
+      const receipt = this.createReceipt(data);
+      this.receiptsSubject.next([...this.receiptsSubject.value, receipt]);
+      return receipt;
+    });
   }
 
   updateReceipt(id: string, data: CreateReceipt): Observable<Receipt> {
-    const targetUrl = `${this.baseUrl}/${encodeURIComponent(id)}`;
-    return this.http.put<Receipt>(targetUrl, data).pipe(
-      catchError(error =>
-        throwError(() =>
-          this.errorParser.create({
-            method: 'PUT',
-            url: targetUrl,
-            payload: data,
-            error,
-          }),
-        ),
-      ),
-    );
+    return this.mutate(() => {
+      const current = this.receiptsSubject.value;
+      const index = current.findIndex(item => item.id === id);
+
+      if (index === -1) {
+        throw new Error(`Receipt with id "${id}" was not found.`);
+      }
+
+      const updated = this.createReceipt(data, id);
+      const copy = [...current];
+      copy[index] = updated;
+      this.receiptsSubject.next(copy);
+
+      return updated;
+    });
   }
 
   deleteReceipt(id: string): Observable<void> {
-    const targetUrl = `${this.baseUrl}/${encodeURIComponent(id)}`;
-    return this.http.delete<void>(targetUrl).pipe(
-      catchError(error =>
-        throwError(() =>
-          this.errorParser.create({ method: 'DELETE', url: targetUrl, error }),
-        ),
-      ),
-    );
+    return this.mutate(() => {
+      const next = this.receiptsSubject.value.filter(receipt => receipt.id !== id);
+      this.receiptsSubject.next(next);
+    });
+  }
+
+  private mutate<T>(operation: () => T): Observable<T> {
+    return defer(() => {
+      const result = operation();
+      return of(result);
+    });
+  }
+
+  private createReceipt(data: CreateReceipt, existingId?: string): Receipt {
+    if (!data.items?.length) {
+      throw new Error('Receipt must contain at least one item.');
+    }
+
+    const items = data.items.map(item => this.createReceiptLine(item));
+    const totalAmount = items.reduce((sum, line) => sum + line.totalCost, 0);
+
+    return {
+      id: existingId ?? this.generateId(),
+      number: data.number.trim(),
+      supplier: data.supplier.trim(),
+      warehouse: data.warehouse.trim(),
+      responsible: data.responsible.trim(),
+      receivedAt: this.normalizeIsoDate(data.receivedAt),
+      items,
+      totalAmount,
+    } satisfies Receipt;
+  }
+
+  private createReceiptLine(line: CreateReceiptLine): ReceiptLine {
+    const quantity = this.normalizeNumber(line.quantity);
+    const unitPrice = this.normalizeNumber(line.unitPrice);
+    const totalCost = Math.round(quantity * unitPrice * 100) / 100;
+
+    return {
+      catalogItemId: line.catalogItemId,
+      sku: line.sku,
+      itemName: line.itemName,
+      category: line.category,
+      quantity,
+      unit: line.unit,
+      unitPrice,
+      totalCost,
+      expiryDate: line.expiryDate ? this.normalizeIsoDate(line.expiryDate) : null,
+      status: line.status,
+    } satisfies ReceiptLine;
+  }
+
+  private normalizeIsoDate(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      throw new Error(`Invalid ISO date: ${value}`);
+    }
+
+    return date.toISOString();
+  }
+
+  private normalizeNumber(value: number): number {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) {
+      throw new Error('Quantity and price must be finite numbers.');
+    }
+
+    return parsed;
+  }
+
+  private generateId(): string {
+    if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+      return crypto.randomUUID();
+    }
+
+    return `receipt-${Math.random().toString(36).slice(2, 11)}`;
   }
 }
