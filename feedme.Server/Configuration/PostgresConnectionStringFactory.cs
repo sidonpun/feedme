@@ -17,11 +17,21 @@ public static class PostgresConnectionStringFactory
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionStringName);
 
         var baseConnectionString = ResolveBaseConnectionString(configuration, connectionStringName);
-        var builder = new NpgsqlConnectionStringBuilder(baseConnectionString);
 
-        ApplyOverrides(builder, configuration);
+        try
+        {
+            var builder = new NpgsqlConnectionStringBuilder(baseConnectionString);
 
-        return builder.ConnectionString;
+            ApplyOverrides(builder, configuration);
+
+            return builder.ConnectionString;
+        }
+        catch (Exception exception) when (exception is ArgumentException or FormatException)
+        {
+            throw new InvalidOperationException(
+                "The configured database connection string is invalid. Provide a valid PostgreSQL connection string or URL.",
+                exception);
+        }
     }
 
     private static string ResolveBaseConnectionString(IConfiguration configuration, string connectionStringName)
