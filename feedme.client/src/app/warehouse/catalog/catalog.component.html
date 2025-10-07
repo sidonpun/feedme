@@ -2,57 +2,76 @@
   <header class="catalog__header">
     <div>
       <h1 class="catalog__title">Каталог</h1>
-      <p class="catalog__subtitle">{{ productsCount() }} позиций</p>
+      <p class="catalog__subtitle">{{ productsCountLabel() }}</p>
     </div>
     <button type="button" class="button button--primary" (click)="openDialog()">
       + Новый товар
     </button>
   </header>
 
-  <div class="table-wrapper" *ngIf="products().length; else emptyCatalog">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Название</th>
-          <th>Тип</th>
-          <th class="is-mono">SKU</th>
-          <th>Категория</th>
-          <th class="is-centered">Ед. изм.</th>
-          <th class="is-right">Цена закупки</th>
-          <th class="is-right">Цена продажи</th>
-          <th>Поставщик</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let product of products(); trackBy: trackByProductId">
-          <td>
-            <div class="truncate" [title]="product.name">{{ product.name }}</div>
-          </td>
-          <td>{{ product.type }}</td>
-          <td class="is-mono">
-            <span class="truncate" [title]="product.sku">{{ product.sku }}</span>
-          </td>
-          <td>
-            <div class="truncate" [title]="product.category">{{ product.category }}</div>
-          </td>
-          <td class="is-centered">{{ product.unit }}</td>
-          <td class="is-right">
-            {{ product.purchasePrice ?? '—' }}
-          </td>
-          <td class="is-right">
-            {{ product.salePrice ?? '—' }}
-          </td>
-          <td>
-            <div class="truncate" [title]="product.supplierMain || '—'">
-              {{ product.supplierMain || '—' }}
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <ng-container *ngIf="totalProductsCount(); else emptyCatalog">
+    <div class="catalog__toolbar">
+      <input
+        #searchInput
+        class="catalog__search"
+        type="search"
+        placeholder="Поиск по названию"
+        [value]="searchQuery()"
+        (input)="updateSearch(searchInput.value)"
+        aria-label="Поиск по названию"
+      />
+    </div>
+
+    <div class="table-wrapper" *ngIf="filteredProductsCount(); else noSearchResults">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Название</th>
+            <th>Тип</th>
+            <th class="is-mono">SKU</th>
+            <th>Категория</th>
+            <th class="is-centered">Ед. изм.</th>
+            <th class="is-right">Цена закупки</th>
+            <th class="is-right">Цена продажи</th>
+            <th>Поставщик</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of filteredProducts(); trackBy: trackByProductId">
+            <td>
+              <div class="truncate" [title]="product.name">{{ product.name }}</div>
+            </td>
+            <td>{{ product.type }}</td>
+            <td class="is-mono">
+              <span class="truncate" [title]="product.sku">{{ product.sku }}</span>
+            </td>
+            <td>
+              <div class="truncate" [title]="product.category">{{ product.category }}</div>
+            </td>
+            <td class="is-centered">{{ product.unit }}</td>
+            <td class="is-right">
+              {{ product.purchasePrice ?? '—' }}
+            </td>
+            <td class="is-right">
+              {{ product.salePrice ?? '—' }}
+            </td>
+            <td>
+              <div class="truncate" [title]="product.supplierMain || '—'">
+                {{ product.supplierMain || '—' }}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
   <ng-template #emptyCatalog>
     <div class="catalog__empty">Каталог пока пуст. Добавьте первую позицию.</div>
+  </ng-template>
+  <ng-template #noSearchResults>
+    <div class="catalog__empty">
+      По запросу «{{ normalizedSearchQuery() }}» ничего не найдено.
+    </div>
   </ng-template>
 
   <div class="dialog-backdrop" *ngIf="dialogOpen()">

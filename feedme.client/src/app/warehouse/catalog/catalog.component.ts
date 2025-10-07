@@ -16,6 +16,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import { WarehouseCatalogService } from './catalog.service';
 import { Product } from '../shared/models';
+import { filterByName } from './filter-by-name';
 
 interface ProductFormValue {
   name: string;
@@ -75,6 +76,7 @@ export class CatalogComponent {
 
   readonly dialogOpen = signal(false);
   readonly submitting = signal(false);
+  readonly searchQuery = signal('');
 
   readonly productForm = this.fb.group({
     name: this.fb.control(this.defaults.name, {
@@ -122,7 +124,21 @@ export class CatalogComponent {
     initialValue: [] as Product[],
   });
 
-  readonly productsCount = computed(() => this.products().length);
+  readonly totalProductsCount = computed(() => this.products().length);
+  readonly filteredProducts = computed(() => filterByName(this.products(), this.searchQuery(), 'ru-RU'));
+  readonly filteredProductsCount = computed(() => this.filteredProducts().length);
+  readonly normalizedSearchQuery = computed(() => this.searchQuery().trim());
+  readonly productsCountLabel = computed(() => {
+    const total = this.totalProductsCount();
+    const filtered = this.filteredProductsCount();
+    const hasSearch = this.normalizedSearchQuery().length > 0;
+
+    if (!hasSearch || filtered === total) {
+      return `${total} позиций`;
+    }
+
+    return `${filtered} из ${total} позиций`;
+  });
 
   openDialog(): void {
     this.dialogOpen.set(true);
@@ -185,6 +201,10 @@ export class CatalogComponent {
 
   trackByProductId(_: number, product: Product): string {
     return product.id;
+  }
+
+  updateSearch(query: string): void {
+    this.searchQuery.set(query);
   }
 
   private resetForm(): void {
