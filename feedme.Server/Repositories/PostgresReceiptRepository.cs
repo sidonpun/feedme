@@ -1,3 +1,4 @@
+using System.Globalization;
 using feedme.Server.Data;
 using feedme.Server.Models;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,21 @@ public partial class PostgresReceiptRepository(AppDbContext context, ILogger<Pos
 {
     private readonly AppDbContext _context = context;
     private readonly ILogger<PostgresReceiptRepository> _logger = logger;
+
+    private static class ReceiptConstraints
+    {
+        public const int NumberMaxLength = 64;
+        public const int SupplierMaxLength = 128;
+        public const int WarehouseMaxLength = 128;
+        public const int ResponsibleMaxLength = 128;
+
+        public const int CatalogItemIdMaxLength = 64;
+        public const int SkuMaxLength = 64;
+        public const int ItemNameMaxLength = 128;
+        public const int CategoryMaxLength = 128;
+        public const int UnitMaxLength = 32;
+        public const int StatusMaxLength = 32;
+    }
 
     public async Task<IEnumerable<Receipt>> GetAllAsync()
     {
@@ -178,10 +194,10 @@ public partial class PostgresReceiptRepository(AppDbContext context, ILogger<Pos
         var normalized = new Receipt
         {
             Id = NormalizeIdentifier(receipt.Id),
-            Number = Sanitize(receipt.Number),
-            Supplier = Sanitize(receipt.Supplier),
-            Warehouse = Sanitize(receipt.Warehouse),
-            Responsible = Sanitize(receipt.Responsible),
+            Number = Sanitize(receipt.Number, ReceiptConstraints.NumberMaxLength),
+            Supplier = Sanitize(receipt.Supplier, ReceiptConstraints.SupplierMaxLength),
+            Warehouse = Sanitize(receipt.Warehouse, ReceiptConstraints.WarehouseMaxLength),
+            Responsible = Sanitize(receipt.Responsible, ReceiptConstraints.ResponsibleMaxLength),
             ReceivedAt = NormalizeTimestamp(receipt.ReceivedAt),
             Items = (receipt.Items ?? new List<ReceiptLine>())
                 .Select(NormalizeItem)
@@ -193,7 +209,7 @@ public partial class PostgresReceiptRepository(AppDbContext context, ILogger<Pos
 
     private static ReceiptLine NormalizeItem(ReceiptLine item)
     {
-        var status = Sanitize(item.Status);
+        var status = Sanitize(item.Status, ReceiptConstraints.StatusMaxLength);
         if (string.IsNullOrEmpty(status))
         {
             status = ShelfLifeState.Ok.ToCode();
@@ -201,12 +217,12 @@ public partial class PostgresReceiptRepository(AppDbContext context, ILogger<Pos
 
         return new ReceiptLine
         {
-            CatalogItemId = Sanitize(item.CatalogItemId),
-            Sku = Sanitize(item.Sku),
-            ItemName = Sanitize(item.ItemName),
-            Category = Sanitize(item.Category),
+            CatalogItemId = Sanitize(item.CatalogItemId, ReceiptConstraints.CatalogItemIdMaxLength),
+            Sku = Sanitize(item.Sku, ReceiptConstraints.SkuMaxLength),
+            ItemName = Sanitize(item.ItemName, ReceiptConstraints.ItemNameMaxLength),
+            Category = Sanitize(item.Category, ReceiptConstraints.CategoryMaxLength),
             Quantity = item.Quantity,
-            Unit = Sanitize(item.Unit),
+            Unit = Sanitize(item.Unit, ReceiptConstraints.UnitMaxLength),
             UnitPrice = item.UnitPrice,
             ExpiryDate = NormalizeDate(item.ExpiryDate),
             Status = status
@@ -231,7 +247,23 @@ public partial class PostgresReceiptRepository(AppDbContext context, ILogger<Pos
         };
     }
 
-    private static string Sanitize(string value) => value?.Trim() ?? string.Empty;
+    private static string Sanitize(string value, int maxLength)
+    {
+        if (maxLength <= 0)
+        {
+            return string.Empty;
+        }
+
+        var sanitized = value?.Trim() ?? string.Empty;
+        if (sanitized.Length <= maxLength)
+        {
+            return sanitized;
+        }
+
+        var stringInfo = new StringInfo(sanitized);
+        var length = Math.Min(maxLength, stringInfo.LengthInTextElements);
+        return stringInfo.SubstringByTextElements(0, length);
+    }
 
     private static DateTime? NormalizeDate(DateTime? value)
     {
