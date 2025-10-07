@@ -166,6 +166,57 @@ public class ReceiptsApiTests
     }
 
     [Fact]
+    public async Task PostReceipt_TruncatesFieldsExceedingDatabaseLimits()
+    {
+        await using var factory = new FeedmeApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var request = new
+        {
+            number = new string('N', 200),
+            supplier = new string('S', 300),
+            warehouse = new string('W', 260),
+            responsible = new string('R', 270),
+            receivedAt = DateTime.UtcNow,
+            items = new[]
+            {
+                new
+                {
+                    catalogItemId = new string('C', 200),
+                    sku = new string('K', 200),
+                    itemName = new string('I', 260),
+                    category = new string('G', 260),
+                    quantity = 1.5m,
+                    unit = new string('U', 120),
+                    unitPrice = 10.25m,
+                    expiryDate = DateTime.UtcNow.AddDays(30),
+                    status = new string('s', 120)
+                }
+            }
+        };
+
+        var response = await client.PostAsJsonAsync("/api/receipts", request);
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+        var created = await response.Content.ReadFromJsonAsync<ReceiptResponse>();
+        Assert.NotNull(created);
+
+        Assert.Equal(ReceiptFieldLengths.NumberMaxLength, created!.Number.Length);
+        Assert.Equal(ReceiptFieldLengths.SupplierMaxLength, created.Supplier.Length);
+        Assert.Equal(ReceiptFieldLengths.WarehouseMaxLength, created.Warehouse.Length);
+        Assert.Equal(ReceiptFieldLengths.ResponsibleMaxLength, created.Responsible.Length);
+
+        var line = Assert.Single(created.Items);
+        Assert.Equal(ReceiptFieldLengths.CatalogItemIdMaxLength, line.CatalogItemId.Length);
+        Assert.Equal(ReceiptFieldLengths.SkuMaxLength, line.Sku.Length);
+        Assert.Equal(ReceiptFieldLengths.ItemNameMaxLength, line.ItemName.Length);
+        Assert.Equal(ReceiptFieldLengths.CategoryMaxLength, line.Category.Length);
+        Assert.Equal(ReceiptFieldLengths.UnitMaxLength, line.Unit.Length);
+        Assert.Equal(ReceiptFieldLengths.StatusMaxLength, line.Status.Length);
+    }
+
+    [Fact]
     public async Task PostReceipt_ReturnsBadRequest_WhenItemsContainNullEntries()
     {
         await using var factory = new FeedmeApplicationFactory();
@@ -188,4 +239,19 @@ public class ReceiptsApiTests
         Assert.True(problem!.Errors.TryGetValue("Items", out var errors));
         Assert.Contains(errors, message => message.Contains("null", StringComparison.OrdinalIgnoreCase));
     }
+}
+
+file static class ReceiptFieldLengths
+{
+    public const int NumberMaxLength = 64;
+    public const int SupplierMaxLength = 128;
+    public const int WarehouseMaxLength = 128;
+    public const int ResponsibleMaxLength = 128;
+
+    public const int CatalogItemIdMaxLength = 64;
+    public const int SkuMaxLength = 64;
+    public const int ItemNameMaxLength = 128;
+    public const int CategoryMaxLength = 128;
+    public const int UnitMaxLength = 32;
+    public const int StatusMaxLength = 32;
 }
