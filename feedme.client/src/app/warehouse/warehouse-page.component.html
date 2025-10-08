@@ -22,6 +22,48 @@
   </aside>
 
   <main class="warehouse-page__content">
+    <div class="warehouse-page__tabs-wrapper">
+      <div class="primary-tabs" role="tablist" aria-label="Разделы склада">
+        <button
+          type="button"
+          class="primary-tab"
+          [class.primary-tab--active]="activeTab() === 'supplies'"
+          [attr.aria-selected]="activeTab() === 'supplies'"
+          (click)="selectTab('supplies')"
+        >
+          Поставки
+        </button>
+        <button
+          type="button"
+          class="primary-tab"
+          [class.primary-tab--active]="activeTab() === 'stock'"
+          [attr.aria-selected]="activeTab() === 'stock'"
+          (click)="selectTab('stock')"
+        >
+          Остатки
+        </button>
+        <button
+          type="button"
+          class="primary-tab"
+          [class.primary-tab--active]="activeTab() === 'catalog'"
+          [attr.aria-selected]="activeTab() === 'catalog'"
+          (click)="selectTab('catalog')"
+        >
+          Каталог
+        </button>
+        <button
+          type="button"
+          class="primary-tab"
+          [class.primary-tab--active]="activeTab() === 'inventory'"
+          [attr.aria-selected]="activeTab() === 'inventory'"
+          (click)="selectTab('inventory')"
+        >
+          Инвентаризация
+        </button>
+        <span class="indicator" aria-hidden="true"></span>
+      </div>
+    </div>
+
     <section class="warehouse-page__overview" aria-label="Обзор склада">
       <header class="header-crumbs">
         <nav class="breadcrumbs" aria-label="Хлебные крошки">
@@ -46,27 +88,33 @@
         </div>
       </header>
 
-      <section *ngIf="overviewMetrics() as snapshot" class="kpi" aria-label="Ключевые показатели склада">
-        <article class="card" aria-live="polite">
-          <p class="title">Поставок за 7 дней</p>
-          <p class="value">{{ snapshot.suppliesLastWeek }}</p>
-        </article>
+      <ng-container *ngIf="activeTab() === 'supplies'">
+        <section
+          *ngIf="overviewMetrics() as snapshot"
+          class="kpi"
+          aria-label="Ключевые показатели склада"
+        >
+          <article class="card" aria-live="polite">
+            <p class="title">Поставок за 7 дней</p>
+            <p class="value">{{ snapshot.suppliesLastWeek }}</p>
+          </article>
 
-        <article class="card" aria-live="polite">
-          <p class="title">Сумма закупок / 7 дн.</p>
-          <p class="value">{{ formatCurrency(snapshot.purchaseAmountLastWeek) }}</p>
-        </article>
+          <article class="card" aria-live="polite">
+            <p class="title">Сумма закупок / 7 дн.</p>
+            <p class="value">{{ formatCurrency(snapshot.purchaseAmountLastWeek) }}</p>
+          </article>
 
-        <article class="card" aria-live="polite">
-          <p class="title">Позиций на складе</p>
-          <p class="value">{{ snapshot.positions }}</p>
-        </article>
+          <article class="card" aria-live="polite">
+            <p class="title">Позиций на складе</p>
+            <p class="value">{{ snapshot.positions }}</p>
+          </article>
 
-        <article class="card" aria-live="polite">
-          <p class="title">Просрочено</p>
-          <p class="value" [ngClass]="{ neg: snapshot.expired > 0 }">{{ snapshot.expired }}</p>
-        </article>
-      </section>
+          <article class="card" aria-live="polite">
+            <p class="title">Просрочено</p>
+            <p class="value" [ngClass]="{ neg: snapshot.expired > 0 }">{{ snapshot.expired }}</p>
+          </article>
+        </section>
+      </ng-container>
     </section>
 
     <section class="toolbar" aria-label="Фильтры и действия по поставкам">
@@ -114,12 +162,6 @@
         <button type="button" class="btn btn-orange" (click)="openCreateDialog()">+ Новая поставка</button>
       </div>
     </section>
-
-    <app-supply-controls
-      class="warehouse-page__tabs"
-      [activeTab]="activeTab()"
-      (activeTabChange)="selectTab($event)"
-    ></app-supply-controls>
 
     <section *ngIf="activeTab() === 'supplies'" class="warehouse-page__tab-panel">
         <section class="warehouse-page__bulk" *ngIf="hasSelection()" aria-live="polite">
