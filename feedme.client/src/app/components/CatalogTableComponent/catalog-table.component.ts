@@ -5,13 +5,16 @@ import { ConfirmDeletePopupComponent } from '../confirm-delete-popup/confirm-del
 import { TableControlsComponent } from '../table-controls/table-controls.component';
 import { CatalogViewSwitcherComponent } from '../catalog-view-switcher/catalog-view-switcher.component';
 import { CatalogItem } from '../../services/catalog.service';
-import { sortBySelector, SortDirection, toggleDirection } from '../../utils/sort.util';
 
 type CatalogView = 'info' | 'logistics';
 
 interface CatalogColumn {
   label: string;
   key: keyof CatalogItem;
+  widthClass: string;
+  headerClasses?: string[];
+  cellClasses?: string[];
+  sortable?: boolean;
 }
 
 interface FilterOptions {
@@ -29,7 +32,7 @@ interface FilterOptions {
     CatalogViewSwitcherComponent
   ],
   templateUrl: './catalog-table.component.html',
-  styleUrls: ['./catalog-table.component.css']
+  styleUrls: ['./catalog-table.component.scss']
 })
 export class CatalogTableComponent implements OnChanges {
   /** Входные данные для каталога */
@@ -50,8 +53,7 @@ export class CatalogTableComponent implements OnChanges {
   filteredData: CatalogItem[] = [];
 
   /** Параметры сортировки */
-  sortKey: keyof CatalogItem | null = null;
-  sortDirection: SortDirection = 'asc';
+  sort: { key: keyof CatalogItem; dir: 'asc' | 'desc' } = { key: 'name', dir: 'asc' };
 
   /** Строка, выбранная для удаления */
   deleteCandidate: CatalogItem | null = null;
@@ -60,26 +62,104 @@ export class CatalogTableComponent implements OnChanges {
 
   /** Колонки для режима "Основная информация" */
   private readonly infoColumns: CatalogColumn[] = [
-    { label: 'Название товара', key: 'name' },
-    { label: 'Тип номенклатуры', key: 'type' },
-    { label: 'Номенклатурный код', key: 'code' },
-    { label: 'Категория', key: 'category' },
-    { label: 'Единица измерения (базовая)', key: 'unit' },
-    { label: 'Метод списания', key: 'writeoffMethod' },
-    { label: 'Аллергены', key: 'allergens' },
-    { label: 'Требует фасовки', key: 'packagingRequired' },
-    { label: 'Портится после вскрытия', key: 'spoilsAfterOpening' },
+    {
+      label: 'Название товара',
+      key: 'name',
+      widthClass: 'w-name',
+      cellClasses: ['text-clip']
+    },
+    {
+      label: 'Тип номенклатуры',
+      key: 'type',
+      widthClass: 'w-type',
+      cellClasses: ['text-clip']
+    },
+    {
+      label: 'Номенклатурный код',
+      key: 'code',
+      widthClass: 'w-code',
+      cellClasses: ['mono']
+    },
+    {
+      label: 'Категория',
+      key: 'category',
+      widthClass: 'w-cat',
+      cellClasses: ['text-clip']
+    },
+    {
+      label: 'Единица измерения (базовая)',
+      key: 'unit',
+      widthClass: 'w-unit',
+      cellClasses: ['mono']
+    },
+    {
+      label: 'Метод списания',
+      key: 'writeoffMethod',
+      widthClass: 'w-method'
+    },
+    {
+      label: 'Аллергены',
+      key: 'allergens',
+      widthClass: 'w-attr',
+      cellClasses: ['text-clip']
+    },
+    {
+      label: 'Флаги',
+      key: 'packagingRequired',
+      widthClass: 'w-flags',
+      sortable: false
+    },
   ];
 
   /** Колонки для режима "Закупка и логистика" */
   private readonly logisticsColumns: CatalogColumn[] = [
-    { label: 'Поставщик (основной)', key: 'supplier' },
-    { label: 'Оценочная себестоимость', key: 'costEstimate' },
-    { label: 'Ставка НДС', key: 'taxRate' },
-    { label: 'Цена за единицу', key: 'unitPrice' },
-    { label: 'Код ТН ВЭД', key: 'tnved' },
-    { label: 'Маркируемый товар', key: 'isMarked' },
-    { label: 'Алкогольная продукция', key: 'isAlcohol' },
+    {
+      label: 'Поставщик (основной)',
+      key: 'supplier',
+      widthClass: 'w-supplier',
+      cellClasses: ['text-clip']
+    },
+    {
+      label: 'Оценочная себестоимость',
+      key: 'costEstimate',
+      widthClass: 'w-cost',
+      headerClasses: ['text-right'],
+      cellClasses: ['mono', 'text-right']
+    },
+    {
+      label: 'Ставка НДС',
+      key: 'taxRate',
+      widthClass: 'w-tax',
+      headerClasses: ['text-right'],
+      cellClasses: ['mono', 'text-right']
+    },
+    {
+      label: 'Цена за единицу',
+      key: 'unitPrice',
+      widthClass: 'w-price',
+      headerClasses: ['text-right'],
+      cellClasses: ['mono', 'text-right']
+    },
+    {
+      label: 'Код ТН ВЭД',
+      key: 'tnved',
+      widthClass: 'w-tnved',
+      cellClasses: ['mono']
+    },
+    {
+      label: 'Маркируемый товар',
+      key: 'isMarked',
+      widthClass: 'w-flag',
+      headerClasses: ['text-center'],
+      cellClasses: ['text-center']
+    },
+    {
+      label: 'Алкогольная продукция',
+      key: 'isAlcohol',
+      widthClass: 'w-flag',
+      headerClasses: ['text-center'],
+      cellClasses: ['text-center']
+    },
   ];
 
   private readonly columnsByView: Record<CatalogView, CatalogColumn[]> = {
@@ -88,9 +168,30 @@ export class CatalogTableComponent implements OnChanges {
   };
 
 
-  private readonly searchableKeys: (keyof CatalogItem)[] = Array.from(
-    new Set([...this.infoColumns, ...this.logisticsColumns].map(column => column.key))
-  ) as (keyof CatalogItem)[];
+  private readonly searchableKeys: (keyof CatalogItem)[] = [
+    'name',
+    'type',
+    'code',
+    'category',
+    'unit',
+    'weight',
+    'writeoffMethod',
+    'allergens',
+    'packagingRequired',
+    'spoilsAfterOpening',
+    'supplier',
+    'deliveryTime',
+    'costEstimate',
+    'taxRate',
+    'unitPrice',
+    'salePrice',
+    'tnved',
+    'isMarked',
+    'isAlcohol',
+    'alcoholCode',
+    'alcoholStrength',
+    'alcoholVolume'
+  ];
 
 
   private previousLength = 0;
@@ -175,29 +276,18 @@ export class CatalogTableComponent implements OnChanges {
 
   onViewChange(view: CatalogView): void {
     this.viewMode = view;
-    if (this.sortKey && !this.columns.some(column => column.key === this.sortKey)) {
-      this.sortKey = null;
+    const sortableColumns = this.columns.filter(column => column.sortable !== false);
+    if (!sortableColumns.some(column => column.key === this.sort.key) && sortableColumns.length > 0) {
+      this.sort = { key: sortableColumns[0].key, dir: 'asc' };
     }
     this.applyFilters({ preservePage: true });
   }
 
-  onSortColumn(column: CatalogColumn): void {
-    if (this.sortKey === column.key) {
-      this.sortDirection = toggleDirection(this.sortDirection);
-    } else {
-      this.sortKey = column.key;
-      this.sortDirection = 'asc';
-    }
-
+  onSort(key: keyof CatalogItem): void {
+    const dir: 'asc' | 'desc' =
+      this.sort.key === key && this.sort.dir === 'asc' ? 'desc' : 'asc';
+    this.sort = { key, dir };
     this.applyFilters({ preservePage: true });
-  }
-
-  getAriaSort(column: CatalogColumn): 'none' | 'ascending' | 'descending' {
-    if (this.sortKey !== column.key) {
-      return 'none';
-    }
-
-    return this.sortDirection === 'asc' ? 'ascending' : 'descending';
   }
   /** Навигация по страницам */
   prevPage(): void {
@@ -222,7 +312,8 @@ export class CatalogTableComponent implements OnChanges {
         )
       : nonEmptyItems;
 
-    this.filteredData = this.sortData(matches);
+    const activeSortKey = this.resolveSortKey();
+    this.filteredData = this.sortItems(matches, activeSortKey, this.sort.dir);
 
     if (justAdded && !normalizedQuery) {
       this.currentPage = this.totalPages;
@@ -258,13 +349,89 @@ export class CatalogTableComponent implements OnChanges {
     return this.searchableKeys.some(key => this.normalize(item[key]).length > 0);
   }
 
-  private sortData(items: CatalogItem[]): CatalogItem[] {
-    if (!this.sortKey) {
-      return [...items];
+  getHeaderClasses(column: CatalogColumn): string[] {
+    const classes = [column.widthClass, ...(column.headerClasses ?? [])];
+    if (column.sortable !== false) {
+      classes.push('sortable');
+      if (this.sort.key === column.key) {
+        classes.push(this.sort.dir);
+      }
     }
+    return classes;
+  }
 
-    const key = this.sortKey;
-    return sortBySelector(items, item => item[key], this.sortDirection);
+  getCellClasses(column: CatalogColumn): string[] {
+    return [column.widthClass, ...(column.cellClasses ?? [])];
+  }
+
+  getFlagLabels(item: CatalogItem): string[] {
+    const flags: string[] = [];
+    if (item.packagingRequired) {
+      flags.push('Требует фасовки');
+    }
+    if (item.spoilsAfterOpening) {
+      flags.push('Портится после вскрытия');
+    }
+    return flags;
+  }
+
+  getWriteoffPillClass(method: string | null | undefined): string {
+    if (!method) {
+      return '';
+    }
+    const normalized = method.trim().toUpperCase();
+    if (normalized === 'FIFO') {
+      return 'pill-green';
+    }
+    if (normalized === 'FEFO') {
+      return 'pill-blue';
+    }
+    return '';
+  }
+
+  private resolveSortKey(): keyof CatalogItem {
+    const sortableColumns = this.columns.filter(column => column.sortable !== false);
+    if (sortableColumns.length === 0) {
+      return this.sort.key;
+    }
+    if (sortableColumns.some(column => column.key === this.sort.key)) {
+      return this.sort.key;
+    }
+    const fallbackKey = sortableColumns[0].key;
+    this.sort = { key: fallbackKey, dir: 'asc' };
+    return fallbackKey;
+  }
+
+  private sortItems(items: CatalogItem[], key: keyof CatalogItem, dir: 'asc' | 'desc'): CatalogItem[] {
+    const copy = [...items];
+    copy.sort((a, b) => {
+      const valueA = a[key];
+      const valueB = b[key];
+
+      if (typeof valueA === 'number' && typeof valueB === 'number') {
+        return dir === 'asc' ? valueA - valueB : valueB - valueA;
+      }
+
+      if (typeof valueA === 'boolean' && typeof valueB === 'boolean') {
+        if (valueA === valueB) {
+          return 0;
+        }
+        return dir === 'asc'
+          ? (valueA ? 1 : -1)
+          : (valueA ? -1 : 1);
+      }
+
+      const normalizedA = this.normalize(valueA);
+      const normalizedB = this.normalize(valueB);
+      if (normalizedA < normalizedB) {
+        return dir === 'asc' ? -1 : 1;
+      }
+      if (normalizedA > normalizedB) {
+        return dir === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+    return copy;
   }
 
 }
