@@ -35,9 +35,9 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
 
         var originRules = CreateOriginRules(allowedOrigins);
 
-        if (originRules.AllowedOrigins.Count > 0)
+        if (originRules.ExactOrigins.Count > 0)
         {
-            policyBuilder.WithOrigins(originRules.AllowedOrigins.ToArray());
+            policyBuilder.WithOrigins(originRules.ExactOrigins.ToArray());
         }
 
         policyBuilder
@@ -55,8 +55,8 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
 
     private static CorsOriginRuleSet CreateOriginRules(IReadOnlyCollection<string> configuredOrigins)
     {
-        var rules = new List<CorsOriginRule>();
-        var allowedOrigins = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var exactOrigins = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var wildcardRules = new List<CorsOriginRule>();
 
         foreach (var origin in configuredOrigins)
         {
@@ -65,37 +65,41 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
                 continue;
             }
 
-            rules.Add(rule);
+            if (rule.AllowsAnyPort)
+            {
+                wildcardRules.Add(rule);
+                continue;
+            }
 
-            allowedOrigins.Add(rule.NormalizedOrigin);
+            exactOrigins.Add(rule.NormalizedOrigin);
         }
 
-        return new CorsOriginRuleSet(rules, allowedOrigins);
+        return new CorsOriginRuleSet(exactOrigins, wildcardRules);
     }
 
     private sealed class CorsOriginRuleSet
     {
-        private readonly IReadOnlyCollection<CorsOriginRule> _rules;
-        private readonly HashSet<string> _allowedOrigins;
+        private readonly IReadOnlyCollection<CorsOriginRule> _wildcardRules;
+        private readonly HashSet<string> _exactOrigins;
 
         public CorsOriginRuleSet(
-            IReadOnlyCollection<CorsOriginRule> rules,
-            HashSet<string> allowedOrigins)
+            HashSet<string> exactOrigins,
+            IReadOnlyCollection<CorsOriginRule> wildcardRules)
         {
-            _rules = rules;
-            _allowedOrigins = allowedOrigins;
+            _exactOrigins = exactOrigins;
+            _wildcardRules = wildcardRules;
         }
 
-        public IReadOnlyCollection<string> AllowedOrigins => _allowedOrigins;
+        public IReadOnlyCollection<string> ExactOrigins => _exactOrigins;
 
         public bool IsAllowed(string origin)
         {
-            if (_allowedOrigins.Contains(origin))
+            if (_exactOrigins.Contains(origin))
             {
                 return true;
             }
 
-            if (_rules.Count == 0)
+            if (_exactOrigins.Count == 0 && _wildcardRules.Count == 0)
             {
                 return false;
             }
@@ -105,9 +109,9 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
                 return false;
             }
 
-            foreach (var rule in _rules)
+            foreach (var wildcardRule in _wildcardRules)
             {
-                if (rule.Matches(parsedOrigin))
+                if (wildcardRule.Matches(parsedOrigin))
                 {
                     return true;
                 }
