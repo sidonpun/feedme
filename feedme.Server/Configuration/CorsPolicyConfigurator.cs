@@ -35,7 +35,7 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
 
         var originRules = CreateOriginRules(allowedOrigins);
 
-        if (originRules.AllowedOrigins.Count > 0)
+        if (!originRules.ContainsWildcardRule && originRules.AllowedOrigins.Count > 0)
         {
             policyBuilder.WithOrigins(originRules.AllowedOrigins.ToArray());
         }
@@ -57,6 +57,7 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
     {
         var rules = new List<CorsOriginRule>();
         var allowedOrigins = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var containsWildcardRule = false;
 
         foreach (var origin in configuredOrigins)
         {
@@ -67,13 +68,16 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
 
             rules.Add(rule);
 
-            if (!rule.AllowsAnyPort)
+            if (rule.AllowsAnyPort)
             {
-                allowedOrigins.Add(rule.NormalizedOrigin);
+                containsWildcardRule = true;
+                continue;
             }
+
+            allowedOrigins.Add(rule.NormalizedOrigin);
         }
 
-        return new CorsOriginRuleSet(rules, allowedOrigins);
+        return new CorsOriginRuleSet(rules, allowedOrigins, containsWildcardRule);
     }
 
     private sealed class CorsOriginRuleSet
@@ -83,13 +87,17 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
 
         public CorsOriginRuleSet(
             IReadOnlyCollection<CorsOriginRule> rules,
-            HashSet<string> allowedOrigins)
+            HashSet<string> allowedOrigins,
+            bool containsWildcardRule)
         {
             _rules = rules;
             _allowedOrigins = allowedOrigins;
+            ContainsWildcardRule = containsWildcardRule;
         }
 
         public IReadOnlyCollection<string> AllowedOrigins => _allowedOrigins;
+
+        public bool ContainsWildcardRule { get; }
 
         public bool IsAllowed(string origin)
         {
