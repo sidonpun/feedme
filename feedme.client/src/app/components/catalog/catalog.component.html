@@ -1,7 +1,25 @@
 <div class="catalog-header">
-  <div class="tabs">
-    <button type="button" (click)="activeTab='info'" [class.active]="activeTab==='info'">Основная информация</button>
-    <button type="button" (click)="activeTab='logistics'" [class.active]="activeTab==='logistics'">Закупка и логистика</button>
+  <div class="tabs" role="tablist" aria-label="Каталог">
+    <button
+      type="button"
+      class="tab"
+      role="tab"
+      (click)="activeTab='info'"
+      [class.active]="activeTab==='info'"
+      [attr.aria-selected]="activeTab === 'info'"
+    >
+      Основная информация
+    </button>
+    <button
+      type="button"
+      class="tab"
+      role="tab"
+      (click)="activeTab='logistics'"
+      [class.active]="activeTab==='logistics'"
+      [attr.aria-selected]="activeTab === 'logistics'"
+    >
+      Закупка и логистика
+    </button>
   </div>
   <button type="button" class="catalog-header__action" (click)="openNewProductPopup()">
     + Новый товар
