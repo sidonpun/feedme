@@ -21,7 +21,6 @@ import { EmptyStateComponent } from './ui/empty-state.component';
 import { FieldComponent } from './ui/field.component';
 import { StatusBadgeClassPipe } from '../pipes/status-badge-class.pipe';
 import { StatusBadgeLabelPipe } from '../pipes/status-badge-label.pipe';
-import { SupplyControlsComponent } from '../components/supply-controls/supply-controls.component';
 import { CatalogComponent as LegacyCatalogComponent } from '../components/catalog/catalog.component';
 import { CreateSupplyDialogComponent, CreateSupplyDialogResult } from './ui/create-supply-dialog.component';
 import { computeExpiryStatus } from './shared/status.util';
@@ -54,7 +53,6 @@ type SupplyHistoryEntry = {
     EmptyStateComponent,
     StatusBadgeClassPipe,
     StatusBadgeLabelPipe,
-    SupplyControlsComponent,
     LegacyCatalogComponent,
     CreateSupplyDialogComponent,
   ],
