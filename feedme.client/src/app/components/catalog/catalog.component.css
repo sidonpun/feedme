@@ -163,6 +163,62 @@
   text-transform: none;
 }
 
+.catalog-table th.sortable {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.catalog-table th.sortable:hover,
+.catalog-table th.sortable.sortable--active {
+  color: var(--accent);
+}
+
+.catalog-table th.sortable:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.catalog-table th.sortable .sort {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 10px;
+  height: 12px;
+}
+
+.catalog-table th.sortable .sort::before,
+.catalog-table th.sortable .sort::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  opacity: 0.25;
+  transition: opacity 0.2s ease;
+}
+
+.catalog-table th.sortable .sort::before {
+  top: 0;
+  border-bottom: 5px solid currentColor;
+}
+
+.catalog-table th.sortable .sort::after {
+  bottom: 0;
+  border-top: 5px solid currentColor;
+}
+
+.catalog-table th.sortable[data-direction='asc'] .sort::before,
+.catalog-table th.sortable[data-direction='desc'] .sort::after {
+  opacity: 1;
+}
+
 .catalog-table thead th:first-child {
   padding-left: 24px;
 }

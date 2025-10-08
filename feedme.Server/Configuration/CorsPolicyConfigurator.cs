@@ -38,6 +38,7 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
 
         var originRules = CreateOriginRules(sanitizedOrigins);
 
+
         if (!originRules.Rules.Any())
         {
             policyBuilder
@@ -50,12 +51,13 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
         }
 
         if (!originRules.ExplicitOrigins.IsEmpty)
+
         {
             policyBuilder.WithOrigins(originRules.ExplicitOrigins.ToArray());
         }
 
         policyBuilder
-            .SetIsOriginAllowed(origin => originRules.IsAllowed(origin))
+            .SetIsOriginAllowed(originRules.IsAllowed)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -70,6 +72,7 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
 
     private static CorsOriginRuleSet CreateOriginRules(IReadOnlyCollection<string> configuredOrigins)
     {
+
         var rules = configuredOrigins
             .Select(origin => CorsOriginRule.TryCreate(origin, out var rule) ? rule : null)
             .Where(rule => rule is not null)
@@ -82,6 +85,7 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToImmutableHashSet(StringComparer.OrdinalIgnoreCase);
 
+
         return new CorsOriginRuleSet(rules, explicitOrigins);
     }
 
@@ -89,9 +93,11 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
         ImmutableArray<CorsOriginRule> Rules,
         ImmutableHashSet<string> ExplicitOrigins)
     {
+
         public bool IsAllowed(string? origin)
         {
             if (string.IsNullOrWhiteSpace(origin))
+
             {
                 return false;
             }
