@@ -57,7 +57,7 @@ type SupplyHistoryEntry = {
     CreateSupplyDialogComponent,
   ],
   templateUrl: './warehouse-page.component.html',
-  styleUrl: './warehouse-page.component.css',
+  styleUrl: './warehouse-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WarehousePageComponent {
