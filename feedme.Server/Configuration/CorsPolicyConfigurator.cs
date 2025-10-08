@@ -37,6 +37,7 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
         var originRules = CreateOriginRules(sanitizedOrigins);
 
         if (originRules.ExplicitOrigins.Count > 0)
+
         {
             policyBuilder.WithOrigins(originRules.ExplicitOrigins.ToArray());
         }
