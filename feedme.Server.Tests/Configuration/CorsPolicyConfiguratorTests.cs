@@ -28,8 +28,10 @@ public class CorsPolicyConfiguratorTests
 
         Assert.NotNull(policy);
         Assert.Contains("http://185.251.90.40", policy!.Origins);
+
         Assert.DoesNotContain("http://localhost:*", policy.Origins);
         Assert.True(policy.IsOriginAllowed("http://185.251.90.40"));
+
         Assert.True(policy.IsOriginAllowed("http://localhost:63191"));
         Assert.True(policy.IsOriginAllowed("http://localhost:4200"));
         Assert.False(policy.IsOriginAllowed("http://malicious.local"));
