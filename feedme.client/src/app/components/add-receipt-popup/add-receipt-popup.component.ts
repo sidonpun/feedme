@@ -1,4 +1,4 @@
-import { Component, DestroyRef, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -67,7 +67,6 @@ export class AddReceiptPopupComponent implements OnInit {
   catalog: CatalogItem[] = [];
   units: string[] = [];
   private selectedProduct: CatalogItem | null = null;
-  private readonly destroyRef = inject(DestroyRef);
 
   constructor(
     private fb: FormBuilder,
@@ -78,20 +77,20 @@ export class AddReceiptPopupComponent implements OnInit {
   ngOnInit(): void {
     this.catalogService
       .getAll()
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed())
       .subscribe(items => (this.catalog = items));
 
     this.units = ['шт', 'кг', 'л', 'упаковка'];
 
     this.form.controls.productId.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed())
       .subscribe(id => this.onProductChange(id));
 
     combineLatest([
       this.form.controls.quantity.valueChanges.pipe(startWith(this.form.controls.quantity.value)),
       this.form.controls.unitPrice.valueChanges.pipe(startWith(this.form.controls.unitPrice.getRawValue()))
     ])
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed())
       .subscribe(([quantity, unitPrice]) => this.updateTotalCost(Number(quantity), Number(unitPrice)));
   }
 
@@ -108,7 +107,7 @@ export class AddReceiptPopupComponent implements OnInit {
 
     this.catalogService
       .getById(id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed())
       .subscribe(item => {
         this.selectedProduct = item;
         this.form.controls.supplier.setValue(item.supplier, { emitEvent: false });
