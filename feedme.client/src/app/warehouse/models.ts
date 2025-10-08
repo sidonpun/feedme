@@ -1,7 +1,14 @@
-import { SUPPLY_STATUSES, SupplyStatus, isSupplyStatus } from './shared/supply-status';
+export type SupplyStatus = 'ok' | 'warning' | 'expired';
 
-export { SUPPLY_STATUSES, isSupplyStatus };
-export type { SupplyStatus };
+export const SUPPLY_STATUSES: ReadonlyArray<SupplyStatus> = [
+  'ok',
+  'warning',
+  'expired',
+];
+
+export function isSupplyStatus(value: string): value is SupplyStatus {
+  return SUPPLY_STATUSES.includes(value as SupplyStatus);
+}
 
 export interface SupplyRow {
   readonly id: string;

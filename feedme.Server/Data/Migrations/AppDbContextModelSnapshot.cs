@@ -22,8 +22,6 @@ namespace feedme.Server.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.HasSequence<long>("supplies_document_number_seq");
-
             modelBuilder.Entity("feedme.Server.Models.CatalogItem", b =>
                 {
                     b.Property<string>("Id")
@@ -163,12 +161,6 @@ namespace feedme.Server.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("received_at");
 
-                    b.Property<string>("Responsible")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasColumnName("responsible");
-
                     b.Property<string>("Supplier")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -181,76 +173,15 @@ namespace feedme.Server.Data.Migrations
                         .HasColumnType("character varying(128)")
                         .HasColumnName("warehouse");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("receipts", (string)null);
-                });
-
-            modelBuilder.Entity("feedme.Server.Models.Supply", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(36)
-                        .HasColumnType("character varying(36)")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("ArrivalDate")
-                        .HasColumnType("date")
-                        .HasColumnName("arrival_date");
-
-                    b.Property<string>("CatalogItemId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("character varying(36)")
-                        .HasColumnName("catalog_item_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("DocumentNumber")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
-                        .HasColumnName("document_number");
-
-                    b.Property<DateTime?>("ExpiryDate")
-                        .HasColumnType("date")
-                        .HasColumnName("expiry_date");
-
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("numeric(18,3)")
-                        .HasColumnName("quantity");
-
                     b.Property<string>("Responsible")
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)")
                         .HasColumnName("responsible");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
-                        .HasColumnName("status");
-
-                    b.Property<string>("Warehouse")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasColumnName("warehouse");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ArrivalDate");
-
-                    b.HasIndex("CatalogItemId");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("DocumentNumber")
-                        .IsUnique();
-
-                    b.ToTable("supplies", (string)null);
+                    b.ToTable("receipts", (string)null);
                 });
 
             modelBuilder.Entity("feedme.Server.Models.Receipt", b =>
@@ -275,15 +206,11 @@ namespace feedme.Server.Data.Migrations
                                 .HasColumnType("character varying(64)")
                                 .HasColumnName("catalog_item_id");
 
-                            b1.Property<string>("Category")
+                            b1.Property<string>("Sku")
                                 .IsRequired()
-                                .HasMaxLength(128)
-                                .HasColumnType("character varying(128)")
-                                .HasColumnName("category");
-
-                            b1.Property<DateTime?>("ExpiryDate")
-                                .HasColumnType("timestamp with time zone")
-                                .HasColumnName("expiry_date");
+                                .HasMaxLength(64)
+                                .HasColumnType("character varying(64)")
+                                .HasColumnName("sku");
 
                             b1.Property<string>("ItemName")
                                 .IsRequired()
@@ -291,22 +218,16 @@ namespace feedme.Server.Data.Migrations
                                 .HasColumnType("character varying(128)")
                                 .HasColumnName("item_name");
 
+                            b1.Property<string>("Category")
+                                .IsRequired()
+                                .HasMaxLength(128)
+                                .HasColumnType("character varying(128)")
+                                .HasColumnName("category");
+
                             b1.Property<decimal>("Quantity")
                                 .HasPrecision(18, 4)
                                 .HasColumnType("numeric(18,4)")
                                 .HasColumnName("quantity");
-
-                            b1.Property<string>("Sku")
-                                .IsRequired()
-                                .HasMaxLength(64)
-                                .HasColumnType("character varying(64)")
-                                .HasColumnName("sku");
-
-                            b1.Property<string>("Status")
-                                .IsRequired()
-                                .HasMaxLength(32)
-                                .HasColumnType("character varying(32)")
-                                .HasColumnName("status");
 
                             b1.Property<string>("Unit")
                                 .IsRequired()
@@ -319,6 +240,16 @@ namespace feedme.Server.Data.Migrations
                                 .HasColumnType("numeric(18,4)")
                                 .HasColumnName("unit_price");
 
+                            b1.Property<DateTime?>("ExpiryDate")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("expiry_date");
+
+                            b1.Property<string>("Status")
+                                .IsRequired()
+                                .HasMaxLength(32)
+                                .HasColumnType("character varying(32)")
+                                .HasColumnName("status");
+
                             b1.HasKey("receipt_id", "Id");
 
                             b1.HasIndex("receipt_id");
@@ -330,17 +261,6 @@ namespace feedme.Server.Data.Migrations
                         });
 
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("feedme.Server.Models.Supply", b =>
-                {
-                    b.HasOne("feedme.Server.Models.CatalogItem", "CatalogItem")
-                        .WithMany()
-                        .HasForeignKey("CatalogItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CatalogItem");
                 });
 #pragma warning restore 612, 618
         }

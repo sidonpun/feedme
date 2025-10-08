@@ -88,11 +88,6 @@ public partial class ReceiptsController : ControllerBase
 
         Log.CreatingReceipt(_logger, receipt.Id);
 
-        if (!ValidateReceiptPayload(receipt))
-        {
-            return ValidationProblem(ModelState);
-        }
-
         try
         {
             var created = await _repository.AddAsync(receipt);
@@ -124,11 +119,6 @@ public partial class ReceiptsController : ControllerBase
             receipt.Id = id;
         }
 
-        if (!ValidateReceiptPayload(receipt))
-        {
-            return ValidationProblem(ModelState);
-        }
-
         Log.UpdatingReceipt(_logger, id);
 
         try
@@ -149,23 +139,6 @@ public partial class ReceiptsController : ControllerBase
             Log.ReceiptUpdateFailed(_logger, id, exception);
             throw;
         }
-    }
-
-    private bool ValidateReceiptPayload(Receipt receipt)
-    {
-        if (receipt.Items is null || receipt.Items.Count == 0)
-        {
-            ModelState.AddModelError(nameof(Receipt.Items), "A receipt must contain at least one item.");
-            return false;
-        }
-
-        if (receipt.Items.Any(item => item is null))
-        {
-            ModelState.AddModelError(nameof(Receipt.Items), "Receipt items cannot contain null values.");
-            return false;
-        }
-
-        return true;
     }
 
     [HttpDelete("{id}")]

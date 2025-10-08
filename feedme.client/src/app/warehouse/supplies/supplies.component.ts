@@ -7,7 +7,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { startWith, take, tap } from 'rxjs';
 
 import { SupplyProduct, SupplyRow, SupplyStatus } from '../shared/models';
-import { CreateSupplyPayload, SuppliesService } from './supplies.service';
+import { computeExpiryStatus } from '../shared/status.util';
+import { SuppliesService } from './supplies.service';
 import { ApiRequestError } from '../../services/api-request-error';
 
 type SupplyFormValue = {
@@ -269,14 +270,19 @@ export class SuppliesComponent {
       return;
     }
 
-    const payload: CreateSupplyPayload = {
+    const payload: Omit<SupplyRow, 'id'> = {
       docNo,
       arrivalDate: value.arrivalDate,
       warehouse,
       responsible: responsible ? responsible : undefined,
       productId: product.id,
-      quantity: qty,
+      sku: product.sku,
+      name: product.name,
+      qty,
+      unit: product.unit,
       expiryDate: value.expiryDate,
+      supplier: product.supplier,
+      status: computeExpiryStatus(value.expiryDate, value.arrivalDate),
     };
 
     this.submissionError.set(null);

@@ -6,7 +6,6 @@ using feedme.Server.Data;
 using feedme.Server.Extensions;
 using feedme.Server.Repositories;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,10 +26,6 @@ public class Program
         // Add services to the container.
 
         builder.Services.AddControllers();
-        builder.Services.Configure<ApiBehaviorOptions>(options =>
-        {
-            options.SuppressModelStateInvalidFilter = true;
-        });
         builder.Services
             .AddOptions<DatabaseOptions>()
             .Bind(builder.Configuration.GetSection(DatabaseOptions.SectionName));
@@ -79,7 +74,6 @@ public class Program
         });
         builder.Services.AddScoped<ICatalogRepository, PostgresCatalogRepository>();
         builder.Services.AddScoped<IReceiptRepository, PostgresReceiptRepository>();
-        builder.Services.AddScoped<ISupplyRepository, PostgresSupplyRepository>();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
 
