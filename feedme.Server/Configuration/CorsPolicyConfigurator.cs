@@ -67,7 +67,10 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
 
             rules.Add(rule);
 
-            allowedOrigins.Add(rule.NormalizedOrigin);
+            if (!rule.AllowsAnyPort)
+            {
+                allowedOrigins.Add(rule.NormalizedOrigin);
+            }
         }
 
         return new CorsOriginRuleSet(rules, allowedOrigins);
