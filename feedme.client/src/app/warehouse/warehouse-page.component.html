@@ -64,14 +64,17 @@
       </div>
     </div>
 
-    <section class="warehouse-page__overview" aria-label="Обзор склада">
-      <header class="header-crumbs">
-        <nav class="breadcrumbs" aria-label="Хлебные крошки">
-          <span>Поставки</span>
-          <span class="sep" aria-hidden="true">/</span>
-          <span>{{ selectedWarehouse() || 'Все склады' }}</span>
-        </nav>
-        <div class="warehouse">
+    <header class="header-crumbs">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <span>Поставки</span>
+        <span class="sep" aria-hidden="true">/</span>
+        <span>{{ selectedWarehouse() || 'Все склады' }}</span>
+      </nav>
+    </header>
+
+    <section class="warehouse-page__filters" aria-label="Фильтры склада">
+      <form class="filters" (submit)="$event.preventDefault()">
+        <div class="filters__field filters__field--warehouse" *ngIf="activeTab() !== 'catalog'">
           <label class="sr-only" for="warehouse-select">Выбор склада</label>
           <select
             #activeWarehouse
@@ -81,87 +84,95 @@
             (change)="selectWarehouse(activeWarehouse.value)"
             aria-label="Выбор активного склада"
           >
+            <option value="">Все склады</option>
             <option *ngFor="let warehouseName of warehouses()" [value]="warehouseName">
               {{ warehouseName }}
             </option>
           </select>
         </div>
-      </header>
 
-      <ng-container *ngIf="activeTab() === 'supplies'">
-        <section
-          *ngIf="overviewMetrics() as snapshot"
-          class="kpi"
-          aria-label="Ключевые показатели склада"
-        >
-          <article class="card" aria-live="polite">
-            <p class="title">Поставок за 7 дней</p>
-            <p class="value">{{ snapshot.suppliesLastWeek }}</p>
-          </article>
+        <div class="filters__field filters__field--search">
+          <label class="sr-only" for="supply-search">Поиск по поставкам</label>
+          <input
+            #searchInput
+            id="supply-search"
+            class="input"
+            type="search"
+            placeholder="Поиск по документу, SKU или названию"
+            [value]="search()"
+            (input)="updateSearch(searchInput.value)"
+            aria-label="Поиск по документу, SKU или названию"
+          />
+        </div>
 
-          <article class="card" aria-live="polite">
-            <p class="title">Сумма закупок / 7 дн.</p>
-            <p class="value">{{ formatCurrency(snapshot.purchaseAmountLastWeek) }}</p>
-          </article>
+        <div class="filters__field filters__field--date">
+          <label class="sr-only" for="arrival-from">Дата прихода от</label>
+          <div class="date-input" [class.date-input--filled]="!!dateFrom()">
+            <input
+              #dateFromInput
+              id="arrival-from"
+              class="date-input__control"
+              type="date"
+              placeholder="ДД. ММ. ГГГГ"
+              aria-label="Дата прихода от"
+              [value]="dateFrom()"
+              (change)="updateDateFrom(dateFromInput.value)"
+            />
+            <span class="date-input__placeholder" aria-hidden="true">ДД. ММ. ГГГГ</span>
+          </div>
+        </div>
 
-          <article class="card" aria-live="polite">
-            <p class="title">Позиций на складе</p>
-            <p class="value">{{ snapshot.positions }}</p>
-          </article>
+        <div class="filters__field filters__field--date">
+          <label class="sr-only" for="arrival-to">Дата прихода до</label>
+          <div class="date-input" [class.date-input--filled]="!!dateTo()">
+            <input
+              #dateToInput
+              id="arrival-to"
+              class="date-input__control"
+              type="date"
+              placeholder="ДД. ММ. ГГГГ"
+              aria-label="Дата прихода до"
+              [value]="dateTo()"
+              (change)="updateDateTo(dateToInput.value)"
+            />
+            <span class="date-input__placeholder" aria-hidden="true">ДД. ММ. ГГГГ</span>
+          </div>
+        </div>
 
-          <article class="card" aria-live="polite">
-            <p class="title">Просрочено</p>
-            <p class="value" [ngClass]="{ neg: snapshot.expired > 0 }">{{ snapshot.expired }}</p>
-          </article>
-        </section>
-      </ng-container>
-    </section>
-
-    <section class="toolbar" aria-label="Фильтры и действия по поставкам">
-      <form class="filters" (submit)="$event.preventDefault()">
-        <label class="sr-only" for="supply-search">Поиск по поставкам</label>
-        <input
-          #searchInput
-          id="supply-search"
-          class="input"
-          type="search"
-          placeholder="Поиск по документу, SKU или названию"
-          [value]="search()"
-          (input)="updateSearch(searchInput.value)"
-          aria-label="Поиск по документу, SKU или названию"
-        />
-
-        <label class="sr-only" for="arrival-from">Дата прихода от</label>
-        <input
-          #dateFromInput
-          id="arrival-from"
-          class="picker"
-          type="date"
-          aria-label="Дата прихода от"
-          [value]="dateFrom()"
-          (change)="updateDateFrom(dateFromInput.value)"
-        />
-
-        <label class="sr-only" for="arrival-to">Дата прихода до</label>
-        <input
-          #dateToInput
-          id="arrival-to"
-          class="picker"
-          type="date"
-          aria-label="Дата прихода до"
-          [value]="dateTo()"
-          (change)="updateDateTo(dateToInput.value)"
-        />
-
-        <button type="button" class="btn btn-outline" (click)="clearFilters()">Сброс</button>
+        <button type="button" class="btn btn--ghost" (click)="clearFilters()">Сброс</button>
+        <button type="button" class="btn btn--ghost">Импорт</button>
+        <button type="button" class="btn btn--primary">Экспорт</button>
+        <button type="button" class="btn btn--accent" (click)="openCreateDialog()">+ Новая поставка</button>
       </form>
-
-      <div class="actions">
-        <button type="button" class="btn btn-outline">Импорт</button>
-        <button type="button" class="btn btn-blue">Экспорт</button>
-        <button type="button" class="btn btn-orange" (click)="openCreateDialog()">+ Новая поставка</button>
-      </div>
     </section>
+
+    <ng-container *ngIf="activeTab() === 'supplies'">
+      <section
+        *ngIf="overviewMetrics() as snapshot"
+        class="kpis"
+        aria-label="Ключевые показатели склада"
+      >
+        <article class="card" aria-live="polite">
+          <p class="card__title">Поставок за 7 дней</p>
+          <p class="card__value">{{ snapshot.suppliesLastWeek }}</p>
+        </article>
+
+        <article class="card" aria-live="polite">
+          <p class="card__title">Сумма закупок / 7 дн.</p>
+          <p class="card__value">{{ formatCurrency(snapshot.purchaseAmountLastWeek) }}</p>
+        </article>
+
+        <article class="card" aria-live="polite">
+          <p class="card__title">Позиций на складе</p>
+          <p class="card__value">{{ snapshot.positions }}</p>
+        </article>
+
+        <article class="card" aria-live="polite">
+          <p class="card__title">Просрочено</p>
+          <p class="card__value" [ngClass]="{ neg: snapshot.expired > 0 }">{{ snapshot.expired }}</p>
+        </article>
+      </section>
+    </ng-container>
 
     <section *ngIf="activeTab() === 'supplies'" class="warehouse-page__tab-panel">
         <section class="warehouse-page__bulk" *ngIf="hasSelection()" aria-live="polite">
