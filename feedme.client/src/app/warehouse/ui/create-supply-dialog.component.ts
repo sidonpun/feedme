@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   EventEmitter,
   Output,
   computed,
@@ -40,7 +39,6 @@ export class CreateSupplyDialogComponent {
 
   private readonly catalogService = inject(WarehouseCatalogService);
   private readonly fb = inject(NonNullableFormBuilder);
-  private readonly destroyRef = inject(DestroyRef);
 
   private static readonly maxSuggestions = 8;
 
@@ -102,7 +100,7 @@ export class CreateSupplyDialogComponent {
 
   constructor() {
     this.form.controls.productQuery.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed())
       .subscribe((value: string) => {
         const selected = this.selectedProduct();
         if (!selected) {

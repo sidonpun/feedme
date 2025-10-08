@@ -1,5 +1,8 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, defer, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { map, Observable } from 'rxjs';
+
+import { ApiUrlService } from './api-url.service';
 
 export type ShelfLifeStatus = 'ok' | 'warning' | 'expired';
 
@@ -40,92 +43,118 @@ export interface CreateReceipt {
 
 @Injectable({ providedIn: 'root' })
 export class ReceiptService {
-  private readonly receiptsSubject = new BehaviorSubject<Receipt[]>([]);
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = inject(ApiUrlService);
+  private readonly baseUrl = this.apiUrl.build('receipts');
 
   getAll(): Observable<Receipt[]> {
-    return this.receiptsSubject.asObservable();
+    return this.http
+      .get<ReceiptDto[]>(this.baseUrl)
+      .pipe(map((dtos) => dtos.map((dto) => this.fromDto(dto))));
   }
 
   saveReceipt(data: CreateReceipt): Observable<Receipt> {
-    return this.mutate(() => {
-      const receipt = this.createReceipt(data);
-      this.receiptsSubject.next([...this.receiptsSubject.value, receipt]);
-      return receipt;
-    });
+    const payload = this.toRequestDto(data);
+    return this.http
+      .post<ReceiptDto>(this.baseUrl, payload)
+      .pipe(map((dto) => this.fromDto(dto)));
   }
 
   updateReceipt(id: string, data: CreateReceipt): Observable<Receipt> {
-    return this.mutate(() => {
-      const current = this.receiptsSubject.value;
-      const index = current.findIndex(item => item.id === id);
+    const normalizedId = this.normalizeId(id);
+    const payload = this.toRequestDto(data, normalizedId);
+    const targetUrl = `${this.baseUrl}/${encodeURIComponent(normalizedId)}`;
 
-      if (index === -1) {
-        throw new Error(`Receipt with id "${id}" was not found.`);
-      }
-
-      const updated = this.createReceipt(data, id);
-      const copy = [...current];
-      copy[index] = updated;
-      this.receiptsSubject.next(copy);
-
-      return updated;
-    });
+    return this.http
+      .put<ReceiptDto>(targetUrl, payload)
+      .pipe(map((dto) => this.fromDto(dto)));
   }
 
   deleteReceipt(id: string): Observable<void> {
-    return this.mutate(() => {
-      const next = this.receiptsSubject.value.filter(receipt => receipt.id !== id);
-      this.receiptsSubject.next(next);
-    });
+    const normalizedId = this.normalizeId(id);
+    const targetUrl = `${this.baseUrl}/${encodeURIComponent(normalizedId)}`;
+    return this.http.delete<void>(targetUrl);
   }
 
-  private mutate<T>(operation: () => T): Observable<T> {
-    return defer(() => {
-      const result = operation();
-      return of(result);
-    });
+  private fromDto(dto: ReceiptDto): Receipt {
+    return {
+      id: dto.id,
+      number: dto.number,
+      supplier: dto.supplier,
+      warehouse: dto.warehouse,
+      responsible: dto.responsible,
+      receivedAt: this.normalizeIsoString(dto.receivedAt),
+      items: (dto.items ?? []).map((item) => this.fromLineDto(item)),
+      totalAmount: this.toNumber(dto.totalAmount),
+    } satisfies Receipt;
   }
 
-  private createReceipt(data: CreateReceipt, existingId?: string): Receipt {
+  private fromLineDto(dto: ReceiptLineDto): ReceiptLine {
+    return {
+      catalogItemId: dto.catalogItemId,
+      sku: dto.sku,
+      itemName: dto.itemName,
+      category: dto.category,
+      quantity: this.toNumber(dto.quantity),
+      unit: dto.unit,
+      unitPrice: this.toNumber(dto.unitPrice),
+      totalCost: this.toNumber(dto.totalCost),
+      expiryDate: dto.expiryDate ? this.normalizeIsoString(dto.expiryDate) : null,
+      status: this.normalizeStatus(dto.status),
+    } satisfies ReceiptLine;
+  }
+
+  private toRequestDto(data: CreateReceipt, id?: string): ReceiptRequestDto {
     if (!data.items?.length) {
       throw new Error('Receipt must contain at least one item.');
     }
 
-    const items = data.items.map(item => this.createReceiptLine(item));
-    const totalAmount = items.reduce((sum, line) => sum + line.totalCost, 0);
-
     return {
-      id: existingId ?? this.generateId(),
-      number: data.number.trim(),
-      supplier: data.supplier.trim(),
-      warehouse: data.warehouse.trim(),
-      responsible: data.responsible.trim(),
-      receivedAt: this.normalizeIsoDate(data.receivedAt),
-      items,
-      totalAmount,
-    } satisfies Receipt;
+      ...(id ? { id } : {}),
+      number: this.normalizeRequiredText(data.number, 'number'),
+      supplier: this.normalizeRequiredText(data.supplier, 'supplier'),
+      warehouse: this.normalizeOptionalText(data.warehouse),
+      responsible: this.normalizeOptionalText(data.responsible),
+      receivedAt: this.normalizeIsoString(data.receivedAt),
+      items: data.items.map((line) => this.toRequestLineDto(line)),
+    } satisfies ReceiptRequestDto;
   }
 
-  private createReceiptLine(line: CreateReceiptLine): ReceiptLine {
-    const quantity = this.normalizeNumber(line.quantity);
-    const unitPrice = this.normalizeNumber(line.unitPrice);
-    const totalCost = Math.round(quantity * unitPrice * 100) / 100;
-
+  private toRequestLineDto(line: CreateReceiptLine): ReceiptLineRequestDto {
     return {
-      catalogItemId: line.catalogItemId,
-      sku: line.sku,
-      itemName: line.itemName,
-      category: line.category,
-      quantity,
-      unit: line.unit,
-      unitPrice,
-      totalCost,
-      expiryDate: line.expiryDate ? this.normalizeIsoDate(line.expiryDate) : null,
-      status: line.status,
-    } satisfies ReceiptLine;
+      catalogItemId: this.normalizeRequiredText(line.catalogItemId, 'catalogItemId'),
+      sku: this.normalizeRequiredText(line.sku, 'sku'),
+      itemName: this.normalizeRequiredText(line.itemName, 'itemName'),
+      category: this.normalizeRequiredText(line.category, 'category'),
+      quantity: this.toNumber(line.quantity),
+      unit: this.normalizeRequiredText(line.unit, 'unit'),
+      unitPrice: this.toNumber(line.unitPrice),
+      expiryDate: line.expiryDate ? this.normalizeIsoString(line.expiryDate) : null,
+      status: this.normalizeStatus(line.status),
+    } satisfies ReceiptLineRequestDto;
   }
 
-  private normalizeIsoDate(value: string): string {
+  private normalizeId(id: string): string {
+    const normalized = id?.trim();
+    if (!normalized) {
+      throw new Error('Receipt identifier is required.');
+    }
+    return normalized;
+  }
+
+  private normalizeRequiredText(value: string, field: string): string {
+    const normalized = value?.trim();
+    if (!normalized) {
+      throw new Error(`Field "${field}" is required.`);
+    }
+    return normalized;
+  }
+
+  private normalizeOptionalText(value: string): string {
+    return value?.trim() ?? '';
+  }
+
+  private normalizeIsoString(value: string): string {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) {
       throw new Error(`Invalid ISO date: ${value}`);
@@ -134,20 +163,66 @@ export class ReceiptService {
     return date.toISOString();
   }
 
-  private normalizeNumber(value: number): number {
-    const parsed = Number(value);
-    if (!Number.isFinite(parsed)) {
-      throw new Error('Quantity and price must be finite numbers.');
+  private normalizeStatus(status: string): ShelfLifeStatus {
+    const normalized = (status ?? '').trim().toLowerCase();
+    if (normalized === 'ok' || normalized === 'warning' || normalized === 'expired') {
+      return normalized;
     }
 
+    return 'ok';
+  }
+
+  private toNumber(value: number | string): number {
+    const parsed = typeof value === 'string' ? Number.parseFloat(value) : Number(value);
+    if (!Number.isFinite(parsed)) {
+      throw new Error('Numeric value must be finite.');
+    }
     return parsed;
   }
-
-  private generateId(): string {
-    if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-      return crypto.randomUUID();
-    }
-
-    return `receipt-${Math.random().toString(36).slice(2, 11)}`;
-  }
 }
+
+type ReceiptDto = {
+  id: string;
+  number: string;
+  supplier: string;
+  warehouse: string;
+  responsible: string;
+  receivedAt: string;
+  items: ReceiptLineDto[];
+  totalAmount: number;
+};
+
+type ReceiptLineDto = {
+  catalogItemId: string;
+  sku: string;
+  itemName: string;
+  category: string;
+  quantity: number | string;
+  unit: string;
+  unitPrice: number | string;
+  totalCost: number | string;
+  expiryDate: string | null;
+  status: string;
+};
+
+type ReceiptRequestDto = {
+  id?: string;
+  number: string;
+  supplier: string;
+  warehouse: string;
+  responsible: string;
+  receivedAt: string;
+  items: ReceiptLineRequestDto[];
+};
+
+type ReceiptLineRequestDto = {
+  catalogItemId: string;
+  sku: string;
+  itemName: string;
+  category: string;
+  quantity: number;
+  unit: string;
+  unitPrice: number;
+  expiryDate: string | null;
+  status: ShelfLifeStatus;
+};
