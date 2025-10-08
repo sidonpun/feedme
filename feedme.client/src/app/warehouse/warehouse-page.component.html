@@ -72,6 +72,34 @@
       </nav>
     </header>
 
+    <ng-container *ngIf="activeTab() === 'supplies'">
+      <section
+        *ngIf="overviewMetrics() as snapshot"
+        class="kpis"
+        aria-label="Ключевые показатели склада"
+      >
+        <article class="card" aria-live="polite">
+          <p class="card__title">Поставок за 7 дней</p>
+          <p class="card__value">{{ snapshot.suppliesLastWeek }}</p>
+        </article>
+
+        <article class="card" aria-live="polite">
+          <p class="card__title">Сумма закупок / 7 дн.</p>
+          <p class="card__value">{{ formatCurrency(snapshot.purchaseAmountLastWeek) }}</p>
+        </article>
+
+        <article class="card" aria-live="polite">
+          <p class="card__title">Позиций на складе</p>
+          <p class="card__value">{{ snapshot.positions }}</p>
+        </article>
+
+        <article class="card" aria-live="polite">
+          <p class="card__title">Просрочено</p>
+          <p class="card__value" [ngClass]="{ neg: snapshot.expired > 0 }">{{ snapshot.expired }}</p>
+        </article>
+      </section>
+    </ng-container>
+
     <section class="warehouse-page__filters" aria-label="Фильтры склада">
       <form class="filters" (submit)="$event.preventDefault()">
         <div class="filters__field filters__field--warehouse" *ngIf="activeTab() !== 'catalog'">
@@ -145,34 +173,6 @@
         <button type="button" class="btn btn--accent" (click)="openCreateDialog()">+ Новая поставка</button>
       </form>
     </section>
-
-    <ng-container *ngIf="activeTab() === 'supplies'">
-      <section
-        *ngIf="overviewMetrics() as snapshot"
-        class="kpis"
-        aria-label="Ключевые показатели склада"
-      >
-        <article class="card" aria-live="polite">
-          <p class="card__title">Поставок за 7 дней</p>
-          <p class="card__value">{{ snapshot.suppliesLastWeek }}</p>
-        </article>
-
-        <article class="card" aria-live="polite">
-          <p class="card__title">Сумма закупок / 7 дн.</p>
-          <p class="card__value">{{ formatCurrency(snapshot.purchaseAmountLastWeek) }}</p>
-        </article>
-
-        <article class="card" aria-live="polite">
-          <p class="card__title">Позиций на складе</p>
-          <p class="card__value">{{ snapshot.positions }}</p>
-        </article>
-
-        <article class="card" aria-live="polite">
-          <p class="card__title">Просрочено</p>
-          <p class="card__value" [ngClass]="{ neg: snapshot.expired > 0 }">{{ snapshot.expired }}</p>
-        </article>
-      </section>
-    </ng-container>
 
     <section *ngIf="activeTab() === 'supplies'" class="warehouse-page__tab-panel">
         <section class="warehouse-page__bulk" *ngIf="hasSelection()" aria-live="polite">
