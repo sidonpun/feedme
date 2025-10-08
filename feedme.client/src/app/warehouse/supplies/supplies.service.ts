@@ -3,34 +3,38 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 
 import { Product, SupplyProduct, SupplyRow } from '../shared/models';
-import { computeExpiryStatus } from '../shared/status.util';
 import { WarehouseCatalogService } from '../catalog/catalog.service';
-import { CreateReceipt, Receipt, ReceiptService } from '../../services/receipt.service';
+import { CreateSupplyDto, SuppliesApiService, SupplyDto } from '../../services/supplies-api.service';
+import { SUPPLY_STATUSES, SupplyStatus } from '../shared/supply-status';
+
+export interface CreateSupplyPayload {
+  readonly docNo: string;
+  readonly productId: string;
+  readonly quantity: number;
+  readonly arrivalDate: string;
+  readonly expiryDate: string;
+  readonly warehouse: string;
+  readonly responsible?: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class SuppliesService {
   private readonly catalogService = inject(WarehouseCatalogService);
-  private readonly receiptService = inject(ReceiptService);
+  private readonly api = inject(SuppliesApiService);
 
   private readonly productsSubject = new BehaviorSubject<SupplyProduct[]>([]);
   private readonly rowsSubject = new BehaviorSubject<SupplyRow[]>([]);
   private productMap = new Map<string, SupplyProduct>();
 
   constructor() {
-    this.catalogService.getAll().subscribe(products => {
-      this.updateProducts(products);
-    });
+    this.catalogService.getAll().subscribe(products => this.updateProducts(products));
 
     this.catalogService
       .refresh()
       .pipe(take(1))
       .subscribe({
-        next: products => {
-          this.updateProducts(products);
-        },
-        error: () => {
-          this.productsSubject.next([]);
-        },
+        next: products => this.updateProducts(products),
+        error: () => this.productsSubject.next([]),
       });
 
     this.loadRowsFromServer();
@@ -48,36 +52,19 @@ export class SuppliesService {
     return this.productMap.get(productId);
   }
 
-  add(row: SupplyRow): Observable<SupplyRow>;
-  add(row: Omit<SupplyRow, 'id'>): Observable<SupplyRow>;
-  add(row: SupplyRow | Omit<SupplyRow, 'id'>): Observable<SupplyRow> {
-    const payload = { ...row } as SupplyRow;
-    const normalized: Omit<SupplyRow, 'id'> = {
-      docNo: payload.docNo.trim(),
+  add(payload: CreateSupplyPayload): Observable<SupplyRow> {
+    const request: CreateSupplyDto = {
+      catalogItemId: payload.productId,
+      quantity: payload.quantity,
       arrivalDate: payload.arrivalDate,
-      warehouse: payload.warehouse.trim(),
+      expiryDate: payload.expiryDate || null,
+      warehouse: payload.warehouse,
       responsible: payload.responsible?.trim() || undefined,
-      productId: payload.productId,
-      sku: payload.sku,
-      name: payload.name,
-      qty: payload.qty,
-      unit: payload.unit,
-      expiryDate: payload.expiryDate,
-      supplier: payload.supplier?.trim() || undefined,
-      status: computeExpiryStatus(payload.expiryDate, payload.arrivalDate),
-    } satisfies Omit<SupplyRow, 'id'>;
+      documentNumber: payload.docNo.trim() || undefined,
+    } satisfies CreateSupplyDto;
 
-    const request = this.toReceiptPayload(normalized);
-
-    return this.receiptService.saveReceipt(request).pipe(
-      map(receipt => {
-        const created = this.mapReceiptToRow(receipt);
-        if (!created) {
-          throw new Error('Ответ сервера не содержит данных о поставке.');
-        }
-
-        return created;
-      }),
+    return this.api.create(request).pipe(
+      map(dto => this.mapDtoToRow(dto)),
       tap(created => {
         this.rowsSubject.next(
           this.sortRows([
@@ -87,6 +74,25 @@ export class SuppliesService {
         );
       }),
     );
+  }
+
+  private updateProducts(products: readonly Product[]): void {
+    const mapped = products.map(product => this.toSupplyProduct(product));
+    this.productMap = new Map(mapped.map(product => [product.id, product]));
+    this.productsSubject.next(mapped);
+  }
+
+  private loadRowsFromServer(): void {
+    this.api
+      .getAll()
+      .pipe(
+        take(1),
+        map(items => items.map(dto => this.mapDtoToRow(dto))),
+      )
+      .subscribe({
+        next: rows => this.rowsSubject.next(this.sortRows(rows)),
+        error: () => this.rowsSubject.next([]),
+      });
   }
 
   private toSupplyProduct(product: Product): SupplyProduct {
@@ -101,97 +107,44 @@ export class SuppliesService {
     } satisfies SupplyProduct;
   }
 
-  private updateProducts(products: readonly Product[]): void {
-    const mapped = products.map(product => this.toSupplyProduct(product));
-    this.productMap = new Map(mapped.map(product => [product.id, product]));
-    this.productsSubject.next(mapped);
-  }
-
-  private loadRowsFromServer(): void {
-    this.receiptService
-      .getAll()
-      .pipe(
-        take(1),
-        map(receipts =>
-          receipts
-            .map(receipt => this.mapReceiptToRow(receipt))
-            .filter((row): row is SupplyRow => row !== null),
-        ),
-      )
-      .subscribe({
-        next: rows => {
-          this.rowsSubject.next(this.sortRows(rows));
-        },
-        error: () => {
-          this.rowsSubject.next([]);
-        },
-      });
-  }
-
-  private mapReceiptToRow(receipt: Receipt): SupplyRow | null {
-    if (!receipt) {
-      return null;
-    }
-
-    const [line] = receipt.items ?? [];
-    if (!line) {
-      return null;
-    }
-
+  private mapDtoToRow(dto: SupplyDto): SupplyRow {
     return {
-      id: receipt.id,
-      docNo: this.normalizeText(receipt.number),
-      arrivalDate: this.normalizeDateString(receipt.receivedAt),
-      warehouse: this.normalizeText(receipt.warehouse, 'Главный склад'),
-      responsible: this.normalizeOptionalText(receipt.responsible),
-      productId: this.normalizeText(line.catalogItemId),
-      sku: this.normalizeText(line.sku),
-      name: this.normalizeText(line.itemName, 'Без названия'),
-      qty: Number(line.quantity ?? 0),
-      unit: this.normalizeText(line.unit, 'шт'),
-      expiryDate: line.expiryDate ? this.normalizeDateString(line.expiryDate) : '',
-      supplier: this.normalizeOptionalText(receipt.supplier),
-      status: this.normalizeStatus(line.status, receipt.receivedAt, line.expiryDate),
+      id: dto.id,
+      docNo: dto.documentNumber,
+      arrivalDate: this.toDateOnly(dto.arrivalDate),
+      warehouse: dto.warehouse,
+      responsible: dto.responsible || undefined,
+      productId: dto.catalogItemId,
+      sku: dto.sku,
+      name: dto.productName,
+      qty: dto.quantity,
+      unit: dto.unit,
+      expiryDate: dto.expiryDate ? this.toDateOnly(dto.expiryDate) : '',
+      supplier: dto.supplier || undefined,
+      status: this.normalizeStatus(dto.status, dto.expiryDate, dto.arrivalDate),
     } satisfies SupplyRow;
   }
 
-  private normalizeText(value: string | null | undefined, fallback = ''): string {
-    const normalized = (value ?? '').trim();
-    return normalized || fallback;
-  }
-
-  private normalizeOptionalText(value: string | null | undefined): string | undefined {
-    const normalized = this.normalizeText(value);
-    return normalized || undefined;
-  }
-
-  private normalizeDateString(value: string | Date | null | undefined): string {
-    if (!value) {
-      return '';
+  private normalizeStatus(status: SupplyStatus, expiry: string | null, arrival: string): SupplyStatus {
+    if (!SUPPLY_STATUSES.includes(status)) {
+      return 'ok';
     }
 
-    const date = value instanceof Date ? value : new Date(value);
-    if (Number.isNaN(date.getTime())) {
-      return '';
+    if (!expiry) {
+      return status;
     }
 
-    const year = date.getUTCFullYear();
-    const month = `${date.getUTCMonth() + 1}`.padStart(2, '0');
-    const day = `${date.getUTCDate()}`.padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  private normalizeStatus(
-    status: string | null | undefined,
-    arrival: string | Date | null | undefined,
-    expiry: string | Date | null | undefined,
-  ): SupplyRow['status'] {
-    const normalized = (status ?? '').trim().toLowerCase();
-    if (normalized === 'ok' || normalized === 'warning' || normalized === 'expired') {
-      return normalized;
+    const expiryDate = new Date(expiry);
+    const arrivalDate = new Date(arrival);
+    if (Number.isNaN(expiryDate.getTime()) || Number.isNaN(arrivalDate.getTime())) {
+      return status;
     }
 
-    return computeExpiryStatus(expiry, arrival);
+    if (expiryDate <= arrivalDate && status === 'ok') {
+      return 'expired';
+    }
+
+    return status;
   }
 
   private sortRows(rows: readonly SupplyRow[]): SupplyRow[] {
@@ -205,47 +158,19 @@ export class SuppliesService {
     });
   }
 
-  private toReceiptPayload(row: Omit<SupplyRow, 'id'>): CreateReceipt {
-    const product = this.productMap.get(row.productId);
-    const unitPrice = this.normalizeNumber(product?.purchasePrice);
-
-    return {
-      number: row.docNo,
-      supplier: row.supplier ?? product?.supplier ?? '',
-      warehouse: row.warehouse,
-      responsible: row.responsible ?? '',
-      receivedAt: this.toUtcIsoString(row.arrivalDate),
-      items: [
-        {
-          catalogItemId: row.productId,
-          sku: row.sku,
-          itemName: row.name,
-          category: product?.category ?? 'Без категории',
-          quantity: row.qty,
-          unit: row.unit,
-          unitPrice,
-          expiryDate: row.expiryDate ? this.toUtcIsoString(row.expiryDate) : null,
-          status: row.status,
-        },
-      ],
-    } satisfies CreateReceipt;
-  }
-
-  private toUtcIsoString(value: string): string {
+  private toDateOnly(value: string): string {
     if (!value) {
-      throw new Error('Дата должна быть указана.');
+      return '';
     }
 
-    const [year, month, day] = value.split('-').map(part => Number.parseInt(part, 10));
-    if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
-      throw new Error(`Некорректная дата: ${value}`);
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return '';
     }
 
-    const utcDate = new Date(Date.UTC(year, month - 1, day));
-    return utcDate.toISOString();
-  }
-
-  private normalizeNumber(value: number | null | undefined): number {
-    return Number.isFinite(value) && value !== null ? value : 0;
+    const year = date.getUTCFullYear();
+    const month = `${date.getUTCMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getUTCDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }

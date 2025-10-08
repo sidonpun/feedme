@@ -2,8 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 
 import { SupplyProduct, SupplyRow } from '../shared/models';
+import { computeExpiryStatus } from '../shared/status.util';
 import { SuppliesComponent } from './supplies.component';
-import { SuppliesService } from './supplies.service';
+import { CreateSupplyPayload, SuppliesService } from './supplies.service';
 
 class MockSuppliesService {
   private readonly productsSubject = new BehaviorSubject<SupplyProduct[]>([
@@ -32,12 +33,28 @@ class MockSuppliesService {
     return this.productsSubject.value.find((product) => product.id === productId);
   }
 
-  add(row: SupplyRow | Omit<SupplyRow, 'id'>): Observable<SupplyRow> {
-    const base = row as SupplyRow;
+  add(payload: CreateSupplyPayload): Observable<SupplyRow> {
+    const product = this.getProductById(payload.productId);
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
     const record: SupplyRow = {
-      ...base,
       id: `mock-${++this.idCounter}`,
-    };
+      docNo: payload.docNo,
+      arrivalDate: payload.arrivalDate,
+      warehouse: payload.warehouse,
+      responsible: payload.responsible,
+      productId: payload.productId,
+      sku: product.sku,
+      name: product.name,
+      qty: payload.quantity,
+      unit: product.unit,
+      expiryDate: payload.expiryDate,
+      supplier: product.supplier,
+      status: computeExpiryStatus(payload.expiryDate, payload.arrivalDate),
+    } satisfies SupplyRow;
+
     this.rowsSubject.next([record, ...this.rowsSubject.value]);
     return of(record);
   }
@@ -100,12 +117,11 @@ describe('SuppliesComponent', () => {
     component.submit();
 
     expect(addSpy).toHaveBeenCalledTimes(1);
-    const payload = addSpy.calls.mostRecent().args[0] as SupplyRow;
-    expect(payload.status).toBe('warning');
-    expect(payload.sku).toBe('MEAT-001');
-    expect(payload.name).toBe('Курица охлаждённая');
-    expect(payload.unit).toBe('кг');
-    expect(payload.supplier).toBe('ООО Куры Дуры');
+    const payload = addSpy.calls.mostRecent().args[0] as CreateSupplyPayload;
+    expect(payload.docNo).toBe('PO-999999');
+    expect(payload.productId).toBe('prod-chicken');
+    expect(payload.quantity).toBe(12);
+    expect(payload.expiryDate).toBe(expiry);
   });
 
   it('updates the stream after successful save', () => {
@@ -133,49 +149,34 @@ describe('SuppliesComponent', () => {
   });
 
   it('computes KPI summary based on supply data', () => {
-    const todaySupply: Omit<SupplyRow, 'id'> = {
+    const todaySupply: CreateSupplyPayload = {
       docNo: 'PO-000200',
       arrivalDate: formatISO(0),
       warehouse: 'Главный склад',
       responsible: 'Иванов И.',
       productId: 'prod-chicken',
-      sku: 'MEAT-001',
-      name: 'Курица охлаждённая',
-      qty: 10,
-      unit: 'кг',
+      quantity: 10,
       expiryDate: formatISO(5),
-      supplier: 'ООО Куры Дуры',
-      status: 'ok',
     };
 
-    const expiredSupply: Omit<SupplyRow, 'id'> = {
+    const expiredSupply: CreateSupplyPayload = {
       docNo: 'PO-000201',
       arrivalDate: formatISO(-5),
       warehouse: 'Бар',
       responsible: 'Петров П.',
       productId: 'prod-chicken',
-      sku: 'MEAT-001',
-      name: 'Курица охлаждённая',
-      qty: 2,
-      unit: 'кг',
+      quantity: 2,
       expiryDate: formatISO(-1),
-      supplier: 'ООО Куры Дуры',
-      status: 'expired',
     };
 
-    const oldSupply: Omit<SupplyRow, 'id'> = {
+    const oldSupply: CreateSupplyPayload = {
       docNo: 'PO-000199',
       arrivalDate: formatISO(-15),
       warehouse: 'Резерв',
       responsible: 'Сидоров С.',
       productId: 'prod-chicken',
-      sku: 'MEAT-001',
-      name: 'Курица охлаждённая',
-      qty: 3,
-      unit: 'кг',
+      quantity: 3,
       expiryDate: formatISO(-5),
-      supplier: 'ООО Куры Дуры',
-      status: 'warning',
     };
 
     service.add(todaySupply).subscribe();
