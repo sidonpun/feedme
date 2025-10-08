@@ -84,6 +84,7 @@
             (change)="selectWarehouse(activeWarehouse.value)"
             aria-label="Выбор активного склада"
           >
+            <option value="">Все склады</option>
             <option *ngFor="let warehouseName of warehouses()" [value]="warehouseName">
               {{ warehouseName }}
             </option>
@@ -106,28 +107,36 @@
 
         <div class="filters__field filters__field--date">
           <label class="sr-only" for="arrival-from">Дата прихода от</label>
-          <input
-            #dateFromInput
-            id="arrival-from"
-            class="input input--date"
-            type="date"
-            aria-label="Дата прихода от"
-            [value]="dateFrom()"
-            (change)="updateDateFrom(dateFromInput.value)"
-          />
+          <div class="date-input" [class.date-input--filled]="!!dateFrom()">
+            <input
+              #dateFromInput
+              id="arrival-from"
+              class="date-input__control"
+              type="date"
+              placeholder="ДД. ММ. ГГГГ"
+              aria-label="Дата прихода от"
+              [value]="dateFrom()"
+              (change)="updateDateFrom(dateFromInput.value)"
+            />
+            <span class="date-input__placeholder" aria-hidden="true">ДД. ММ. ГГГГ</span>
+          </div>
         </div>
 
         <div class="filters__field filters__field--date">
           <label class="sr-only" for="arrival-to">Дата прихода до</label>
-          <input
-            #dateToInput
-            id="arrival-to"
-            class="input input--date"
-            type="date"
-            aria-label="Дата прихода до"
-            [value]="dateTo()"
-            (change)="updateDateTo(dateToInput.value)"
-          />
+          <div class="date-input" [class.date-input--filled]="!!dateTo()">
+            <input
+              #dateToInput
+              id="arrival-to"
+              class="date-input__control"
+              type="date"
+              placeholder="ДД. ММ. ГГГГ"
+              aria-label="Дата прихода до"
+              [value]="dateTo()"
+              (change)="updateDateTo(dateToInput.value)"
+            />
+            <span class="date-input__placeholder" aria-hidden="true">ДД. ММ. ГГГГ</span>
+          </div>
         </div>
 
         <button type="button" class="btn btn--ghost" (click)="clearFilters()">Сброс</button>
