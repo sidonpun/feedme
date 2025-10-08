@@ -1,24 +1,20 @@
 // src/environments/environment.ts
 //
 
-// Dev-окружение использует прокси Angular CLI, чтобы перенаправлять запросы
-// к удалённому серверу через тот же origin. Это избавляет от проблем с CORS,
-// сохраняя работу с тем же API, что и в продакшене.
+// Dev-окружение намеренно работает с тем же удалённым API, что и продакшен,
+// чтобы исключить любые расхождения между средами и предотвратить обращения
+// к localhost. Благодаря этому все HTTP-запросы выполняются напрямую к
+// серверу 185.251.90.40.
 
 import type { EnvironmentConfig } from './environment.model';
-import {
-  buildEnvironmentConfig,
-  resolveApiPath,
-  type RemoteBackendConfig
-} from './api-base-url.builder';
+import { buildEnvironmentConfig, type RemoteBackendConfig } from './api-base-url.builder';
 import remoteBackendConfigJson from './remote-backend.config.json';
 
 const remoteBackendConfig = remoteBackendConfigJson satisfies RemoteBackendConfig;
 const remoteEnvironment = buildEnvironmentConfig(remoteBackendConfig);
-const proxyAwareApiBaseUrl = resolveApiPath(remoteBackendConfig) || '/';
 
 export const environment: EnvironmentConfig = {
   ...remoteEnvironment,
-  apiBaseUrl: proxyAwareApiBaseUrl
+  production: false
 };
 
