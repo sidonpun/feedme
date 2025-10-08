@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Options;
 
@@ -19,13 +21,14 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        var policyBuilder = new CorsPolicyBuilder();
-        var allowedOrigins = _settings.GetSanitizedOrigins();
+        var sanitizedOrigins = _settings.GetSanitizedOrigins();
 
-        if (allowedOrigins.Count == 0)
+        var policyBuilder = new CorsPolicyBuilder();
+
+        if (sanitizedOrigins.Count == 0)
         {
-            policyBuilder.AllowAnyOrigin();
             policyBuilder
+                .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
 
@@ -33,17 +36,29 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
             return;
         }
 
-        var originRules = CreateOriginRules(allowedOrigins);
+        var originRules = CreateOriginRules(sanitizedOrigins);
 
-        if (!originRules.ContainsWildcardRule && originRules.AllowedOrigins.Count > 0)
+        if (!originRules.Rules.Any())
         {
-            policyBuilder.WithOrigins(originRules.AllowedOrigins.ToArray());
+            policyBuilder
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+
+            options.AddPolicy(CorsSettings.PolicyName, policyBuilder.Build());
+            return;
+        }
+
+        if (!originRules.ExplicitOrigins.IsEmpty)
+        {
+            policyBuilder.WithOrigins(originRules.ExplicitOrigins.ToArray());
         }
 
         policyBuilder
             .SetIsOriginAllowed(origin => originRules.IsAllowed(origin))
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
 
         options.AddPolicy(CorsSettings.PolicyName, policyBuilder.Build());
     }
@@ -55,60 +70,35 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
 
     private static CorsOriginRuleSet CreateOriginRules(IReadOnlyCollection<string> configuredOrigins)
     {
-        var rules = new List<CorsOriginRule>();
-        var allowedOrigins = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var containsWildcardRule = false;
+        var rules = configuredOrigins
+            .Select(origin => CorsOriginRule.TryCreate(origin, out var rule) ? rule : null)
+            .Where(rule => rule is not null)
+            .Cast<CorsOriginRule>()
+            .ToImmutableArray();
 
-        foreach (var origin in configuredOrigins)
-        {
-            if (!CorsOriginRule.TryCreate(origin, out var rule) || rule is null)
-            {
-                continue;
-            }
+        var explicitOrigins = rules
+            .Where(rule => !rule.AllowsAnyPort)
+            .Select(rule => rule.NormalizedOrigin)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToImmutableHashSet(StringComparer.OrdinalIgnoreCase);
 
-            rules.Add(rule);
-
-            if (rule.AllowsAnyPort)
-            {
-                containsWildcardRule = true;
-                continue;
-            }
-
-            allowedOrigins.Add(rule.NormalizedOrigin);
-        }
-
-        return new CorsOriginRuleSet(rules, allowedOrigins, containsWildcardRule);
+        return new CorsOriginRuleSet(rules, explicitOrigins);
     }
 
-    private sealed class CorsOriginRuleSet
+    private sealed record CorsOriginRuleSet(
+        ImmutableArray<CorsOriginRule> Rules,
+        ImmutableHashSet<string> ExplicitOrigins)
     {
-        private readonly IReadOnlyCollection<CorsOriginRule> _rules;
-        private readonly HashSet<string> _allowedOrigins;
-
-        public CorsOriginRuleSet(
-            IReadOnlyCollection<CorsOriginRule> rules,
-            HashSet<string> allowedOrigins,
-            bool containsWildcardRule)
+        public bool IsAllowed(string? origin)
         {
-            _rules = rules;
-            _allowedOrigins = allowedOrigins;
-            ContainsWildcardRule = containsWildcardRule;
-        }
-
-        public IReadOnlyCollection<string> AllowedOrigins => _allowedOrigins;
-
-        public bool ContainsWildcardRule { get; }
-
-        public bool IsAllowed(string origin)
-        {
-            if (_allowedOrigins.Contains(origin))
-            {
-                return true;
-            }
-
-            if (_rules.Count == 0)
+            if (string.IsNullOrWhiteSpace(origin))
             {
                 return false;
+            }
+
+            if (ExplicitOrigins.Contains(origin))
+            {
+                return true;
             }
 
             if (!Uri.TryCreate(origin, UriKind.Absolute, out var parsedOrigin))
@@ -116,7 +106,7 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
                 return false;
             }
 
-            foreach (var rule in _rules)
+            foreach (var rule in Rules)
             {
                 if (rule.Matches(parsedOrigin))
                 {
