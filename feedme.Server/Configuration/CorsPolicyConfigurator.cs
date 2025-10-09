@@ -27,31 +27,21 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
 
         if (sanitizedOrigins.Count == 0)
         {
-            policyBuilder
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-
+            ConfigureOpenCorsPolicy(policyBuilder);
             options.AddPolicy(CorsSettings.PolicyName, policyBuilder.Build());
             return;
         }
 
         var originRules = CreateOriginRules(sanitizedOrigins);
 
-
-        if (!originRules.Rules.Any())
+        if (!originRules.HasAnyRules)
         {
-            policyBuilder
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-
+            ConfigureOpenCorsPolicy(policyBuilder);
             options.AddPolicy(CorsSettings.PolicyName, policyBuilder.Build());
             return;
         }
 
         if (!originRules.ExplicitOrigins.IsEmpty)
-
         {
             policyBuilder.WithOrigins(originRules.ExplicitOrigins.ToArray());
         }
@@ -59,8 +49,12 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
         policyBuilder
             .SetIsOriginAllowed(originRules.IsAllowed)
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowAnyMethod();
+
+        if (originRules.SupportsCredentials)
+        {
+            policyBuilder.AllowCredentials();
+        }
 
         options.AddPolicy(CorsSettings.PolicyName, policyBuilder.Build());
     }
@@ -72,27 +66,45 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
 
     private static CorsOriginRuleSet CreateOriginRules(IReadOnlyCollection<string> configuredOrigins)
     {
-
-        var rules = configuredOrigins
+        var validRules = configuredOrigins
             .Select(origin => CorsOriginRule.TryCreate(origin, out var rule) ? rule : null)
             .Where(rule => rule is not null)
             .Cast<CorsOriginRule>()
             .ToImmutableArray();
 
-        var explicitOrigins = rules
+        var explicitRules = validRules
             .Where(rule => !rule.AllowsAnyPort)
+            .ToImmutableArray();
+
+        var wildcardRules = validRules
+            .Where(rule => rule.AllowsAnyPort)
+            .ToImmutableArray();
+
+        var explicitOrigins = explicitRules
             .Select(rule => rule.NormalizedOrigin)
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToImmutableHashSet(StringComparer.OrdinalIgnoreCase);
 
+        return new CorsOriginRuleSet(explicitRules, wildcardRules, explicitOrigins);
+    }
 
-        return new CorsOriginRuleSet(rules, explicitOrigins);
+    private static void ConfigureOpenCorsPolicy(CorsPolicyBuilder builder)
+    {
+        builder
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     }
 
     private sealed record CorsOriginRuleSet(
-        ImmutableArray<CorsOriginRule> Rules,
+        ImmutableArray<CorsOriginRule> ExplicitRules,
+        ImmutableArray<CorsOriginRule> WildcardRules,
         ImmutableHashSet<string> ExplicitOrigins)
     {
+
+        public bool HasAnyRules => ExplicitRules.Length > 0 || WildcardRules.Length > 0;
+
+        public bool SupportsCredentials => HasAnyRules;
 
         public bool IsAllowed(string? origin)
         {
@@ -112,7 +124,15 @@ public sealed class CorsPolicyConfigurator : IConfigureNamedOptions<CorsOptions>
                 return false;
             }
 
-            foreach (var rule in Rules)
+            foreach (var rule in ExplicitRules)
+            {
+                if (rule.Matches(parsedOrigin))
+                {
+                    return true;
+                }
+            }
+
+            foreach (var rule in WildcardRules)
             {
                 if (rule.Matches(parsedOrigin))
                 {
