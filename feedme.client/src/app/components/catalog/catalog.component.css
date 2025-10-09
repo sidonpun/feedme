@@ -135,52 +135,54 @@
   border-bottom: 1px solid var(--border);
 }
 .catalog-table thead {
-  background: var(--surface);
-  color: var(--muted);
+  background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
 }
 
 .catalog-table thead tr {
   position: relative;
 }
 
-.catalog-table thead tr::after {
-  content: '';
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  border-radius: 3px;
-  box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.05), 0 6px 14px rgba(255, 102, 0, 0.35);
-}
-
 .catalog-table thead th {
-  color: var(--muted);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  color: #2e3a49;
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.1px;
   text-transform: none;
+  background-color: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  box-shadow: inset 0 -1px 0 rgba(46, 58, 73, 0.08);
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .catalog-table th.sortable {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   cursor: pointer;
   user-select: none;
-  transition: color 0.2s ease;
+  border-bottom-color: transparent;
 }
 
-.catalog-table th.sortable:hover,
-.catalog-table th.sortable.sortable--active {
-  color: var(--accent);
+.catalog-table th.sortable:hover {
+  background: rgba(255, 106, 0, 0.05);
 }
 
 .catalog-table th.sortable:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
   border-radius: 8px;
+}
+
+.catalog-table th.sortable.sortable--active,
+.catalog-table th.sortable[data-direction='asc'],
+.catalog-table th.sortable[data-direction='desc'] {
+  color: #ff6a00;
+  border-bottom-color: #ff6a00;
+  box-shadow: inset 0 -1px 0 rgba(255, 106, 0, 0.2);
 }
 
 .catalog-table th.sortable .sort {
@@ -220,10 +222,12 @@
 }
 
 .catalog-table thead th:first-child {
+  border-top-left-radius: 12px;
   padding-left: 24px;
 }
 
 .catalog-table thead th:last-child {
+  border-top-right-radius: 12px;
   padding-right: 24px;
 }
 .catalog-table tbody tr:nth-child(even) {
