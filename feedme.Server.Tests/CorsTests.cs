@@ -119,4 +119,30 @@ public class CorsTests
         Assert.True(response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins));
         Assert.Contains("http://example.com:63191", origins);
     }
+
+    [Fact]
+    public async Task GetRequest_IncludesCorsHeaderForWildcardPortOrigin()
+    {
+        await using var factory = new FeedmeApplicationFactory()
+            .WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureAppConfiguration((_, configuration) =>
+                {
+                    configuration.AddInMemoryCollection(new Dictionary<string, string?>
+                    {
+                        [$"{CorsSettings.SectionName}:{nameof(CorsSettings.AllowedOrigins)}:0"] = "http://localhost:*"
+                    });
+                });
+            });
+
+        using var client = factory.CreateClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/api/receipts");
+        request.Headers.Add("Origin", "http://localhost:4200");
+
+        using var response = await client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.True(response.Headers.TryGetValues("Access-Control-Allow-Origin", out var origins));
+        Assert.Contains("http://localhost:4200", origins);
+    }
 }
