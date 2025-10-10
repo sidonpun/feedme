@@ -149,8 +149,28 @@
             <td>{{ item.writeoffMethod }}</td>
             <td>{{ item.allergens }}</td>
             <td>
-              <div>Требует фасовки: {{ item.packagingRequired | booleanLabel }}</div>
-              <div>Портится после вскрытия: {{ item.spoilsAfterOpening | booleanLabel }}</div>
+              <div class="boolean-flag-row">
+                <span class="boolean-flag-row__label">Требует фасовки</span>
+                <span
+                  class="boolean-pill"
+                  [class.boolean-pill--positive]="item.packagingRequired === true"
+                  [class.boolean-pill--negative]="item.packagingRequired === false"
+                  [class.boolean-pill--unknown]="item.packagingRequired == null"
+                >
+                  {{ item.packagingRequired | booleanLabel }}
+                </span>
+              </div>
+              <div class="boolean-flag-row">
+                <span class="boolean-flag-row__label">Портится после вскрытия</span>
+                <span
+                  class="boolean-pill"
+                  [class.boolean-pill--positive]="item.spoilsAfterOpening === true"
+                  [class.boolean-pill--negative]="item.spoilsAfterOpening === false"
+                  [class.boolean-pill--unknown]="item.spoilsAfterOpening == null"
+                >
+                  {{ item.spoilsAfterOpening | booleanLabel }}
+                </span>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -262,7 +282,16 @@
             <td>{{ item.unitPrice }}</td>
             <td>{{ item.salePrice }}</td>
             <td>{{ item.tnved }}</td>
-            <td>{{ item.isMarked }}</td>
+            <td>
+              <span
+                class="boolean-pill"
+                [class.boolean-pill--positive]="item.isMarked === true"
+                [class.boolean-pill--negative]="item.isMarked === false"
+                [class.boolean-pill--unknown]="item.isMarked == null"
+              >
+                {{ item.isMarked | booleanLabel }}
+              </span>
+            </td>
           </tr>
         </tbody>
       </table>
