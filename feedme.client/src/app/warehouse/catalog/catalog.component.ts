@@ -40,6 +40,12 @@ interface ProductFormValue {
   alcohol: boolean;
 }
 
+interface CatalogTab {
+  id: string;
+  label: string;
+  categoryKey: string | null;
+}
+
 @Component({
   standalone: true,
   selector: 'app-warehouse-catalog',
@@ -77,6 +83,7 @@ export class CatalogComponent {
   readonly dialogOpen = signal(false);
   readonly submitting = signal(false);
   readonly searchQuery = signal('');
+  readonly activeTabId = signal('all');
 
   readonly productForm = this.fb.group({
     name: this.fb.control(this.defaults.name, {
@@ -124,8 +131,63 @@ export class CatalogComponent {
     initialValue: [] as Product[],
   });
 
+  readonly tabs = computed<CatalogTab[]>(() => {
+    const products = this.products();
+    const categories = new Map<string, { label: string; count: number }>();
+
+    for (const product of products) {
+      const label = this.normalizeCategoryLabel(product.category);
+      const key = this.toCategoryKey(product.category);
+
+      const stats = categories.get(key);
+      if (stats) {
+        stats.count += 1;
+        continue;
+      }
+
+      categories.set(key, { label, count: 1 });
+    }
+
+    const categoryTabs = Array.from(categories.entries())
+      .sort(([, a], [, b]) => a.label.localeCompare(b.label, 'ru-RU'))
+      .map<CatalogTab>(([key, value]) => ({
+        id: `category:${key}`,
+        label: `${value.label} (${value.count})`,
+        categoryKey: key,
+      }));
+
+    const totalLabel = `Все позиции (${products.length})`;
+
+    return [
+      { id: 'all', label: totalLabel, categoryKey: null },
+      ...categoryTabs,
+    ];
+  });
+
+  readonly activeTab = computed(() => {
+    const activeId = this.activeTabId();
+    const tabs = this.tabs();
+
+    return tabs.find((tab) => tab.id === activeId) ?? tabs[0] ?? null;
+  });
+
+  readonly productsByActiveTab = computed(() => {
+    const activeTab = this.activeTab();
+    const products = this.products();
+
+    if (!activeTab || activeTab.categoryKey === null) {
+      return products;
+    }
+
+    return products.filter(
+      (product) => this.toCategoryKey(product.category) === activeTab.categoryKey,
+    );
+  });
+
   readonly totalProductsCount = computed(() => this.products().length);
-  readonly filteredProducts = computed(() => filterByName(this.products(), this.searchQuery(), 'ru-RU'));
+  readonly filteredProducts = computed(() =>
+    filterByName(this.productsByActiveTab(), this.searchQuery(), 'ru-RU'),
+  );
   readonly filteredProductsCount = computed(() => this.filteredProducts().length);
   readonly normalizedSearchQuery = computed(() => this.searchQuery().trim());
   readonly productsCountLabel = computed(() => {
@@ -207,6 +269,14 @@ export class CatalogComponent {
     this.searchQuery.set(query);
   }
 
+  trackByTabId(_: number, tab: CatalogTab): string {
+    return tab.id;
+  }
+
+  setActiveTab(tabId: string): void {
+    this.activeTabId.set(tabId);
+  }
+
   private resetForm(): void {
     this.productForm.reset(this.defaults);
   }
@@ -221,5 +291,19 @@ export class CatalogComponent {
     }
 
     return value;
+  }
+
+  private normalizeCategoryLabel(category: string | null | undefined): string {
+    const trimmed = category?.trim();
+
+    if (trimmed && trimmed.length > 0) {
+      return trimmed;
+    }
+
+    return 'Без категории';
+  }
+
+  private toCategoryKey(category: string | null | undefined): string {
+    return this.normalizeCategoryLabel(category).toLocaleLowerCase('ru-RU');
   }
 }
