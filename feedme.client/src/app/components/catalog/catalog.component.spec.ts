@@ -89,18 +89,21 @@ describe('CatalogComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('отображает форматированные флаги для каждого товара', () => {
+  it('отображает флаги для каждого товара', () => {
     fixture.detectChanges();
 
-    const rows = fixture.debugElement.queryAll(By.css('tbody tr'));
+    const rows = fixture.debugElement.queryAll(By.css('app-catalog-table tbody tr'));
     expect(rows.length).toBe(mockItems.length);
 
-    const firstFlagCellText = rows[0].query(By.css('td:nth-child(8)'))!.nativeElement.textContent;
-    expect(firstFlagCellText).toContain('Требует фасовки: Да');
-    expect(firstFlagCellText).toContain('Портится после вскрытия: Нет');
+    const firstFlags = rows[0].queryAll(By.css('.flag'));
+    expect(firstFlags.length).toBe(2);
+    const firstFlagTexts = firstFlags.map(flag => flag.nativeElement.textContent.trim());
+    expect(firstFlagTexts).toContain('Требует фасовки');
+    expect(firstFlagTexts).toContain('Портится после вскрытия');
 
-    const secondFlagCellText = rows[1].query(By.css('td:nth-child(8)'))!.nativeElement.textContent;
-    expect(secondFlagCellText).toContain('Требует фасовки: Нет');
-    expect(secondFlagCellText).toContain('Портится после вскрытия: Да');
+    const secondFlags = rows[1].queryAll(By.css('.flag'));
+    const secondFlagTexts = secondFlags.map(flag => flag.nativeElement.textContent.trim());
+    expect(secondFlagTexts).toContain('Портится после вскрытия');
+    expect(secondFlagTexts).not.toContain('Требует фасовки');
   });
 });

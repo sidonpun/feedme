@@ -1,14 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  Pipe,
-  PipeTransform,
-  computed,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -18,6 +8,7 @@ import { NewProductFormValues } from '../catalog-new-product-popup/catalog-new-p
 import { CatalogItem } from '../../services/catalog.service';
 import { EmptyStateComponent } from '../../warehouse/ui/empty-state.component';
 import { CatalogNewProductPopupComponent } from '../catalog-new-product-popup/catalog-new-product-popup.component';
+import { CatalogSortState, CatalogTableComponent } from '../CatalogTableComponent/catalog-table.component';
 import { catalogActions } from '../../store/catalog/catalog.actions';
 import {
   selectCatalogCreationError,
@@ -39,29 +30,10 @@ type SortState = {
 
 type SortValue = string | number | boolean;
 
-@Pipe({
-  name: 'booleanLabel',
-  standalone: true,
-})
-export class BooleanLabelPipe implements PipeTransform {
-  transform(value: boolean | null | undefined): string {
-    if (value === null || value === undefined) {
-      return '—';
-    }
-
-    return value ? 'Да' : 'Нет';
-  }
-}
-
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [
-    CommonModule,
-    BooleanLabelPipe,
-    EmptyStateComponent,
-    CatalogNewProductPopupComponent,
-  ],
+  imports: [CommonModule, EmptyStateComponent, CatalogNewProductPopupComponent, CatalogTableComponent],
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -158,6 +130,10 @@ export class CatalogComponent implements OnInit {
 
   protected get catalogData(): readonly CatalogItem[] {
     return this.catalogItems();
+  }
+
+  protected getSortState(tab: CatalogTab): CatalogSortState {
+    return this.sortState()[tab];
   }
 
   protected onSort(tab: CatalogTab, column: number): void {

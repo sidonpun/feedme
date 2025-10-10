@@ -1,148 +1,246 @@
-<!-- Заголовок: поиск + выбор числа строк -->
-<div class="table-header">
-  <app-table-controls [searchQuery]="searchQuery"
-                      [rowsPerPage]="rowsPerPage"
-                      (searchQueryChange)="onSearchChange($event)"
-                      (rowsPerPageChange)="onRowsChange($event)">
-  </app-table-controls>
-  <app-catalog-view-switcher [view]="viewMode" (viewChange)="onViewChange($event)"></app-catalog-view-switcher>
-  <button class="add-button" (click)="addSupply()">+ Новый товар</button>
-
-</div>
-
-<!-- Горизонтальный скролл для таблицы -->
-<div class="table-container">
-  <table class="catalog-table">
+<div class="table-wrapper" *ngIf="viewMode === 'info'; else logisticsTable">
+  <table class="catalog-table" role="grid">
     <thead>
       <tr>
         <th
-          *ngFor="let column of columns"
-          [ngClass]="getHeaderClasses(column)"
-          (click)="column.sortable === false ? null : onSort(column.key)"
+          scope="col"
+          class="sortable w-name"
+          tabindex="0"
+          (click)="onSort(0)"
+          (keydown)="onSortKey(0, $event)"
+          [class.sortable--active]="isSorted(0)"
+          [attr.data-direction]="getSortDirection(0)"
+          [attr.aria-sort]="getAriaSort(0)"
         >
-          <span>{{ column.label }}</span>
-          <span class="ind" *ngIf="column.sortable !== false"></span>
+          <span>Название</span>
+          <span class="sort" aria-hidden="true"></span>
         </th>
-        <th class="w-actions">Действия</th>
+        <th
+          scope="col"
+          class="sortable w-type"
+          tabindex="0"
+          (click)="onSort(1)"
+          (keydown)="onSortKey(1, $event)"
+          [class.sortable--active]="isSorted(1)"
+          [attr.data-direction]="getSortDirection(1)"
+          [attr.aria-sort]="getAriaSort(1)"
+        >
+          <span>Тип</span>
+          <span class="sort" aria-hidden="true"></span>
+        </th>
+        <th
+          scope="col"
+          class="sortable w-code"
+          tabindex="0"
+          (click)="onSort(2)"
+          (keydown)="onSortKey(2, $event)"
+          [class.sortable--active]="isSorted(2)"
+          [attr.data-direction]="getSortDirection(2)"
+          [attr.aria-sort]="getAriaSort(2)"
+        >
+          <span>Код</span>
+          <span class="sort" aria-hidden="true"></span>
+        </th>
+        <th
+          scope="col"
+          class="sortable w-cat"
+          tabindex="0"
+          (click)="onSort(3)"
+          (keydown)="onSortKey(3, $event)"
+          [class.sortable--active]="isSorted(3)"
+          [attr.data-direction]="getSortDirection(3)"
+          [attr.aria-sort]="getAriaSort(3)"
+        >
+          <span>Категория</span>
+          <span class="sort" aria-hidden="true"></span>
+        </th>
+        <th
+          scope="col"
+          class="sortable w-unit"
+          tabindex="0"
+          (click)="onSort(4)"
+          (keydown)="onSortKey(4, $event)"
+          [class.sortable--active]="isSorted(4)"
+          [attr.data-direction]="getSortDirection(4)"
+          [attr.aria-sort]="getAriaSort(4)"
+        >
+          <span>Ед.изм.</span>
+          <span class="sort" aria-hidden="true"></span>
+        </th>
+        <th
+          scope="col"
+          class="sortable w-method"
+          tabindex="0"
+          (click)="onSort(5)"
+          (keydown)="onSortKey(5, $event)"
+          [class.sortable--active]="isSorted(5)"
+          [attr.data-direction]="getSortDirection(5)"
+          [attr.aria-sort]="getAriaSort(5)"
+        >
+          <span>Метод списания</span>
+          <span class="sort" aria-hidden="true"></span>
+        </th>
+        <th
+          scope="col"
+          class="sortable w-attr"
+          tabindex="0"
+          (click)="onSort(6)"
+          (keydown)="onSortKey(6, $event)"
+          [class.sortable--active]="isSorted(6)"
+          [attr.data-direction]="getSortDirection(6)"
+          [attr.aria-sort]="getAriaSort(6)"
+        >
+          <span>Аллергены</span>
+          <span class="sort" aria-hidden="true"></span>
+        </th>
+        <th
+          scope="col"
+          class="sortable w-flags"
+          tabindex="0"
+          (click)="onSort(7)"
+          (keydown)="onSortKey(7, $event)"
+          [class.sortable--active]="isSorted(7)"
+          [attr.data-direction]="getSortDirection(7)"
+          [attr.aria-sort]="getAriaSort(7)"
+        >
+          <span>Флаги</span>
+          <span class="sort" aria-hidden="true"></span>
+        </th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of paginatedData">
-        <td *ngFor="let column of columns" [ngClass]="getCellClasses(column)">
-          <ng-container [ngSwitch]="column.key">
-            <span
-              *ngSwitchCase="'name'"
-              class="text-clip"
-              [title]="format(item.name)"
-            >
-              {{ format(item.name) }}
-            </span>
-            <span
-              *ngSwitchCase="'type'"
-              class="text-clip"
-              [title]="format(item.type)"
-            >
-              {{ format(item.type) }}
-            </span>
-            <span
-              *ngSwitchCase="'code'"
-              class="mono"
-              [title]="format(item.code)"
-            >
-              {{ format(item.code) }}
-            </span>
-            <span
-              *ngSwitchCase="'category'"
-              class="text-clip"
-              [title]="format(item.category)"
-            >
-              {{ format(item.category) }}
-            </span>
-            <span
-              *ngSwitchCase="'unit'"
-              class="mono"
-              [title]="format(item.unit)"
-            >
-              {{ format(item.unit) }}
-            </span>
-            <span *ngSwitchCase="'writeoffMethod'" class="pill" [ngClass]="getWriteoffPillClass(item.writeoffMethod)">
-              {{ format(item.writeoffMethod) }}
-            </span>
-            <span
-              *ngSwitchCase="'allergens'"
-              class="text-clip"
-              [title]="format(item.allergens)"
-            >
-              {{ format(item.allergens) }}
-            </span>
-            <ng-container *ngSwitchCase="'packagingRequired'">
-              <ng-container *ngIf="getFlagLabels(item) as flags">
-                <div class="flags" *ngIf="flags.length > 0; else noFlags">
-                  <span class="flag" *ngFor="let flag of flags">{{ flag }}</span>
-                </div>
-                <ng-template #noFlags>
-                  <span class="flag flag-empty">Нет флагов</span>
-                </ng-template>
-              </ng-container>
-            </ng-container>
-            <span
-              *ngSwitchCase="'supplier'"
-              class="text-clip"
-              [title]="format(item.supplier)"
-            >
-              {{ format(item.supplier) }}
-            </span>
-            <span
-              *ngSwitchCase="'costEstimate'"
-              class="mono"
-            >
-              {{ format(item.costEstimate) }}
-            </span>
-            <span *ngSwitchCase="'taxRate'" class="mono">
-              {{ format(item.taxRate) }}
-            </span>
-            <span *ngSwitchCase="'unitPrice'" class="mono">
-              {{ format(item.unitPrice) }}
-            </span>
-            <span *ngSwitchCase="'tnved'" class="mono" [title]="format(item.tnved)">
-              {{ format(item.tnved) }}
-            </span>
-            <span *ngSwitchCase="'isMarked'" class="pill" [class.pill-green]="item.isMarked">
-              {{ item.isMarked ? 'Да' : 'Нет' }}
-            </span>
-            <span *ngSwitchCase="'isAlcohol'" class="pill" [class.pill-green]="item.isAlcohol">
-              {{ item.isAlcohol ? 'Да' : 'Нет' }}
-            </span>
-            <span *ngSwitchDefault [title]="format(item[column.key])">
-              {{ format(item[column.key]) }}
-            </span>
+      <tr *ngFor="let item of data; trackBy: trackById">
+        <td class="w-name">{{ item.name }}</td>
+        <td class="w-type">{{ item.type }}</td>
+        <td class="w-code">{{ item.code }}</td>
+        <td class="w-cat">{{ item.category }}</td>
+        <td class="w-unit">{{ item.unit }}</td>
+        <td class="w-method">{{ item.writeoffMethod }}</td>
+        <td class="w-attr">{{ item.allergens }}</td>
+        <td class="w-flags">
+          <ng-container *ngIf="getFlagLabels(item) as flags">
+            <div class="flags" *ngIf="flags.length > 0; else noFlags">
+              <span class="flag" *ngFor="let flag of flags">{{ flag }}</span>
+            </div>
+            <ng-template #noFlags>
+              <span class="flag flag-empty">Нет флагов</span>
+            </ng-template>
           </ng-container>
         </td>
-        <td class="w-actions actions-cell">
-          <button class="btn-icon" type="button" aria-label="Редактировать" (click)="edit.emit(item)">
-            <img src="assets/correct.svg" alt="Редактировать" />
-          </button>
-          <button class="btn-icon" type="button" aria-label="Удалить" (click)="requestDelete(item)">
-            <img src="assets/delete.svg" alt="Удалить" />
-          </button>
-        </td>
-      </tr>
-      <tr *ngIf="paginatedData.length === 0">
-        <td [attr.colspan]="columns.length + 1" class="no-data">Нет данных</td>
       </tr>
     </tbody>
   </table>
 </div>
 
-<!-- Пагинация -->
-<div class="pagination-controls">
-  <button (click)="prevPage()" [disabled]="currentPage === 1">Назад</button>
-  <span>Страница {{ currentPage }} из {{ totalPages }}</span>
-  <button (click)="nextPage()" [disabled]="currentPage === totalPages">Далее</button>
-</div>
-
-<app-confirm-delete-popup
-  *ngIf="showConfirm"
-  (confirm)="confirmDelete()"
-  (cancel)="cancelDelete()">
-</app-confirm-delete-popup>
+<ng-template #logisticsTable>
+  <div class="table-wrapper">
+    <table class="catalog-table" role="grid">
+      <thead>
+        <tr>
+          <th
+            scope="col"
+            class="sortable w-supplier"
+            tabindex="0"
+            (click)="onSort(0)"
+            (keydown)="onSortKey(0, $event)"
+            [class.sortable--active]="isSorted(0)"
+            [attr.data-direction]="getSortDirection(0)"
+            [attr.aria-sort]="getAriaSort(0)"
+          >
+            <span>Поставщик</span>
+            <span class="sort" aria-hidden="true"></span>
+          </th>
+          <th
+            scope="col"
+            class="sortable w-cost"
+            tabindex="0"
+            (click)="onSort(1)"
+            (keydown)="onSortKey(1, $event)"
+            [class.sortable--active]="isSorted(1)"
+            [attr.data-direction]="getSortDirection(1)"
+            [attr.aria-sort]="getAriaSort(1)"
+          >
+            <span>Оценочная себестоимость</span>
+            <span class="sort" aria-hidden="true"></span>
+          </th>
+          <th
+            scope="col"
+            class="sortable w-tax"
+            tabindex="0"
+            (click)="onSort(2)"
+            (keydown)="onSortKey(2, $event)"
+            [class.sortable--active]="isSorted(2)"
+            [attr.data-direction]="getSortDirection(2)"
+            [attr.aria-sort]="getAriaSort(2)"
+          >
+            <span>Ставка НДС</span>
+            <span class="sort" aria-hidden="true"></span>
+          </th>
+          <th
+            scope="col"
+            class="sortable w-price"
+            tabindex="0"
+            (click)="onSort(3)"
+            (keydown)="onSortKey(3, $event)"
+            [class.sortable--active]="isSorted(3)"
+            [attr.data-direction]="getSortDirection(3)"
+            [attr.aria-sort]="getAriaSort(3)"
+          >
+            <span>Цена за ед.</span>
+            <span class="sort" aria-hidden="true"></span>
+          </th>
+          <th
+            scope="col"
+            class="sortable w-price"
+            tabindex="0"
+            (click)="onSort(4)"
+            (keydown)="onSortKey(4, $event)"
+            [class.sortable--active]="isSorted(4)"
+            [attr.data-direction]="getSortDirection(4)"
+            [attr.aria-sort]="getAriaSort(4)"
+          >
+            <span>Цена продажи</span>
+            <span class="sort" aria-hidden="true"></span>
+          </th>
+          <th
+            scope="col"
+            class="sortable w-tnved"
+            tabindex="0"
+            (click)="onSort(5)"
+            (keydown)="onSortKey(5, $event)"
+            [class.sortable--active]="isSorted(5)"
+            [attr.data-direction]="getSortDirection(5)"
+            [attr.aria-sort]="getAriaSort(5)"
+          >
+            <span>Код ТН ВЭД</span>
+            <span class="sort" aria-hidden="true"></span>
+          </th>
+          <th
+            scope="col"
+            class="sortable w-flag"
+            tabindex="0"
+            (click)="onSort(6)"
+            (keydown)="onSortKey(6, $event)"
+            [class.sortable--active]="isSorted(6)"
+            [attr.data-direction]="getSortDirection(6)"
+            [attr.aria-sort]="getAriaSort(6)"
+          >
+            <span>Маркируемый</span>
+            <span class="sort" aria-hidden="true"></span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of data; trackBy: trackById">
+          <td class="w-supplier">{{ item.supplier }}</td>
+          <td class="w-cost">{{ item.costEstimate }}</td>
+          <td class="w-tax">{{ item.taxRate }}</td>
+          <td class="w-price">{{ item.unitPrice }}</td>
+          <td class="w-price">{{ item.salePrice }}</td>
+          <td class="w-tnved">{{ item.tnved }}</td>
+          <td class="w-flag">{{ booleanLabel(item.isMarked) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
