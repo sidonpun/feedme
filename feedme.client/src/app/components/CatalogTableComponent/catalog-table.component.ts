@@ -41,6 +41,9 @@ export class CatalogTableComponent implements OnChanges {
   /** Режим отображения таблицы */
   viewMode: CatalogView = 'info';
 
+  /** Идентификатор заголовка колонки действий */
+  readonly actionsHeaderId = 'catalog-column-actions';
+
 
   @Output() onAddSupply = new EventEmitter<void>();
   @Output() edit = new EventEmitter<CatalogItem>();
@@ -362,6 +365,11 @@ export class CatalogTableComponent implements OnChanges {
 
   getCellClasses(column: CatalogColumn): string[] {
     return [column.widthClass, ...(column.cellClasses ?? [])];
+  }
+
+  /** Уникальный идентификатор заголовка для привязки ячеек */
+  getHeaderId(column: CatalogColumn): string {
+    return `catalog-column-${String(column.key)}`;
   }
 
   getFlagLabels(item: CatalogItem): string[] {
