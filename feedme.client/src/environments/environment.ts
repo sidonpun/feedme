@@ -7,14 +7,20 @@
 // серверу 185.251.90.40.
 
 import type { EnvironmentConfig } from './environment.model';
-import { buildEnvironmentConfig, type RemoteBackendConfig } from './api-base-url.builder';
+import {
+  buildEnvironmentConfig,
+  resolveApiPath,
+  type RemoteBackendConfig,
+} from './api-base-url.builder';
 import remoteBackendConfigJson from './remote-backend.config.json';
 
 const remoteBackendConfig = remoteBackendConfigJson satisfies RemoteBackendConfig;
 const remoteEnvironment = buildEnvironmentConfig(remoteBackendConfig);
+const relativeApiBase = resolveApiPath(remoteBackendConfig);
 
 export const environment: EnvironmentConfig = {
   ...remoteEnvironment,
+  apiBaseUrl: relativeApiBase,
   production: false
 };
 
