@@ -17,6 +17,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { WarehouseCatalogService } from './catalog.service';
 import { Product } from '../shared/models';
 import { filterByName } from './filter-by-name';
+import { CatalogSortKey, CatalogSortState, SortDirection, sortProducts } from './sort-products';
 
 interface ProductFormValue {
   name: string;
@@ -77,6 +78,7 @@ export class CatalogComponent {
   readonly dialogOpen = signal(false);
   readonly submitting = signal(false);
   readonly searchQuery = signal('');
+  readonly activeSort = signal<CatalogSortState>({ key: 'name', direction: 'asc' });
 
   readonly productForm = this.fb.group({
     name: this.fb.control(this.defaults.name, {
@@ -126,6 +128,7 @@ export class CatalogComponent {
 
   readonly totalProductsCount = computed(() => this.products().length);
   readonly filteredProducts = computed(() => filterByName(this.products(), this.searchQuery(), 'ru-RU'));
+  readonly sortedProducts = computed(() => sortProducts(this.filteredProducts(), this.activeSort()));
   readonly filteredProductsCount = computed(() => this.filteredProducts().length);
   readonly normalizedSearchQuery = computed(() => this.searchQuery().trim());
   readonly productsCountLabel = computed(() => {
@@ -139,6 +142,47 @@ export class CatalogComponent {
 
     return `${filtered} из ${total} позиций`;
   });
+
+  changeSort(key: CatalogSortKey): void {
+    this.activeSort.update(current => {
+      if (current.key === key) {
+        const direction: SortDirection = current.direction === 'asc' ? 'desc' : 'asc';
+
+        return { key, direction };
+      }
+
+      return { key, direction: 'asc' };
+    });
+  }
+
+  ariaSort(key: CatalogSortKey): 'none' | 'ascending' | 'descending' {
+    const currentSort = this.activeSort();
+
+    if (currentSort.key !== key) {
+      return 'none';
+    }
+
+    return currentSort.direction === 'asc' ? 'ascending' : 'descending';
+  }
+
+  sortAriaLabel(key: CatalogSortKey, columnLabel: string): string {
+    const currentSort = this.activeSort();
+    const willToggleToDescending = currentSort.key === key && currentSort.direction === 'asc';
+    const nextDirection = willToggleToDescending ? 'descending' : 'ascending';
+    const directionLabel = nextDirection === 'ascending' ? 'по возрастанию' : 'по убыванию';
+
+    return `Сортировать по «${columnLabel}» ${directionLabel}`;
+  }
+
+  sortIndicator(key: CatalogSortKey): string {
+    const currentSort = this.activeSort();
+
+    if (currentSort.key !== key) {
+      return '↕';
+    }
+
+    return currentSort.direction === 'asc' ? '▲' : '▼';
+  }
 
   openDialog(): void {
     this.dialogOpen.set(true);
