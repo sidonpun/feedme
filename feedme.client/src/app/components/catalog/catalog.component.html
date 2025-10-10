@@ -29,6 +29,7 @@
 
 <ng-container *ngIf="catalogData as catalogData">
   <ng-container *ngIf="catalogData.length; else emptyCatalog">
+
     <app-catalog-table
       *ngIf="activeTab==='info'"
       [viewMode]="'info'"
@@ -46,6 +47,7 @@
       (sort)="onSort('logistics', $event)"
       (sortByKey)="onSortKey('logistics', $event.column, $event.event)"
     ></app-catalog-table>
+
   </ng-container>
 </ng-container>
 

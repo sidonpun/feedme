@@ -18,10 +18,12 @@ export interface CatalogSortState {
   styleUrls: ['./catalog-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
 export class CatalogTableComponent {
   @Input({ required: true }) data: readonly CatalogItem[] = [];
   @Input({ required: true }) viewMode: CatalogTableView = 'info';
   @Input({ required: true }) sortState: CatalogSortState | null = null;
+
 
   @Output() readonly sort = new EventEmitter<number>();
   @Output() readonly sortByKey = new EventEmitter<{ column: number; event: KeyboardEvent }>();
@@ -69,7 +71,9 @@ export class CatalogTableComponent {
     return 'none';
   }
 
+
   getFlagLabels(item: CatalogItem): readonly string[] {
+
     const flags: string[] = [];
 
     if (item.packagingRequired) {
