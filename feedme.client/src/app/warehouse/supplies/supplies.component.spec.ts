@@ -16,6 +16,15 @@ class MockSuppliesService {
       supplier: 'ООО Куры Дуры',
       purchasePrice: 210,
     },
+    {
+      id: 'prod-bun',
+      sku: 'BAK-010',
+      name: 'Булочка для бургеров',
+      unit: 'шт',
+      category: 'Выпечка',
+      supplier: undefined,
+      purchasePrice: 12,
+    },
   ]);
   private readonly rowsSubject = new BehaviorSubject<SupplyRow[]>([]);
   private idCounter = 0;
@@ -92,6 +101,7 @@ describe('SuppliesComponent', () => {
       arrivalDate: formatISO(-8),
       warehouse: 'Главный склад',
       responsible: 'Петров П.',
+      supplier: 'ООО Куры Дуры',
       productId: 'prod-chicken',
       qty: 12,
       expiryDate: expiry,
@@ -118,6 +128,7 @@ describe('SuppliesComponent', () => {
       arrivalDate: formatISO(-1),
       warehouse: 'Бар',
       responsible: '',
+      supplier: 'ООО Куры Дуры',
       productId: 'prod-chicken',
       qty: 5,
       expiryDate: expiry,
@@ -130,6 +141,31 @@ describe('SuppliesComponent', () => {
     expect(rows[0].docNo).toBe('PO-000123');
     expect(rows[0].status).toBe('ok');
     expect(rows[0].id).toContain('mock-');
+  });
+
+  it('saves supply with manual supplier when catalog entry is empty', () => {
+    const addSpy = spyOn(service, 'add').and.callThrough();
+    const expiry = formatISO(7);
+
+    component.openDialog();
+    component.form.setValue({
+      docNo: 'PO-000555',
+      arrivalDate: formatISO(-2),
+      warehouse: 'Ресторан',
+      responsible: 'Сидоров С.',
+      supplier: 'ИП Пекарь',
+      productId: 'prod-bun',
+      qty: 50,
+      expiryDate: expiry,
+    });
+
+    component.submit();
+
+    expect(addSpy).toHaveBeenCalledTimes(1);
+    const [payload] = addSpy.calls.mostRecent().args as [Omit<SupplyRow, 'id'>];
+    expect(payload.productId).toBe('prod-bun');
+    expect(payload.supplier).toBe('ИП Пекарь');
+    expect(payload.status).toBe('ok');
   });
 
   it('computes KPI summary based on supply data', () => {
