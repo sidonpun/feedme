@@ -10,84 +10,148 @@
   </header>
 
   <ng-container *ngIf="totalProductsCount(); else emptyCatalog">
-    <nav class="catalog__tabs" role="tablist" aria-label="Категории товаров">
-      <button
-        *ngFor="let tab of tabs(); trackBy: trackByTabId"
-        type="button"
-        class="catalog__tab"
-        [ngClass]="{ 'catalog__tab--active': tab.id === activeTabId() }"
-        role="tab"
-        [attr.id]="'tab-' + tab.id"
-        [attr.aria-selected]="tab.id === activeTabId()"
-        aria-controls="catalog-panel"
-        (click)="setActiveTab(tab.id)"
-      >
-        {{ tab.label }}
-      </button>
-    </nav>
 
-    <section
-      class="catalog__panel"
-      id="catalog-panel"
-      role="tabpanel"
-      [attr.aria-labelledby]="'tab-' + activeTabId()"
-    >
-      <div class="catalog__panel-header">
-        <input
-          #searchInput
-          class="catalog__search"
-          type="search"
-          placeholder="Поиск по названию"
-          id="catalog-search"
-          [value]="searchQuery()"
-          (input)="updateSearch(searchInput.value)"
-          aria-label="Поиск по названию"
-        />
-      </div>
+    <div class="catalog__toolbar">
+      <input
+        #searchInput
+        class="catalog__search"
+        type="search"
+        placeholder="Поиск по названию"
+        [value]="searchQuery()"
+        (input)="updateSearch(searchInput.value)"
+        aria-label="Поиск по названию"
+      />
+    </div>
 
-      <div class="table-wrapper" *ngIf="filteredProductsCount(); else noSearchResults">
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">Название</th>
-              <th scope="col">Тип</th>
-              <th scope="col" class="is-mono">SKU</th>
-              <th scope="col">Категория</th>
-              <th scope="col" class="is-centered">Ед. изм.</th>
-              <th scope="col" class="is-right">Цена закупки</th>
-              <th scope="col" class="is-right">Цена продажи</th>
-              <th scope="col">Поставщик</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let product of filteredProducts(); trackBy: trackByProductId">
-              <td>
-                <div class="truncate" [title]="product.name">{{ product.name }}</div>
-              </td>
-              <td>{{ product.type }}</td>
-              <td class="is-mono">
-                <span class="truncate" [title]="product.sku">{{ product.sku }}</span>
-              </td>
-              <td>
-                <div class="truncate" [title]="product.category">{{ product.category }}</div>
-              </td>
-              <td class="is-centered">{{ product.unit }}</td>
-              <td class="is-right">
-                {{ product.purchasePrice ?? '—' }}
-              </td>
-              <td class="is-right">
-                {{ product.salePrice ?? '—' }}
-              </td>
-              <td>
-                <div class="truncate" [title]="product.supplierMain || '—'">
-                  {{ product.supplierMain || '—' }}
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+    <div class="table-wrapper" *ngIf="filteredProductsCount(); else noSearchResults">
+      <table class="table">
+        <thead>
+          <tr>
+            <th [attr.aria-sort]="ariaSort('name')">
+              <button
+                type="button"
+                class="table__sort-trigger"
+                (click)="changeSort('name')"
+                [attr.aria-label]="sortAriaLabel('name', 'Название')"
+              >
+                <span class="table__sort-label">Название</span>
+                <span class="table__sort-indicator" aria-hidden="true">{{ sortIndicator('name') }}</span>
+              </button>
+            </th>
+            <th [attr.aria-sort]="ariaSort('type')">
+              <button
+                type="button"
+                class="table__sort-trigger"
+                (click)="changeSort('type')"
+                [attr.aria-label]="sortAriaLabel('type', 'Тип')"
+              >
+                <span class="table__sort-label">Тип</span>
+                <span class="table__sort-indicator" aria-hidden="true">{{ sortIndicator('type') }}</span>
+              </button>
+            </th>
+            <th class="is-mono" [attr.aria-sort]="ariaSort('sku')">
+              <button
+                type="button"
+                class="table__sort-trigger table__sort-trigger--align-right"
+                (click)="changeSort('sku')"
+                [attr.aria-label]="sortAriaLabel('sku', 'SKU')"
+              >
+                <span class="table__sort-label">SKU</span>
+                <span class="table__sort-indicator" aria-hidden="true">{{ sortIndicator('sku') }}</span>
+              </button>
+            </th>
+            <th [attr.aria-sort]="ariaSort('category')">
+              <button
+                type="button"
+                class="table__sort-trigger"
+                (click)="changeSort('category')"
+                [attr.aria-label]="sortAriaLabel('category', 'Категория')"
+              >
+                <span class="table__sort-label">Категория</span>
+                <span class="table__sort-indicator" aria-hidden="true">{{ sortIndicator('category') }}</span>
+              </button>
+            </th>
+            <th class="is-centered" [attr.aria-sort]="ariaSort('unit')">
+              <button
+                type="button"
+                class="table__sort-trigger table__sort-trigger--align-center"
+                (click)="changeSort('unit')"
+                [attr.aria-label]="sortAriaLabel('unit', 'Единица измерения')"
+              >
+                <span class="table__sort-label">Ед. изм.</span>
+                <span class="table__sort-indicator" aria-hidden="true">{{ sortIndicator('unit') }}</span>
+              </button>
+            </th>
+            <th class="is-right" [attr.aria-sort]="ariaSort('purchasePrice')">
+              <button
+                type="button"
+                class="table__sort-trigger table__sort-trigger--align-right"
+                (click)="changeSort('purchasePrice')"
+                [attr.aria-label]="sortAriaLabel('purchasePrice', 'Цена закупки')"
+              >
+                <span class="table__sort-label">Цена закупки</span>
+                <span class="table__sort-indicator" aria-hidden="true">
+                  {{ sortIndicator('purchasePrice') }}
+                </span>
+              </button>
+            </th>
+            <th class="is-right" [attr.aria-sort]="ariaSort('salePrice')">
+              <button
+                type="button"
+                class="table__sort-trigger table__sort-trigger--align-right"
+                (click)="changeSort('salePrice')"
+                [attr.aria-label]="sortAriaLabel('salePrice', 'Цена продажи')"
+              >
+                <span class="table__sort-label">Цена продажи</span>
+                <span class="table__sort-indicator" aria-hidden="true">
+                  {{ sortIndicator('salePrice') }}
+                </span>
+              </button>
+            </th>
+            <th [attr.aria-sort]="ariaSort('supplierMain')">
+              <button
+                type="button"
+                class="table__sort-trigger"
+                (click)="changeSort('supplierMain')"
+                [attr.aria-label]="sortAriaLabel('supplierMain', 'Поставщик')"
+              >
+                <span class="table__sort-label">Поставщик</span>
+                <span class="table__sort-indicator" aria-hidden="true">
+                  {{ sortIndicator('supplierMain') }}
+                </span>
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of sortedProducts(); trackBy: trackByProductId">
+            <td>
+              <div class="truncate" [title]="product.name">{{ product.name }}</div>
+            </td>
+            <td>{{ product.type }}</td>
+            <td class="is-mono">
+              <span class="truncate" [title]="product.sku">{{ product.sku }}</span>
+            </td>
+            <td>
+              <div class="truncate" [title]="product.category">{{ product.category }}</div>
+            </td>
+            <td class="is-centered">{{ product.unit }}</td>
+            <td class="is-right">
+              {{ product.purchasePrice ?? '—' }}
+            </td>
+            <td class="is-right">
+              {{ product.salePrice ?? '—' }}
+            </td>
+            <td>
+              <div class="truncate" [title]="product.supplierMain || '—'">
+                {{ product.supplierMain || '—' }}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
   </ng-container>
   <ng-template #emptyCatalog>
     <div class="catalog__empty">Каталог пока пуст. Добавьте первую позицию.</div>
