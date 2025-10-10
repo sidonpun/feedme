@@ -209,9 +209,14 @@ export class SuppliesService {
     const product = this.productMap.get(row.productId);
     const unitPrice = this.normalizeNumber(product?.purchasePrice);
 
+    const supplier = (row.supplier ?? product?.supplier ?? '').trim();
+    if (!supplier) {
+      throw new Error('Поставщик должен быть указан.');
+    }
+
     return {
       number: row.docNo,
-      supplier: row.supplier ?? product?.supplier ?? '',
+      supplier,
       warehouse: row.warehouse,
       responsible: row.responsible ?? '',
       receivedAt: this.toUtcIsoString(row.arrivalDate),

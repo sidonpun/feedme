@@ -1,7 +1,7 @@
 
 import { CommonModule } from '@angular/common';
 import { animate, query, stagger, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { startWith, take, tap } from 'rxjs';
@@ -17,6 +17,7 @@ type SupplyFormValue = {
   arrivalDate: string;
   warehouse: string;
   responsible: string;
+  supplier: string;
   productId: string;
 
   qty: number;
@@ -121,6 +122,7 @@ export class SuppliesComponent {
     arrivalDate: this.fb.control('', { validators: [Validators.required] }),
     warehouse: this.fb.control('', { validators: [Validators.required] }),
     responsible: this.fb.control(''),
+    supplier: this.fb.control('', { validators: [Validators.required] }),
     productId: this.fb.control('', { validators: [Validators.required] }),
     qty: this.fb.control(0, { validators: [Validators.required, Validators.min(0.0001)] }),
     expiryDate: this.fb.control('', { validators: [Validators.required] }),
@@ -139,6 +141,34 @@ export class SuppliesComponent {
     }
 
     return this.suppliesService.getProductById(id) ?? null;
+  });
+
+  private lastPrefilledProductId: string | null = null;
+
+  private readonly supplierPrefillEffect = effect(() => {
+    const product = this.selectedProduct();
+    const control = this.form.controls.supplier;
+    const productId = product?.id ?? null;
+
+    if (!product) {
+      this.lastPrefilledProductId = null;
+      if (control.value !== '') {
+        control.setValue('', { emitEvent: false });
+        control.markAsPristine();
+        control.markAsUntouched();
+      }
+      return;
+    }
+
+    if (this.lastPrefilledProductId === productId) {
+      return;
+    }
+
+    this.lastPrefilledProductId = productId;
+    const supplier = product.supplier?.trim() ?? '';
+    control.setValue(supplier, { emitEvent: false });
+    control.markAsPristine();
+    control.markAsUntouched();
   });
 
   readonly kpi = computed((): { weekSupplies: number; weekSpend: number; items: number; expired: number } => {
@@ -250,6 +280,7 @@ export class SuppliesComponent {
     const docNo = value.docNo.trim();
     const warehouse = value.warehouse.trim();
     const responsible = value.responsible.trim();
+    const supplier = value.supplier.trim();
     const qty = Number(value.qty);
 
     if (!docNo) {
@@ -264,6 +295,12 @@ export class SuppliesComponent {
       return;
     }
 
+    if (!supplier) {
+      this.form.controls.supplier.setErrors({ required: true });
+      this.form.controls.supplier.markAsTouched();
+      return;
+    }
+
     if (!Number.isFinite(qty) || qty <= 0) {
       this.form.controls.qty.setErrors({ min: true });
       this.form.controls.qty.markAsTouched();
@@ -275,13 +312,13 @@ export class SuppliesComponent {
       arrivalDate: value.arrivalDate,
       warehouse,
       responsible: responsible ? responsible : undefined,
+      supplier,
       productId: product.id,
       sku: product.sku,
       name: product.name,
       qty,
       unit: product.unit,
       expiryDate: value.expiryDate,
-      supplier: product.supplier,
       status: computeExpiryStatus(value.expiryDate, value.arrivalDate),
     };
 
@@ -444,6 +481,7 @@ export class SuppliesComponent {
       arrivalDate: '',
       warehouse: '',
       responsible: '',
+      supplier: '',
       productId: '',
       qty: 0,
       expiryDate: '',
@@ -453,6 +491,7 @@ export class SuppliesComponent {
     this.form.setErrors(null);
     this.submissionError.set(null);
     this.isSubmitting.set(false);
+    this.lastPrefilledProductId = null;
   }
 
   private toSubmissionError(cause: unknown): SubmissionErrorState {

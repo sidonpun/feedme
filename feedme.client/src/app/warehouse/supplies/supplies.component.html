@@ -201,6 +201,18 @@
               <span class="supplies-field__label">Ответственный</span>
               <input class="supplies-field__input" type="text" formControlName="responsible" placeholder="ФИО" />
             </label>
+            <label class="supplies-field">
+              <span class="supplies-field__label">Поставщик *</span>
+              <input
+                class="supplies-field__input"
+                type="text"
+                formControlName="supplier"
+                placeholder="Например, ООО Поставщик"
+              />
+              <span class="supplies-field__error" *ngIf="form.controls.supplier.touched && form.controls.supplier.invalid">
+                Укажите поставщика
+              </span>
+            </label>
           </div>
         </section>
 
