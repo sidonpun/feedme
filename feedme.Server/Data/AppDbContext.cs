@@ -9,6 +9,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public DbSet<CatalogItem> CatalogItems => Set<CatalogItem>();
     public DbSet<Receipt> Receipts => Set<Receipt>();
+    public DbSet<InventoryDocument> InventoryDocuments => Set<InventoryDocument>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

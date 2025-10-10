@@ -16,6 +16,7 @@ import {
 } from '@angular/forms';
 
 import { SupplyRow, SupplyStatus, SUPPLY_STATUSES } from './models';
+import { InventoryComponent } from './inventory/inventory.component';
 import { WarehouseService } from './warehouse.service';
 import { EmptyStateComponent } from './ui/empty-state.component';
 import { FieldComponent } from './ui/field.component';
@@ -73,13 +74,22 @@ export class WarehousePageComponent {
   @ViewChild(LegacyCatalogComponent)
   private catalogComponent?: LegacyCatalogComponent;
 
+  @ViewChild(InventoryComponent)
+  private inventoryComponent?: InventoryComponent;
+
 
   readonly activeTab = signal<'supplies' | 'stock' | 'catalog' | 'inventory'>('supplies');
 
   readonly selectedWarehouse = signal('');
   readonly dateFrom = signal('');
   readonly dateTo = signal('');
-  readonly search = signal('');
+  readonly searchState = signal<Record<WarehouseTab, string>>({
+    supplies: '',
+    stock: '',
+    catalog: '',
+    inventory: '',
+  });
+  readonly search = computed(() => this.searchState()[this.activeTab()]);
   readonly checkedIds = signal<string[]>([]);
   readonly drawerRowId = signal<string | null>(null);
   readonly drawerOpen = signal(false);
@@ -99,25 +109,28 @@ export class WarehousePageComponent {
 
 
   readonly primaryAction = computed<PrimaryAction | null>(() => {
-    const active = this.activeTab();
-
-    if (active === 'supplies') {
-      return {
-        label: '+ Новая поставка',
-        aria: 'Создать новую поставку',
-        cssClass: 'btn--accent',
-      };
+    switch (this.activeTab()) {
+      case 'supplies':
+        return {
+          label: '+ \u041d\u043e\u0432\u0430\u044f \u043f\u043e\u0441\u0442\u0430\u0432\u043a\u0430',
+          aria: '\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u043d\u043e\u0432\u0443\u044e \u043f\u043e\u0441\u0442\u0430\u0432\u043a\u0443',
+          cssClass: 'btn--accent',
+        };
+      case 'catalog':
+        return {
+          label: '+ \u041d\u043e\u0432\u044b\u0439 \u0442\u043e\u0432\u0430\u0440',
+          aria: '\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043d\u043e\u0432\u044b\u0439 \u0442\u043e\u0432\u0430\u0440 \u0432 \u043a\u0430\u0442\u0430\u043b\u043e\u0433',
+          cssClass: 'btn--primary',
+        };
+      case 'inventory':
+        return {
+          label: '+ \u0418\u043d\u0432\u0435\u043d\u0442\u0430\u0440\u0438\u0437\u0430\u0446\u0438\u044f',
+          aria: '\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u0434\u043e\u043a\u0443\u043c\u0435\u043d\u0442 \u0438\u043d\u0432\u0435\u043d\u0442\u0430\u0440\u0438\u0437\u0430\u0446\u0438\u0438',
+          cssClass: 'btn--primary',
+        };
+      default:
+        return null;
     }
-
-    if (active === 'catalog') {
-      return {
-        label: '+ Новый товар',
-        aria: 'Добавить новый товар в каталог',
-        cssClass: 'btn--primary',
-      };
-    }
-
-    return null;
   });
 
 
@@ -157,7 +170,7 @@ export class WarehousePageComponent {
     const warehouseFilter = this.selectedWarehouse();
     const from = this.dateFrom();
     const to = this.dateTo();
-    const query = this.search().trim().toLowerCase();
+    const query = this.searchState().supplies.trim().toLowerCase();
 
     const filtered = this.rows().filter((row) => {
       const matchesWarehouse = warehouseFilter ? row.warehouse === warehouseFilter : true;
@@ -275,17 +288,31 @@ export class WarehousePageComponent {
       return;
     }
 
+    if (active === 'inventory') {
+      this.inventoryComponent?.openCreateDialog();
+      return;
+    }
+
     if (active === 'catalog') {
       this.catalogComponent?.openNewProductPopup();
     }
   }
-
   selectWarehouse(value: string): void {
     this.selectedWarehouse.set(value);
   }
 
   updateSearch(value: string): void {
-    this.search.set(value);
+    const activeTab = this.activeTab();
+    this.searchState.update((state) => {
+      if (state[activeTab] === value) {
+        return state;
+      }
+
+      return {
+        ...state,
+        [activeTab]: value,
+      };
+    });
   }
 
   updateDateFrom(value: string): void {
@@ -299,7 +326,7 @@ export class WarehousePageComponent {
   clearFilters(): void {
     this.dateFrom.set('');
     this.dateTo.set('');
-    this.search.set('');
+    this.updateSearch('');
   }
 
   toggleRowSelection(id: string, checked: boolean): void {

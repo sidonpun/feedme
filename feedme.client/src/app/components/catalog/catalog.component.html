@@ -29,113 +29,105 @@
 
 <ng-container *ngIf="catalogData as catalogData">
   <ng-container *ngIf="catalogData.length; else emptyCatalog">
-    <div *ngIf="activeTab==='info'">
+    <div *ngIf="activeTab==='info'" class="catalog-table__container">
       <table class="catalog-table">
         <thead>
           <tr>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('info', 0)"
-              (keydown)="onSortKey('info', 0, $event)"
               [class.sortable--active]="isSorted('info', 0)"
               [attr.data-direction]="getSortDirection('info', 0)"
               [attr.aria-sort]="getAriaSort('info', 0)"
             >
-              <span>Название</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('info', 0)">
+                <span class="catalog-table__sort-label">Название</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('info', 1)"
-              (keydown)="onSortKey('info', 1, $event)"
               [class.sortable--active]="isSorted('info', 1)"
               [attr.data-direction]="getSortDirection('info', 1)"
               [attr.aria-sort]="getAriaSort('info', 1)"
             >
-              <span>Тип</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('info', 1)">
+                <span class="catalog-table__sort-label">Тип</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('info', 2)"
-              (keydown)="onSortKey('info', 2, $event)"
               [class.sortable--active]="isSorted('info', 2)"
               [attr.data-direction]="getSortDirection('info', 2)"
               [attr.aria-sort]="getAriaSort('info', 2)"
             >
-              <span>Код</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('info', 2)">
+                <span class="catalog-table__sort-label">Код</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('info', 3)"
-              (keydown)="onSortKey('info', 3, $event)"
               [class.sortable--active]="isSorted('info', 3)"
               [attr.data-direction]="getSortDirection('info', 3)"
               [attr.aria-sort]="getAriaSort('info', 3)"
             >
-              <span>Категория</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('info', 3)">
+                <span class="catalog-table__sort-label">Категория</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('info', 4)"
-              (keydown)="onSortKey('info', 4, $event)"
               [class.sortable--active]="isSorted('info', 4)"
               [attr.data-direction]="getSortDirection('info', 4)"
               [attr.aria-sort]="getAriaSort('info', 4)"
             >
-              <span>Ед.изм.</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('info', 4)">
+                <span class="catalog-table__sort-label">Ед. изм.</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('info', 5)"
-              (keydown)="onSortKey('info', 5, $event)"
               [class.sortable--active]="isSorted('info', 5)"
               [attr.data-direction]="getSortDirection('info', 5)"
               [attr.aria-sort]="getAriaSort('info', 5)"
             >
-              <span>Метод списания</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('info', 5)">
+                <span class="catalog-table__sort-label">Метод списания</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('info', 6)"
-              (keydown)="onSortKey('info', 6, $event)"
               [class.sortable--active]="isSorted('info', 6)"
               [attr.data-direction]="getSortDirection('info', 6)"
               [attr.aria-sort]="getAriaSort('info', 6)"
             >
-              <span>Аллергены</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('info', 6)">
+                <span class="catalog-table__sort-label">Аллергены</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('info', 7)"
-              (keydown)="onSortKey('info', 7, $event)"
               [class.sortable--active]="isSorted('info', 7)"
               [attr.data-direction]="getSortDirection('info', 7)"
               [attr.aria-sort]="getAriaSort('info', 7)"
             >
-              <span>Флаги</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('info', 7)">
+                <span class="catalog-table__sort-label">Флаги</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
           </tr>
         </thead>
@@ -177,100 +169,93 @@
       </table>
     </div>
 
-    <div *ngIf="activeTab==='logistics'">
+    <div *ngIf="activeTab==='logistics'" class="catalog-table__container">
       <table class="catalog-table">
         <thead>
           <tr>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('logistics', 0)"
-              (keydown)="onSortKey('logistics', 0, $event)"
               [class.sortable--active]="isSorted('logistics', 0)"
               [attr.data-direction]="getSortDirection('logistics', 0)"
               [attr.aria-sort]="getAriaSort('logistics', 0)"
             >
-              <span>Поставщик</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 0)">
+                <span class="catalog-table__sort-label">Поставщик</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('logistics', 1)"
-              (keydown)="onSortKey('logistics', 1, $event)"
               [class.sortable--active]="isSorted('logistics', 1)"
               [attr.data-direction]="getSortDirection('logistics', 1)"
               [attr.aria-sort]="getAriaSort('logistics', 1)"
             >
-              <span>Оценочная себестоимость</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 1)">
+                <span class="catalog-table__sort-label">Оценочная себестоимость</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('logistics', 2)"
-              (keydown)="onSortKey('logistics', 2, $event)"
               [class.sortable--active]="isSorted('logistics', 2)"
               [attr.data-direction]="getSortDirection('logistics', 2)"
               [attr.aria-sort]="getAriaSort('logistics', 2)"
             >
-              <span>Ставка НДС</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 2)">
+                <span class="catalog-table__sort-label">Ставка НДС</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('logistics', 3)"
-              (keydown)="onSortKey('logistics', 3, $event)"
               [class.sortable--active]="isSorted('logistics', 3)"
               [attr.data-direction]="getSortDirection('logistics', 3)"
               [attr.aria-sort]="getAriaSort('logistics', 3)"
             >
-              <span>Цена за ед.</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 3)">
+                <span class="catalog-table__sort-label">Цена за ед.</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('logistics', 4)"
-              (keydown)="onSortKey('logistics', 4, $event)"
               [class.sortable--active]="isSorted('logistics', 4)"
               [attr.data-direction]="getSortDirection('logistics', 4)"
               [attr.aria-sort]="getAriaSort('logistics', 4)"
             >
-              <span>Цена продажи</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 4)">
+                <span class="catalog-table__sort-label">Цена продажи</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('logistics', 5)"
-              (keydown)="onSortKey('logistics', 5, $event)"
               [class.sortable--active]="isSorted('logistics', 5)"
               [attr.data-direction]="getSortDirection('logistics', 5)"
               [attr.aria-sort]="getAriaSort('logistics', 5)"
             >
-              <span>Код ТН ВЭД</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 5)">
+                <span class="catalog-table__sort-label">Код ТН ВЭД</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
             <th
               scope="col"
               class="sortable"
-              tabindex="0"
-              (click)="onSort('logistics', 6)"
-              (keydown)="onSortKey('logistics', 6, $event)"
               [class.sortable--active]="isSorted('logistics', 6)"
               [attr.data-direction]="getSortDirection('logistics', 6)"
               [attr.aria-sort]="getAriaSort('logistics', 6)"
             >
-              <span>Маркируемый</span>
-              <span class="sort" aria-hidden="true"></span>
+              <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 6)">
+                <span class="catalog-table__sort-label">Маркируемый</span>
+                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+              </button>
             </th>
           </tr>
         </thead>

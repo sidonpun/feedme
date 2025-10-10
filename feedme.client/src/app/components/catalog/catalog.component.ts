@@ -173,13 +173,6 @@ export class CatalogComponent implements OnInit {
     });
   }
 
-  protected onSortKey(tab: CatalogTab, column: number, event: KeyboardEvent): void {
-    if (event.key === ' ' || event.key === 'Enter') {
-      event.preventDefault();
-      this.onSort(tab, column);
-    }
-  }
-
   protected isSorted(tab: CatalogTab, column: number): boolean {
     const state = this.sortState()[tab];
     return state.column === column;

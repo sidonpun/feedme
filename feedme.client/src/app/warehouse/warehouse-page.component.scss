@@ -174,10 +174,23 @@
 
 .filters {
   display: grid;
-  grid-template-columns: 170px 2.6fr 100px 100px auto auto auto minmax(150px, auto);
+  grid-template-columns:
+    170px
+    minmax(280px, 3fr)
+    repeat(2, minmax(150px, 1fr))
+    auto auto auto
+    minmax(150px, auto);
   gap: 12px;
   margin: 12px 0;
   align-items: center;
+}
+
+.filters--catalog {
+  grid-template-columns:
+    minmax(360px, 4fr)
+    repeat(2, minmax(150px, 1fr))
+    auto auto auto
+    minmax(150px, auto);
 }
 
 .filters__field {

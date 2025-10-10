@@ -4,13 +4,9 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "baseUrl": "./",
-    "paths": {
-      "@app/*": ["src/app/*"]
-    },
     "skipLibCheck": true
   },
   "files": [],

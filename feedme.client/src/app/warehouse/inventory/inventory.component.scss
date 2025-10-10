@@ -1,0 +1,261 @@
+.inventory-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.inventory-tab__section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inventory-tab__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+  color: var(--text-secondary, #4a5568);
+}
+
+.inventory-tab__summary-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inventory-tab__summary-value {
+  font-weight: 600;
+  color: var(--text-primary, #1a202c);
+}
+
+.inventory-tab__summary-value.pos {
+  color: #1a8238;
+}
+
+.inventory-tab__summary-value.neg {
+  color: #c53030;
+}
+
+.inventory-tab__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-secondary, #4a5568);
+}
+
+.inventory-tab__link {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--link-color, #1a56db);
+  cursor: pointer;
+}
+
+.inventory-tab__link:hover {
+  text-decoration: underline;
+}
+
+.inventory-tab__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.inventory-tab__action {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 12px;
+  color: var(--link-color, #1a56db);
+  cursor: pointer;
+}
+
+.inventory-tab__action:hover {
+  text-decoration: underline;
+}
+
+.inventory-tab__items {
+  margin-top: 24px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.inventory-tab__items table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.inventory-tab__items th,
+.inventory-tab__items td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.inventory-tab__items thead {
+  background-color: rgba(15, 23, 42, 0.04);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary, #4a5568);
+}
+
+.inventory-tab__items .align-right {
+  text-align: right;
+}
+
+.inventory-tab__items tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.inventory-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  z-index: 50;
+}
+
+.inventory-dialog {
+  background: #fff;
+  border-radius: 18px;
+  width: min(960px, 100%);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px -24px rgba(15, 23, 42, 0.45);
+}
+
+.inventory-dialog--confirm {
+  width: min(420px, 100%);
+}
+
+.inventory-dialog__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.inventory-dialog__close {
+  border: none;
+  background: none;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.inventory-dialog__form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.inventory-dialog__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.inventory-dialog__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.inventory-dialog__items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inventory-dialog__items-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inventory-dialog__items-table {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inventory-dialog__item-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr)) minmax(90px, 1fr) repeat(3, minmax(110px, 1fr)) 80px;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 12px;
+  background-color: rgba(243, 246, 255, 0.45);
+}
+
+.inventory-dialog__item-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.inventory-dialog__item-field--wide {
+  grid-column: span 2;
+}
+
+.inventory-dialog__remove {
+  align-self: flex-start;
+  margin-top: 22px;
+  border: none;
+  background: none;
+  color: #c53030;
+  cursor: pointer;
+}
+
+.inventory-dialog__totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  background-color: rgba(15, 23, 42, 0.04);
+  font-size: 14px;
+}
+
+.inventory-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 0 24px 24px;
+}
+
+.inventory-dialog__content {
+  padding: 24px;
+  font-size: 14px;
+  color: var(--text-secondary, #4a5568);
+}
+
+.inventory-tab__summary-value,
+.inventory-tab__items td span {
+  font-variant-numeric: tabular-nums;
+}
+
+.inventory-tab .neg {
+  color: #c53030;
+}
+
+.inventory-tab .pos {
+  color: #1a8238;
+}
