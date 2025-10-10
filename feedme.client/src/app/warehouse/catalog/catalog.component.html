@@ -10,6 +10,7 @@
   </header>
 
   <ng-container *ngIf="totalProductsCount(); else emptyCatalog">
+
     <div class="catalog__toolbar">
       <input
         #searchInput
@@ -150,6 +151,7 @@
         </tbody>
       </table>
     </div>
+
   </ng-container>
   <ng-template #emptyCatalog>
     <div class="catalog__empty">Каталог пока пуст. Добавьте первую позицию.</div>
