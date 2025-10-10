@@ -10,60 +10,84 @@
   </header>
 
   <ng-container *ngIf="totalProductsCount(); else emptyCatalog">
-    <div class="catalog__toolbar">
-      <input
-        #searchInput
-        class="catalog__search"
-        type="search"
-        placeholder="Поиск по названию"
-        [value]="searchQuery()"
-        (input)="updateSearch(searchInput.value)"
-        aria-label="Поиск по названию"
-      />
-    </div>
+    <nav class="catalog__tabs" role="tablist" aria-label="Категории товаров">
+      <button
+        *ngFor="let tab of tabs(); trackBy: trackByTabId"
+        type="button"
+        class="catalog__tab"
+        [ngClass]="{ 'catalog__tab--active': tab.id === activeTabId() }"
+        role="tab"
+        [attr.id]="'tab-' + tab.id"
+        [attr.aria-selected]="tab.id === activeTabId()"
+        aria-controls="catalog-panel"
+        (click)="setActiveTab(tab.id)"
+      >
+        {{ tab.label }}
+      </button>
+    </nav>
 
-    <div class="table-wrapper" *ngIf="filteredProductsCount(); else noSearchResults">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Название</th>
-            <th>Тип</th>
-            <th class="is-mono">SKU</th>
-            <th>Категория</th>
-            <th class="is-centered">Ед. изм.</th>
-            <th class="is-right">Цена закупки</th>
-            <th class="is-right">Цена продажи</th>
-            <th>Поставщик</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let product of filteredProducts(); trackBy: trackByProductId">
-            <td>
-              <div class="truncate" [title]="product.name">{{ product.name }}</div>
-            </td>
-            <td>{{ product.type }}</td>
-            <td class="is-mono">
-              <span class="truncate" [title]="product.sku">{{ product.sku }}</span>
-            </td>
-            <td>
-              <div class="truncate" [title]="product.category">{{ product.category }}</div>
-            </td>
-            <td class="is-centered">{{ product.unit }}</td>
-            <td class="is-right">
-              {{ product.purchasePrice ?? '—' }}
-            </td>
-            <td class="is-right">
-              {{ product.salePrice ?? '—' }}
-            </td>
-            <td>
-              <div class="truncate" [title]="product.supplierMain || '—'">
-                {{ product.supplierMain || '—' }}
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <section
+      class="catalog__panel"
+      id="catalog-panel"
+      role="tabpanel"
+      [attr.aria-labelledby]="'tab-' + activeTabId()"
+    >
+      <div class="catalog__panel-header">
+        <input
+          #searchInput
+          class="catalog__search"
+          type="search"
+          placeholder="Поиск по названию"
+          id="catalog-search"
+          [value]="searchQuery()"
+          (input)="updateSearch(searchInput.value)"
+          aria-label="Поиск по названию"
+        />
+      </div>
+
+      <div class="table-wrapper" *ngIf="filteredProductsCount(); else noSearchResults">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Название</th>
+              <th scope="col">Тип</th>
+              <th scope="col" class="is-mono">SKU</th>
+              <th scope="col">Категория</th>
+              <th scope="col" class="is-centered">Ед. изм.</th>
+              <th scope="col" class="is-right">Цена закупки</th>
+              <th scope="col" class="is-right">Цена продажи</th>
+              <th scope="col">Поставщик</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of filteredProducts(); trackBy: trackByProductId">
+              <td>
+                <div class="truncate" [title]="product.name">{{ product.name }}</div>
+              </td>
+              <td>{{ product.type }}</td>
+              <td class="is-mono">
+                <span class="truncate" [title]="product.sku">{{ product.sku }}</span>
+              </td>
+              <td>
+                <div class="truncate" [title]="product.category">{{ product.category }}</div>
+              </td>
+              <td class="is-centered">{{ product.unit }}</td>
+              <td class="is-right">
+                {{ product.purchasePrice ?? '—' }}
+              </td>
+              <td class="is-right">
+                {{ product.salePrice ?? '—' }}
+              </td>
+              <td>
+                <div class="truncate" [title]="product.supplierMain || '—'">
+                  {{ product.supplierMain || '—' }}
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
   </ng-container>
   <ng-template #emptyCatalog>
     <div class="catalog__empty">Каталог пока пуст. Добавьте первую позицию.</div>
