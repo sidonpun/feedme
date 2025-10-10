@@ -41,6 +41,12 @@ type SupplyHistoryEntry = {
   quantity: string;
 };
 
+type PrimaryAction = {
+  readonly label: string;
+  readonly aria: string;
+  readonly cssClass: string;
+};
+
 @Component({
   standalone: true,
   selector: 'app-warehouse-page',
@@ -90,6 +96,29 @@ export class WarehousePageComponent {
   readonly overviewMetrics = computed(() =>
     this.warehouseService.metricsForWarehouse(this.selectedWarehouse() || null),
   );
+
+
+  readonly primaryAction = computed<PrimaryAction | null>(() => {
+    const active = this.activeTab();
+
+    if (active === 'supplies') {
+      return {
+        label: '+ Новая поставка',
+        aria: 'Создать новую поставку',
+        cssClass: 'btn--accent',
+      };
+    }
+
+    if (active === 'catalog') {
+      return {
+        label: '+ Новый товар',
+        aria: 'Добавить новый товар в каталог',
+        cssClass: 'btn--primary',
+      };
+    }
+
+    return null;
+  });
 
 
   readonly editDialogTabs: ReadonlyArray<{ key: EditDialogTab; label: string }> = [
@@ -241,7 +270,7 @@ export class WarehousePageComponent {
   handlePrimaryAction(): void {
     const active = this.activeTab();
 
-    if (active === 'supplies' || active === 'stock' || active === 'inventory') {
+    if (active === 'supplies') {
       this.openCreateDialog();
       return;
     }

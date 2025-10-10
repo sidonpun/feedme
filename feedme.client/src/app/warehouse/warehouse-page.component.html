@@ -170,7 +170,17 @@
         <button type="button" class="btn btn--ghost" (click)="clearFilters()">Сброс</button>
         <button type="button" class="btn btn--ghost">Импорт</button>
         <button type="button" class="btn btn--primary">Экспорт</button>
-        <button type="button" class="btn btn--accent" (click)="openCreateDialog()">+ Новая поставка</button>
+        <ng-container *ngIf="primaryAction() as action">
+          <button
+            type="button"
+            class="btn"
+            [ngClass]="action.cssClass"
+            (click)="handlePrimaryAction()"
+            [attr.aria-label]="action.aria"
+          >
+            {{ action.label }}
+          </button>
+        </ng-container>
       </form>
     </section>
 
