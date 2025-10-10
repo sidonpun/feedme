@@ -17,18 +17,30 @@
       <tr>
         <th
           *ngFor="let column of columns"
+          scope="col"
+          [attr.id]="getHeaderId(column)"
           [ngClass]="getHeaderClasses(column)"
           (click)="column.sortable === false ? null : onSort(column.key)"
         >
           <span>{{ column.label }}</span>
           <span class="ind" *ngIf="column.sortable !== false"></span>
         </th>
-        <th class="w-actions">Действия</th>
+        <th
+          class="w-actions"
+          scope="col"
+          [attr.id]="actionsHeaderId"
+        >
+          Действия
+        </th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let item of paginatedData">
-        <td *ngFor="let column of columns" [ngClass]="getCellClasses(column)">
+        <td
+          *ngFor="let column of columns"
+          [attr.headers]="getHeaderId(column)"
+          [ngClass]="getCellClasses(column)"
+        >
           <ng-container [ngSwitch]="column.key">
             <span
               *ngSwitchCase="'name'"
@@ -118,7 +130,10 @@
             </span>
           </ng-container>
         </td>
-        <td class="w-actions actions-cell">
+        <td
+          class="w-actions actions-cell"
+          [attr.headers]="actionsHeaderId"
+        >
           <button class="btn-icon" type="button" aria-label="Редактировать" (click)="edit.emit(item)">
             <img src="assets/correct.svg" alt="Редактировать" />
           </button>
