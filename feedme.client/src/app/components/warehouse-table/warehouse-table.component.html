@@ -1,34 +1,53 @@
-<div class="custom-table">
-  <div class="table-header">
-    <div>Дата поставки</div>
-    <div>Название</div>
-    <div>Стоимость</div>
-    <div>Цена за ед.</div>
-    <div>Остаток товара</div>
-    <div>Кол-во товара в поставке</div>
-    <div>Срок годности</div>
-    <div>Действия</div>
-  </div>
-
-  <div class="table-body">
-    <div class="table-row" *ngFor="let item of data; let i = index">
-      <div>{{ item.supplyDate }}</div>
-      <div class="name-cell">
-        <img [src]="getCategoryIcon(item.category)" [alt]="item.category" class="name-icon">
-        <span>{{ item.name }}</span>
-      </div>
-      <div>{{ item.totalCost }}</div>
-      <div>{{ item.unitPrice }}</div>
-      <div>{{ item.stock }}</div>
-      <div>{{ getSupplyQuantity(item) }}</div>
-      <div>{{ item.expiryDate }}</div>
-      <div class="actions">
-        <div class="icons-container">
-          <img src="assets/plus.svg" alt="Добавить" class="action-icon">
-          <img src="assets/minus.svg" alt="Редактировать остаток" class="action-icon" (click)="handleEditStockClick(i, item.stock)">
-          <img src="assets/settings.svg" alt="Настройки" class="action-icon" (click)="handleSettingsClick(item, $event)">
+<table class="custom-table">
+  <thead class="custom-table__header">
+    <tr>
+      <th scope="col" class="custom-table__header-cell">Дата поставки</th>
+      <th scope="col" class="custom-table__header-cell">Название</th>
+      <th scope="col" class="custom-table__header-cell">Стоимость</th>
+      <th scope="col" class="custom-table__header-cell">Цена за ед.</th>
+      <th scope="col" class="custom-table__header-cell">Остаток товара</th>
+      <th scope="col" class="custom-table__header-cell">Кол-во товара в поставке</th>
+      <th scope="col" class="custom-table__header-cell">Срок годности</th>
+      <th scope="col" class="custom-table__header-cell">Действия</th>
+    </tr>
+  </thead>
+  <tbody class="custom-table__body">
+    <tr class="custom-table__row" *ngFor="let item of data; let i = index">
+      <td class="custom-table__cell">{{ item.supplyDate }}</td>
+      <td class="custom-table__cell">
+        <div class="name-cell">
+          <img [src]="getCategoryIcon(item.category)" [alt]="item.category" class="name-icon" />
+          <span>{{ item.name }}</span>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
+      </td>
+      <td class="custom-table__cell">{{ item.totalCost }}</td>
+      <td class="custom-table__cell">{{ item.unitPrice }}</td>
+      <td class="custom-table__cell">{{ item.stock }}</td>
+      <td class="custom-table__cell">{{ getSupplyQuantity(item) }}</td>
+      <td class="custom-table__cell">{{ item.expiryDate }}</td>
+      <td class="custom-table__cell">
+        <div class="icons-container">
+          <button type="button" class="action-button" aria-label="Добавить товар">
+            <img src="assets/plus.svg" alt="" class="action-icon" />
+          </button>
+          <button
+            type="button"
+            class="action-button"
+            aria-label="Редактировать остаток"
+            (click)="handleEditStockClick(i, item.stock)"
+          >
+            <img src="assets/minus.svg" alt="" class="action-icon" />
+          </button>
+          <button
+            type="button"
+            class="action-button"
+            aria-label="Открыть настройки"
+            (click)="handleSettingsClick(item, $event)"
+          >
+            <img src="assets/settings.svg" alt="" class="action-icon" />
+          </button>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -3,42 +3,48 @@
   background-color: #ffffff;
   box-shadow: none;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
-.table-header,
-.table-row {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
+.custom-table__header-cell {
+  padding: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+  text-align: left;
+}
+
+.custom-table__cell {
+  padding: 12px;
+  font-size: 14px;
+  color: #666;
+  vertical-align: middle;
+}
+
+.custom-table__row:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.action-button {
+  display: inline-flex;
   align-items: center;
-  height: 60px;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
-  .table-header div {
-    font-size: 18px;
-    font-weight: 700;
-    color: #000;
-  }
+.action-button:focus-visible {
+  outline: 2px solid #ff6b00;
+  outline-offset: 2px;
+}
 
-  .table-header div,
-  .table-row div {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 12px;
-    font-size: 14px;
-    color: #666;
-  }
-
-  .table-row:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-
-.action-icon,
-.category-icon,
-.name-icon {
+.action-icon {
   width: 20px;
   height: 20px;
-  margin-right: 8px;
   object-fit: contain;
   cursor: pointer;
 }
@@ -52,6 +58,7 @@
 .name-icon {
   width: 30px;
   height: 30px;
+  object-fit: contain;
 }
 
 .icons-container {
