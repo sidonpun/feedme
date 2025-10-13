@@ -108,6 +108,10 @@
         </article>
       </section>
 
+      <div class="warehouse-page__alert" *ngIf="actionError() as error" role="alert">
+        {{ error }}
+      </div>
+
       <app-supply-table
         [data]="supplyTableData()"
         (onAddSupply)="openCreateDialog()"
@@ -159,5 +163,30 @@
       (cancel)="closeCreateDialog()"
       (create)="handleCreateSupply($event)"
     ></app-create-supply-dialog>
+  </div>
+
+  <div
+    class="warehouse-page__dialog-backdrop"
+    *ngIf="editDialogOpen() && supplyPendingEditRow() as supplyForEdit"
+  >
+    <app-edit-supply-dialog
+      [supply]="supplyForEdit"
+      [pending]="isUpdatingSupply()"
+      (cancel)="cancelEditSupply()"
+      (save)="saveEditedSupply($event)"
+    ></app-edit-supply-dialog>
+  </div>
+
+  <div
+    class="warehouse-page__dialog-backdrop"
+    *ngIf="deleteDialogOpen() && supplyPendingDeleteRow() as supplyForDelete"
+  >
+    <app-confirm-delete-popup
+      [title]="'Удалить поставку'"
+      [message]="'Действительно удалить поставку ' + supplyForDelete.docNo + '?'"
+      [pending]="isDeletingSupply()"
+      (confirm)="confirmDeleteSupply()"
+      (cancel)="cancelDeleteSupply()"
+    ></app-confirm-delete-popup>
   </div>
 </div>

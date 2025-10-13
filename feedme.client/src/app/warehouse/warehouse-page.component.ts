@@ -1,4 +1,4 @@
-п»їimport { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -12,12 +12,12 @@ import {
 import { SupplyRow, SupplyStatus } from './models';
 import { WarehouseService } from './warehouse.service';
 import { EmptyStateComponent } from './ui/empty-state.component';
-import { StatusBadgeClassPipe } from '../pipes/status-badge-class.pipe';
-import { StatusBadgeLabelPipe } from '../pipes/status-badge-label.pipe';
 import { CatalogComponent as LegacyCatalogComponent } from '../components/catalog/catalog.component';
 import { InventoryComponent } from './inventory/inventory.component';
 import { CreateSupplyDialogComponent, CreateSupplyDialogResult } from './ui/create-supply-dialog.component';
 import { SupplyTableComponent } from '../components/SupplyTableComponent/supply-table.component';
+import { ConfirmDeletePopupComponent } from '../components/confirm-delete-popup/confirm-delete-popup.component';
+import { EditSupplyDialogComponent } from './ui/edit-supply-dialog.component';
 import { computeExpiryStatus } from './shared/status.util';
 
 const RUB_FORMATTER = new Intl.NumberFormat('ru-RU', {
@@ -38,16 +38,15 @@ type PrimaryAction = {
   standalone: true,
   selector: 'app-warehouse-page',
   imports: [
-    NgFor,
     NgIf,
     NgClass,
     EmptyStateComponent,
-    StatusBadgeClassPipe,
-    StatusBadgeLabelPipe,
     LegacyCatalogComponent,
     InventoryComponent,
     SupplyTableComponent,
     CreateSupplyDialogComponent,
+    ConfirmDeletePopupComponent,
+    EditSupplyDialogComponent,
   ],
   templateUrl: './warehouse-page.component.html',
   styleUrl: './warehouse-page.component.scss',
@@ -74,6 +73,15 @@ export class WarehousePageComponent {
   });
   readonly search = computed(() => this.searchState()[this.activeTab()]);
   readonly createDialogOpen = signal(false);
+  readonly deleteDialogOpen = signal(false);
+  readonly editDialogOpen = signal(false);
+  readonly actionError = signal<string | null>(null);
+  private readonly supplyPendingDelete = signal<SupplyRow | null>(null);
+  readonly supplyPendingDeleteRow = computed(() => this.supplyPendingDelete());
+  private readonly supplyPendingEdit = signal<SupplyRow | null>(null);
+  readonly supplyPendingEditRow = computed(() => this.supplyPendingEdit());
+  readonly isDeletingSupply = signal(false);
+  readonly isUpdatingSupply = signal(false);
 
   readonly rows = this.warehouseService.list();
   readonly metrics = this.warehouseService.metrics();
@@ -85,20 +93,20 @@ export class WarehousePageComponent {
     switch (this.activeTab()) {
       case 'supplies':
         return {
-          label: '+ РќРѕРІР°СЏ РїРѕСЃС‚Р°РІРєР°',
-          aria: 'РЎРѕР·РґР°С‚СЊ РЅРѕРІСѓСЋ РїРѕСЃС‚Р°РІРєСѓ',
+          label: '+ Новая поставка',
+          aria: 'Создать новую поставку',
           cssClass: 'btn--accent',
         };
       case 'catalog':
         return {
-          label: '+ РќРѕРІС‹Р№ С‚РѕРІР°СЂ',
-          aria: 'Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІС‹Р№ С‚РѕРІР°СЂ РІ РєР°С‚Р°Р»РѕРі',
+          label: '+ Новый товар',
+          aria: 'Добавить новый товар в каталог',
           cssClass: 'btn--primary',
         };
       case 'inventory':
         return {
-          label: '+ РРЅРІРµРЅС‚Р°СЂРёР·Р°С†РёСЏ',
-          aria: 'РЎРѕР·РґР°С‚СЊ РґРѕРєСѓРјРµРЅС‚ РёРЅРІРµРЅС‚Р°СЂРёР·Р°С†РёРё',
+          label: '+ Инвентаризация',
+          aria: 'Создать документ инвентаризации',
           cssClass: 'btn--primary',
         };
       default:
@@ -111,10 +119,10 @@ export class WarehousePageComponent {
       if (a === b) {
         return 0;
       }
-      if (a === 'Р“Р»Р°РІРЅС‹Р№ СЃРєР»Р°Рґ') {
+      if (a === 'Главный склад') {
         return -1;
       }
-      if (b === 'Р“Р»Р°РІРЅС‹Р№ СЃРєР»Р°Рґ') {
+      if (b === 'Главный склад') {
         return 1;
       }
 
@@ -222,18 +230,18 @@ export class WarehousePageComponent {
     const product = result.product;
     const docNo = this.generateDocumentNumber();
     const warehouse = this.normalizeWarehouse(
-      this.selectedWarehouse() || this.warehouses()[0] || 'Р“Р»Р°РІРЅС‹Р№ СЃРєР»Р°Рґ',
+      this.selectedWarehouse() || this.warehouses()[0] || 'Главный склад',
     );
-    const responsible = 'РќРµ РЅР°Р·РЅР°С‡РµРЅ';
-    const supplier = this.normalizeText(product.supplierMain, 'РќРµ СѓРєР°Р·Р°РЅ');
-    const category = this.normalizeText(product.category, 'Р‘РµР· РєР°С‚РµРіРѕСЂРёРё');
+    const responsible = 'Не назначен';
+    const supplier = this.normalizeText(product.supplierMain, 'Не указан');
+    const category = this.normalizeText(product.category, 'Без категории');
     const unit = this.normalizeUnit(product.unit);
     const price = Number(product.purchasePrice ?? 0);
     const status = this.mapExpiryStatus(result.arrivalDate, result.expiryDate);
     const arrivalDate = result.arrivalDate.trim();
     const expiryDate = result.expiryDate.trim();
-    const name = this.normalizeText(product.name, 'Р‘РµР· РЅР°Р·РІР°РЅРёСЏ');
-    const sku = this.normalizeText(product.sku, 'вЂ”');
+    const name = this.normalizeText(product.name, 'Без названия');
+    const sku = this.normalizeText(product.sku, '—');
 
     const payload = {
       docNo,
@@ -275,21 +283,118 @@ export class WarehousePageComponent {
     }
   }
 
-  handleSupplySettings(_row: unknown): void {}
+  handleSupplySettings(row: unknown): void {
+    this.openEditDialog(row);
+  }
 
-  handleSupplyWriteOff(_row: unknown): void {}
+  handleSupplyWriteOff(row: unknown): void {
+    this.openDeleteDialog(row);
+  }
 
-  handleSupplyMove(_row: unknown): void {}
+  handleSupplyMove(row: unknown): void {
+    this.openEditDialog(row);
+  }
 
-  handleSupplyPrint(_row: unknown): void {}
+  handleSupplyPrint(row: unknown): void {
+    console.info('Печать поставки пока не реализована', row);
+  }
+
+  cancelDeleteSupply(): void {
+    this.deleteDialogOpen.set(false);
+    this.supplyPendingDelete.set(null);
+    this.actionError.set(null);
+  }
+
+  async confirmDeleteSupply(): Promise<void> {
+    const target = this.supplyPendingDelete();
+    if (!target) {
+      return;
+    }
+
+    this.isDeletingSupply.set(true);
+    this.actionError.set(null);
+
+    try {
+      await this.warehouseService.removeRowsById([target.id]);
+      this.deleteDialogOpen.set(false);
+      this.supplyPendingDelete.set(null);
+    } catch (error) {
+      console.error('Failed to remove supply', error);
+      this.actionError.set('Не удалось удалить поставку. Повторите попытку позже.');
+    } finally {
+      this.isDeletingSupply.set(false);
+    }
+  }
+
+  cancelEditSupply(): void {
+    this.editDialogOpen.set(false);
+    this.supplyPendingEdit.set(null);
+    this.actionError.set(null);
+  }
+
+  async saveEditedSupply(updated: SupplyRow): Promise<void> {
+    this.isUpdatingSupply.set(true);
+    this.actionError.set(null);
+
+    try {
+      const result = await this.warehouseService.updateRow(updated);
+      if (!result) {
+        throw new Error('Supply update returned empty result.');
+      }
+      this.editDialogOpen.set(false);
+      this.supplyPendingEdit.set(null);
+    } catch (error) {
+      console.error('Failed to update supply', error);
+      this.actionError.set('Не удалось сохранить изменения поставки. Попробуйте ещё раз.');
+    } finally {
+      this.isUpdatingSupply.set(false);
+    }
+  }
 
   formatCurrency(value: number): string {
     return RUB_FORMATTER.format(value);
   }
 
+  private openDeleteDialog(payload: unknown): void {
+    const supply = this.resolveSupplyRow(payload);
+    if (!supply) {
+      this.actionError.set('Запись поставки не найдена.');
+      return;
+    }
+
+    this.actionError.set(null);
+    this.supplyPendingDelete.set(supply);
+    this.deleteDialogOpen.set(true);
+  }
+
+  private openEditDialog(payload: unknown): void {
+    const supply = this.resolveSupplyRow(payload);
+    if (!supply) {
+      this.actionError.set('Запись поставки не найдена.');
+      return;
+    }
+
+    this.actionError.set(null);
+    this.supplyPendingEdit.set(supply);
+    this.editDialogOpen.set(true);
+  }
+
+  private resolveSupplyRow(payload: unknown): SupplyRow | null {
+    if (!payload || typeof payload !== 'object') {
+      return null;
+    }
+
+    const id = (payload as { id?: unknown }).id;
+    if (typeof id !== 'string' || id.length === 0) {
+      return null;
+    }
+
+    return this.rows().find((row) => row.id === id) ?? null;
+  }
+
   private normalizeWarehouse(value: string): string {
     const normalized = value.trim();
-    return normalized || 'Р“Р»Р°РІРЅС‹Р№ СЃРєР»Р°Рґ';
+    return normalized || 'Главный склад';
   }
 
   private generateDocumentNumber(): string {
@@ -325,6 +430,7 @@ export class WarehousePageComponent {
   }
 
   private normalizeUnit(unit: string | null | undefined): string {
-    return this.normalizeText(unit, 'С€С‚');
+    return this.normalizeText(unit, 'шт');
   }
 }
+

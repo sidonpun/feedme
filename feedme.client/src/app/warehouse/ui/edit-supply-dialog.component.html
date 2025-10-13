@@ -1,0 +1,141 @@
+<div
+  class="edit-dialog emd-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="edit-supply-title"
+>
+  <div class="edit-dialog__card emd-card">
+    <header class="edit-dialog__header emd-header">
+      <h2 id="edit-supply-title" class="edit-dialog__title emd-title">Редактировать поставку</h2>
+      <button
+        type="button"
+        class="edit-dialog__close emd-close"
+        aria-label="Закрыть"
+        (click)="close()"
+        [disabled]="pending"
+      >
+        &times;
+      </button>
+    </header>
+
+    <section *ngIf="supply as row" class="edit-dialog__meta emd-summary" aria-live="polite">
+      <div class="edit-dialog__meta-row emd-summary__item">
+        <span class="edit-dialog__meta-label emd-summary__label">Документ</span>
+        <strong class="edit-dialog__meta-value emd-summary__value">{{ row.docNo }}</strong>
+      </div>
+      <div class="edit-dialog__meta-row emd-summary__item">
+        <span class="edit-dialog__meta-label emd-summary__label">Товар</span>
+        <strong class="edit-dialog__meta-value emd-summary__value">{{ row.name }}</strong>
+      </div>
+      <div class="edit-dialog__meta-row emd-summary__item">
+        <span class="edit-dialog__meta-label emd-summary__label">SKU</span>
+        <strong class="edit-dialog__meta-value emd-summary__value">{{ row.sku }}</strong>
+      </div>
+    </section>
+
+    <form class="edit-dialog__form emd-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="edit-dialog__grid emd-grid">
+        <label class="edit-dialog__field emd-field">
+          <span class="edit-dialog__label emd-field__label">Дата прихода *</span>
+          <input type="date" class="edit-dialog__input emd-field__control" formControlName="arrivalDate" />
+          <span
+            class="edit-dialog__error emd-field__error"
+            *ngIf="form.controls.arrivalDate.invalid && form.controls.arrivalDate.touched"
+          >
+            Укажите дату прихода.
+          </span>
+        </label>
+
+        <label class="edit-dialog__field emd-field">
+          <span class="edit-dialog__label emd-field__label">Склад *</span>
+          <input type="text" class="edit-dialog__input emd-field__control" formControlName="warehouse" />
+          <span
+            class="edit-dialog__error emd-field__error"
+            *ngIf="form.controls.warehouse.invalid && form.controls.warehouse.touched"
+          >
+            Укажите склад.
+          </span>
+        </label>
+
+        <label class="edit-dialog__field emd-field">
+          <span class="edit-dialog__label emd-field__label">Ответственный</span>
+          <input type="text" class="edit-dialog__input emd-field__control" formControlName="responsible" />
+        </label>
+
+        <label class="edit-dialog__field emd-field">
+          <span class="edit-dialog__label emd-field__label">Поставщик *</span>
+          <input type="text" class="edit-dialog__input emd-field__control" formControlName="supplier" />
+          <span
+            class="edit-dialog__error emd-field__error"
+            *ngIf="form.controls.supplier.invalid && form.controls.supplier.touched"
+          >
+            Укажите поставщика.
+          </span>
+        </label>
+
+        <label class="edit-dialog__field emd-field">
+          <span class="edit-dialog__label emd-field__label">Количество *</span>
+          <input
+            type="number"
+            class="edit-dialog__input emd-field__control emd-field__control--right"
+            formControlName="qty"
+            min="0.0001"
+            step="0.0001"
+          />
+          <span class="edit-dialog__error emd-field__error" *ngIf="form.controls.qty.invalid && form.controls.qty.touched">
+            Количество должно быть больше нуля.
+          </span>
+        </label>
+
+        <label class="edit-dialog__field emd-field">
+          <span class="edit-dialog__label emd-field__label">Ед. изм. *</span>
+          <input type="text" class="edit-dialog__input emd-field__control" formControlName="unit" />
+          <span class="edit-dialog__error emd-field__error" *ngIf="form.controls.unit.invalid && form.controls.unit.touched">
+            Укажите единицу измерения.
+          </span>
+        </label>
+
+        <label class="edit-dialog__field emd-field">
+          <span class="edit-dialog__label emd-field__label">Срок годности *</span>
+          <input type="date" class="edit-dialog__input emd-field__control" formControlName="expiry" />
+          <span
+            class="edit-dialog__error emd-field__error"
+            *ngIf="form.controls.expiry.invalid && form.controls.expiry.touched"
+          >
+            Укажите срок годности.
+          </span>
+        </label>
+
+        <label class="edit-dialog__field emd-field">
+          <span class="edit-dialog__label emd-field__label">Статус *</span>
+          <select class="edit-dialog__input emd-field__control" formControlName="status">
+            <option *ngFor="let status of statuses; trackBy: trackStatus" [value]="status">
+              {{ status }}
+            </option>
+          </select>
+          <span class="edit-dialog__error emd-field__error" *ngIf="form.controls.status.invalid && form.controls.status.touched">
+            Выберите статус.
+          </span>
+        </label>
+      </div>
+
+      <footer class="edit-dialog__footer emd-footer">
+        <button
+          type="button"
+          class="btn btn-outline emd-btn emd-btn--ghost"
+          (click)="close()"
+          [disabled]="pending"
+        >
+          Отмена
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary emd-btn emd-btn--primary"
+          [disabled]="pending"
+        >
+          {{ pending ? 'Сохраняем...' : 'Сохранить' }}
+        </button>
+      </footer>
+    </form>
+  </div>
+</div>

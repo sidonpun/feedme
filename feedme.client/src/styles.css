@@ -109,27 +109,26 @@ button,
   gap: 8px;
   border-radius: var(--radius);
   border: none;
-  padding: 10px 18px;
+  padding: 0;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-  background: var(--brand-600);
-  color: #ffffff;
-  box-shadow: 0 8px 16px var(--shadow-medium);
+  transition: color 0.2s ease, opacity 0.2s ease;
+  background: transparent;
+  color: var(--brand-600);
+  box-shadow: none;
 }
 
 .btn--primary,
 .shadcn-btn:not([variant]),
 .shadcn-btn[variant="default"] {
-  background: var(--brand-600);
-  color: #ffffff;
+  color: var(--brand-600);
 }
 
 .btn:hover:not(:disabled),
 .shadcn-btn:hover:not(:disabled),
 button:hover:not(:disabled) {
-  background: var(--brand-700);
+  opacity: 0.75;
 }
 
 .btn:disabled {
@@ -139,7 +138,7 @@ button:hover:not(:disabled) {
 }
 
 .btn-sm {
-  padding: 6px 12px;
+  padding: 0;
   font-size: 0.8125rem;
   border-radius: var(--radius);
   box-shadow: none;
@@ -149,45 +148,45 @@ button:hover:not(:disabled) {
 .shadcn-btn[variant="outline"] {
   background: transparent;
   color: var(--brand-600);
-  border: 1px solid var(--brand-600);
+  border: none;
   box-shadow: none;
 }
 
 .btn-outline:hover:not(:disabled),
 .shadcn-btn[variant="outline"]:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--brand-600) 10%, #ffffff);
+  text-decoration: underline;
 }
 
 .btn-secondary,
 .shadcn-btn[variant="secondary"] {
-  background: color-mix(in srgb, var(--brand-600) 10%, #ffffff);
   color: var(--brand-600);
-  box-shadow: 0 8px 16px var(--shadow-soft);
+  background: transparent;
+  box-shadow: none;
 }
 
 .btn-secondary:hover:not(:disabled),
 .shadcn-btn[variant="secondary"]:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--brand-600) 20%, #ffffff);
+  text-decoration: underline;
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: #ffffff;
-  box-shadow: 0 8px 16px rgba(239, 68, 68, 0.25);
+  background: transparent;
+  color: #dc2626;
+  box-shadow: none;
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  text-decoration: underline;
 }
 
 .btn-ghost {
   background: transparent;
-  color: #1f2937;
+  color: inherit;
   box-shadow: none;
 }
 
 .btn-ghost:hover:not(:disabled) {
-  background: rgba(15, 23, 42, 0.06);
+  text-decoration: underline;
 }
 
 .input,

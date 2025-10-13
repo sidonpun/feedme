@@ -1,7 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TableControlsComponent } from '../table-controls/table-controls.component';
 import { EmptyStateComponent } from '../../warehouse/ui/empty-state.component';
 import { StatusBadgeClassPipe } from '../../pipes/status-badge-class.pipe';
 import { StatusBadgeLabelPipe } from '../../pipes/status-badge-label.pipe';
@@ -26,7 +25,6 @@ interface FilterOptions {
   imports: [
     CommonModule,
     FormsModule,
-    TableControlsComponent,
     EmptyStateComponent,
     StatusBadgeClassPipe,
     StatusBadgeLabelPipe,
