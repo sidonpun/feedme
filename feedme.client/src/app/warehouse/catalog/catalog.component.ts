@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgIf } from '@angular/common';
+﻿import { NgClass, NgFor, NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -61,10 +61,10 @@ export class CatalogComponent {
 
   private readonly defaults: ProductFormValue = {
     name: '',
-    type: 'Товар',
+    type: 'РўРѕРІР°СЂ',
     sku: '',
     category: '',
-    unit: 'кг',
+    unit: 'РєРі',
     unitWeight: null,
     writeoff: 'FIFO',
     allergens: '',
@@ -158,7 +158,7 @@ export class CatalogComponent {
         categoryKey: key,
       }));
 
-    const totalLabel = `Все позиции (${products.length})`;
+    const totalLabel = `Р’СЃРµ РїРѕР·РёС†РёРё (${products.length})`;
 
     return [
       { id: 'all', label: totalLabel, categoryKey: null },
@@ -167,7 +167,7 @@ export class CatalogComponent {
   });
 
   readonly activeTab = computed(() => {
-    const activeId = this.activeTabId();
+    const activeId = this.activeTab();
     const tabs = this.tabs();
 
     return tabs.find((tab) => tab.id === activeId) ?? tabs[0] ?? null;
@@ -199,10 +199,10 @@ export class CatalogComponent {
     const hasSearch = this.normalizedSearchQuery().length > 0;
 
     if (!hasSearch || filtered === total) {
-      return `${total} позиций`;
+      return `${total} РїРѕР·РёС†РёР№`;
     }
 
-    return `${filtered} из ${total} позиций`;
+    return `${filtered} РёР· ${total} РїРѕР·РёС†РёР№`;
   });
 
   changeSort(key: CatalogSortKey): void {
@@ -231,19 +231,19 @@ export class CatalogComponent {
     const currentSort = this.activeSort();
     const willToggleToDescending = currentSort.key === key && currentSort.direction === 'asc';
     const nextDirection = willToggleToDescending ? 'descending' : 'ascending';
-    const directionLabel = nextDirection === 'ascending' ? 'по возрастанию' : 'по убыванию';
+    const directionLabel = nextDirection === 'ascending' ? 'РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ' : 'РїРѕ СѓР±С‹РІР°РЅРёСЋ';
 
-    return `Сортировать по «${columnLabel}» ${directionLabel}`;
+    return `РЎРѕСЂС‚РёСЂРѕРІР°С‚СЊ РїРѕ В«${columnLabel}В» ${directionLabel}`;
   }
 
   sortIndicator(key: CatalogSortKey): string {
     const currentSort = this.activeSort();
 
     if (currentSort.key !== key) {
-      return '↕';
+      return 'в†•';
     }
 
-    return currentSort.direction === 'asc' ? '▲' : '▼';
+    return currentSort.direction === 'asc' ? 'в–І' : 'в–ј';
   }
 
   openDialog(): void {
@@ -318,7 +318,7 @@ export class CatalogComponent {
   }
 
   setActiveTab(tabId: string): void {
-    this.activeTabId.set(tabId);
+    this.activeTab.set(tabId);
   }
 
   private resetForm(): void {
@@ -344,10 +344,11 @@ export class CatalogComponent {
       return trimmed;
     }
 
-    return 'Без категории';
+    return 'Р‘РµР· РєР°С‚РµРіРѕСЂРёРё';
   }
 
   private toCategoryKey(category: string | null | undefined): string {
     return this.normalizeCategoryLabel(category).toLocaleLowerCase('ru-RU');
   }
 }
+
