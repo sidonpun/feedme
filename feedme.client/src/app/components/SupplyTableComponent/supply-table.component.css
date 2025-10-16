@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: column;
   gap: 0;
+  flex: 1 1 auto;
+  min-height: 0;
   --supply-accent: var(--brand-600, #fa4b00);
   --supply-accent-strong: #d94300;
   --supply-accent-hover: rgba(250, 75, 0, 0.08);
@@ -253,12 +255,20 @@
 }
 
 .table-container {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-x: hidden;
+  overflow-y: auto;
   border-radius: 0;
   border: 1px solid #e2e8f0;
   border-top: 0;
   background-color: #ffffff;
   box-shadow: none;
+  scrollbar-width: none;
+}
+
+.table-container::-webkit-scrollbar {
+  display: none;
 }
 
 .supplies-table {

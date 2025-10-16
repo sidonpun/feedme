@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using feedme.Server.Data;
@@ -11,9 +12,11 @@ using feedme.Server.Data;
 namespace feedme.Server.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251015080000_AddProductFlagsDictionary")]
+    partial class AddProductFlagsDictionary
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,6 +229,69 @@ namespace feedme.Server.Data.Migrations
                     b.ToTable("inventory_documents", (string)null);
                 });
 
+            modelBuilder.Entity("feedme.Server.Models.InventoryLine", b =>
+                {
+                    b.Property<string>("InventoryDocumentId")
+                        .HasColumnType("character varying(36)")
+                        .HasColumnName("inventory_document_id");
+
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CatalogItemId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("catalog_item_id");
+
+                    b.Property<decimal>("CountedQuantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("counted_quantity");
+
+                    b.Property<decimal>("ExpectedQuantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("expected_quantity");
+
+                    b.Property<string>("ItemName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("item_name");
+
+                    b.Property<string>("Sku")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("sku");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("unit");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("unit_price");
+
+                    b.HasKey("InventoryDocumentId", "Id");
+
+                    b.ToTable("inventory_lines", (string)null);
+                });
+
             modelBuilder.Entity("feedme.Server.Models.Receipt", b =>
                 {
                     b.Property<string>("Id")
@@ -239,10 +305,6 @@ namespace feedme.Server.Data.Migrations
                         .HasColumnType("character varying(64)")
                         .HasColumnName("number");
 
-                    b.Property<DateTime>("ReceivedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("received_at");
-
                     b.Property<string>("Responsible")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -255,6 +317,10 @@ namespace feedme.Server.Data.Migrations
                         .HasColumnType("character varying(128)")
                         .HasColumnName("supplier");
 
+                    b.Property<DateTime>("ReceivedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("received_at");
+
                     b.Property<string>("Warehouse")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -266,159 +332,103 @@ namespace feedme.Server.Data.Migrations
                     b.ToTable("receipts", (string)null);
                 });
 
+            modelBuilder.Entity("feedme.Server.Models.ReceiptLine", b =>
+                {
+                    b.Property<string>("ReceiptId")
+                        .HasColumnType("character varying(36)")
+                        .HasColumnName("receipt_id");
+
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CatalogItemId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("catalog_item_id");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("category");
+
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expiry_date");
+
+                    b.Property<string>("ItemName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("item_name");
+
+                    b.Property<string>("Sku")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("sku");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("unit");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("unit_price");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("quantity");
+
+                    b.HasKey("ReceiptId", "Id");
+
+                    b.ToTable("receipt_lines", (string)null);
+                });
+
+            modelBuilder.Entity("feedme.Server.Models.InventoryLine", b =>
+                {
+                    b.HasOne("feedme.Server.Models.InventoryDocument", null)
+                        .WithMany("Items")
+                        .HasForeignKey("InventoryDocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("feedme.Server.Models.ReceiptLine", b =>
+                {
+                    b.HasOne("feedme.Server.Models.Receipt", null)
+                        .WithMany("Items")
+                        .HasForeignKey("ReceiptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("feedme.Server.Models.InventoryDocument", b =>
                 {
-                    b.OwnsMany("feedme.Server.Models.InventoryLine", "Items", b1 =>
-                        {
-                            b1.Property<string>("inventory_document_id")
-                                .HasMaxLength(36)
-                                .HasColumnType("character varying(36)")
-                                .HasColumnName("inventory_document_id");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer")
-                                .HasColumnName("id");
-
-                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
-
-                            b1.Property<string>("CatalogItemId")
-                                .IsRequired()
-                                .HasMaxLength(64)
-                                .HasColumnType("character varying(64)")
-                                .HasColumnName("catalog_item_id");
-
-                            b1.Property<string>("Category")
-                                .IsRequired()
-                                .HasMaxLength(128)
-                                .HasColumnType("character varying(128)")
-                                .HasColumnName("category");
-
-                            b1.Property<decimal>("CountedQuantity")
-                                .HasPrecision(18, 4)
-                                .HasColumnType("numeric(18,4)")
-                                .HasColumnName("counted_quantity");
-
-                            b1.Property<decimal>("ExpectedQuantity")
-                                .HasPrecision(18, 4)
-                                .HasColumnType("numeric(18,4)")
-                                .HasColumnName("expected_quantity");
-
-                            b1.Property<string>("ItemName")
-                                .IsRequired()
-                                .HasMaxLength(128)
-                                .HasColumnType("character varying(128)")
-                                .HasColumnName("item_name");
-
-                            b1.Property<string>("Sku")
-                                .IsRequired()
-                                .HasMaxLength(64)
-                                .HasColumnType("character varying(64)")
-                                .HasColumnName("sku");
-
-                            b1.Property<string>("Unit")
-                                .IsRequired()
-                                .HasMaxLength(32)
-                                .HasColumnType("character varying(32)")
-                                .HasColumnName("unit");
-
-                            b1.Property<decimal>("UnitPrice")
-                                .HasPrecision(18, 4)
-                                .HasColumnType("numeric(18,4)")
-                                .HasColumnName("unit_price");
-
-                            b1.HasKey("inventory_document_id", "Id");
-
-                            b1.HasIndex("inventory_document_id");
-
-                            b1.ToTable("inventory_lines", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("inventory_document_id");
-                        });
-
                     b.Navigation("Items");
                 });
 
             modelBuilder.Entity("feedme.Server.Models.Receipt", b =>
                 {
-                    b.OwnsMany("feedme.Server.Models.ReceiptLine", "Items", b1 =>
-                        {
-                            b1.Property<string>("receipt_id")
-                                .HasMaxLength(36)
-                                .HasColumnType("character varying(36)")
-                                .HasColumnName("receipt_id");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer")
-                                .HasColumnName("id");
-
-                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
-
-                            b1.Property<string>("CatalogItemId")
-                                .IsRequired()
-                                .HasMaxLength(64)
-                                .HasColumnType("character varying(64)")
-                                .HasColumnName("catalog_item_id");
-
-                            b1.Property<string>("Category")
-                                .IsRequired()
-                                .HasMaxLength(128)
-                                .HasColumnType("character varying(128)")
-                                .HasColumnName("category");
-
-                            b1.Property<DateTime?>("ExpiryDate")
-                                .HasColumnType("timestamp with time zone")
-                                .HasColumnName("expiry_date");
-
-                            b1.Property<string>("ItemName")
-                                .IsRequired()
-                                .HasMaxLength(128)
-                                .HasColumnType("character varying(128)")
-                                .HasColumnName("item_name");
-
-                            b1.Property<decimal>("Quantity")
-                                .HasPrecision(18, 4)
-                                .HasColumnType("numeric(18,4)")
-                                .HasColumnName("quantity");
-
-                            b1.Property<string>("Sku")
-                                .IsRequired()
-                                .HasMaxLength(64)
-                                .HasColumnType("character varying(64)")
-                                .HasColumnName("sku");
-
-                            b1.Property<string>("Status")
-                                .IsRequired()
-                                .HasMaxLength(32)
-                                .HasColumnType("character varying(32)")
-                                .HasColumnName("status");
-
-                            b1.Property<string>("Unit")
-                                .IsRequired()
-                                .HasMaxLength(32)
-                                .HasColumnType("character varying(32)")
-                                .HasColumnName("unit");
-
-                            b1.Property<decimal>("UnitPrice")
-                                .HasPrecision(18, 4)
-                                .HasColumnType("numeric(18,4)")
-                                .HasColumnName("unit_price");
-
-                            b1.HasKey("receipt_id", "Id");
-
-                            b1.HasIndex("receipt_id");
-
-                            b1.ToTable("receipt_lines", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("receipt_id");
-                        });
-
                     b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }
     }
 }
+

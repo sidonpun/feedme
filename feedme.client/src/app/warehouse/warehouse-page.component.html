@@ -84,78 +84,84 @@
       </nav>
     </header>
 
-    <ng-container *ngIf="activeTab() === 'supplies'">
+    <div class="warehouse-page__tab-content">
       <section
-        *ngIf="overviewMetrics() as snapshot"
-        class="kpis"
-        aria-label="Ключевые показатели склада"
+        *ngIf="activeTab() === 'supplies'"
+        class="warehouse-page__tab-panel warehouse-page__tab-panel--supplies"
+        role="tabpanel"
+        id="warehouse-tab-panel-supplies"
+        [attr.aria-labelledby]="'warehouse-tab-button-' + 'supplies'"
       >
-        <article class="card" aria-live="polite">
-          <p class="card__title">Поставок за 7 дней</p>
-          <p class="card__value">{{ snapshot.suppliesLastWeek }}</p>
-        </article>
-        <article class="card" aria-live="polite">
-          <p class="card__title">Сумма закупок / 7 дн.</p>
-          <p class="card__value">{{ formatCurrency(snapshot.purchaseAmountLastWeek) }}</p>
-        </article>
-        <article class="card" aria-live="polite">
-          <p class="card__title">Позиций на складе</p>
-          <p class="card__value">{{ snapshot.positions }}</p>
-        </article>
-        <article class="card" aria-live="polite">
-          <p class="card__title">Просрочено</p>
-          <p class="card__value" [ngClass]="{ neg: snapshot.expired > 0 }">{{ snapshot.expired }}</p>
-        </article>
+        <ng-container *ngIf="overviewMetrics() as snapshot">
+          <section class="kpis" aria-label="Ключевые показатели склада">
+            <article class="card" aria-live="polite">
+              <p class="card__title">Поставок за 7 дней</p>
+              <p class="card__value">{{ snapshot.suppliesLastWeek }}</p>
+            </article>
+            <article class="card" aria-live="polite">
+              <p class="card__title">Сумма закупок / 7 дн.</p>
+              <p class="card__value">{{ formatCurrency(snapshot.purchaseAmountLastWeek) }}</p>
+            </article>
+            <article class="card" aria-live="polite">
+              <p class="card__title">Позиций на складе</p>
+              <p class="card__value">{{ snapshot.positions }}</p>
+            </article>
+            <article class="card" aria-live="polite">
+              <p class="card__title">Просрочено</p>
+              <p class="card__value" [ngClass]="{ neg: snapshot.expired > 0 }">{{ snapshot.expired }}</p>
+            </article>
+          </section>
+        </ng-container>
+
+        <div class="warehouse-page__alert" *ngIf="actionError() as error" role="alert">
+          {{ error }}
+        </div>
+
+        <app-supply-table
+          [data]="supplyTableData()"
+          (onAddSupply)="openCreateDialog()"
+          (onSettingsClick)="handleSupplySettings($event)"
+          (writeOff)="handleSupplyWriteOff($event)"
+          (move)="handleSupplyMove($event)"
+          (print)="handleSupplyPrint($event)"
+        ></app-supply-table>
       </section>
 
-      <div class="warehouse-page__alert" *ngIf="actionError() as error" role="alert">
-        {{ error }}
-      </div>
+      <section
+        *ngIf="activeTab() === 'stock'"
+        class="warehouse-page__tab-panel"
+        role="tabpanel"
+        id="warehouse-tab-panel-stock"
+        [attr.aria-labelledby]="'warehouse-tab-button-' + 'stock'"
+      >
+        <app-empty title="Остатки" subtitle="Выберите склад и примените фильтры"></app-empty>
+      </section>
 
-      <app-supply-table
-        [data]="supplyTableData()"
-        (onAddSupply)="openCreateDialog()"
-        (onSettingsClick)="handleSupplySettings($event)"
-        (writeOff)="handleSupplyWriteOff($event)"
-        (move)="handleSupplyMove($event)"
-        (print)="handleSupplyPrint($event)"
-      ></app-supply-table>
-    </ng-container>
+      <section
+        *ngIf="activeTab() === 'catalog'"
+        class="warehouse-page__tab-panel"
+        role="tabpanel"
+        id="warehouse-tab-panel-catalog"
+        [attr.aria-labelledby]="'warehouse-tab-button-' + 'catalog'"
+      >
+        <app-catalog [searchQuery]="search()"></app-catalog>
+      </section>
 
-    <section
-      *ngIf="activeTab() === 'stock'"
-      class="warehouse-page__tab-panel"
-      role="tabpanel"
-      id="warehouse-tab-panel-stock"
-      [attr.aria-labelledby]="'warehouse-tab-button-' + 'stock'"
-    >
-      <app-empty title="Остатки" subtitle="Выберите склад и примените фильтры"></app-empty>
-    </section>
-
-    <section
-      *ngIf="activeTab() === 'catalog'"
-      class="warehouse-page__tab-panel"
-      role="tabpanel"
-      id="warehouse-tab-panel-catalog"
-      [attr.aria-labelledby]="'warehouse-tab-button-' + 'catalog'"
-    >
-      <app-catalog [searchQuery]="search()"></app-catalog>
-    </section>
-
-    <section
-      *ngIf="activeTab() === 'inventory'"
-      class="warehouse-page__tab-panel"
-      role="tabpanel"
-      id="warehouse-tab-panel-inventory"
-      [attr.aria-labelledby]="'warehouse-tab-button-' + 'inventory'"
-    >
-      <app-inventory
-        [warehouseFilter]="selectedWarehouse()"
-        [searchFilter]="search()"
-        [dateFrom]="dateFrom()"
-        [dateTo]="dateTo()"
-      ></app-inventory>
-    </section>
+      <section
+        *ngIf="activeTab() === 'inventory'"
+        class="warehouse-page__tab-panel"
+        role="tabpanel"
+        id="warehouse-tab-panel-inventory"
+        [attr.aria-labelledby]="'warehouse-tab-button-' + 'inventory'"
+      >
+        <app-inventory
+          [warehouseFilter]="selectedWarehouse()"
+          [searchFilter]="search()"
+          [dateFrom]="dateFrom()"
+          [dateTo]="dateTo()"
+        ></app-inventory>
+      </section>
+    </div>
   </main>
 
   <div class="warehouse-page__dialog-backdrop" *ngIf="createDialogOpen()">

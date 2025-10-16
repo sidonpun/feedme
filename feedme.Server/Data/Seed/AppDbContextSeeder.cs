@@ -9,8 +9,31 @@ internal static class AppDbContextSeeder
     {
         ArgumentNullException.ThrowIfNull(context);
 
+        await SeedProductFlagsAsync(context, cancellationToken).ConfigureAwait(false);
         await SeedCatalogItemsAsync(context, cancellationToken).ConfigureAwait(false);
         await SeedInventoryDocumentsAsync(context, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task SeedProductFlagsAsync(AppDbContext context, CancellationToken cancellationToken)
+    {
+        var existingCodes = await context.ProductFlags
+            .AsNoTracking()
+            .Select(flag => flag.Code)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var missingFlags = ProductFlagSeedData.Flags
+            .Where(flag => !existingCodes.Contains(flag.Code, StringComparer.OrdinalIgnoreCase))
+            .Select(CloneProductFlag)
+            .ToArray();
+
+        if (missingFlags.Length == 0)
+        {
+            return;
+        }
+
+        await context.ProductFlags.AddRangeAsync(missingFlags, cancellationToken).ConfigureAwait(false);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private static async Task SeedCatalogItemsAsync(AppDbContext context, CancellationToken cancellationToken)
@@ -143,6 +166,18 @@ internal static class AppDbContextSeeder
             AlcoholCode = item.AlcoholCode,
             AlcoholStrength = item.AlcoholStrength,
             AlcoholVolume = item.AlcoholVolume
+        };
+    }
+
+    private static ProductFlag CloneProductFlag(ProductFlag flag)
+    {
+        return new ProductFlag
+        {
+            Id = Guid.NewGuid(),
+            Code = flag.Code,
+            Name = flag.Name,
+            IsActive = flag.IsActive,
+            CreatedAt = flag.CreatedAt
         };
     }
 }

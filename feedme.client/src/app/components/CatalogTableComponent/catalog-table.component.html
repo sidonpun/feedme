@@ -1,11 +1,11 @@
-<div class="wrap">
-  <div class="toolbar">
-    <div class="tabs" role="tablist" aria-label="Выбор базы">
+<div class="catalog-table">
+  <div class="catalog-table__toolbar">
+    <div class="catalog-table__tabs" role="tablist" aria-label="Выбор базы">
       <button
         type="button"
         role="tab"
-        class="tab"
-        [class.tab--active]="tab === 'baseA'"
+        class="catalog-table__tab"
+        [class.catalog-table__tab--active]="tab === 'baseA'"
         [attr.aria-selected]="tab === 'baseA'"
         (click)="onTabChange('baseA')"
       >
@@ -14,8 +14,8 @@
       <button
         type="button"
         role="tab"
-        class="tab"
-        [class.tab--active]="tab === 'baseB'"
+        class="catalog-table__tab"
+        [class.catalog-table__tab--active]="tab === 'baseB'"
         [attr.aria-selected]="tab === 'baseB'"
         (click)="onTabChange('baseB')"
       >
@@ -23,13 +23,13 @@
       </button>
     </div>
 
-    <button type="button" class="new-item">+ Новый товар</button>
+    <button type="button" class="catalog-table__new-item">+ Новый товар</button>
   </div>
 
-  <div class="table-shell">
-    <table>
-      <thead>
-        <tr>
+  <div class="catalog-table__container">
+    <table class="catalog-table__table">
+      <thead class="catalog-table__head">
+        <tr class="catalog-table__head-row">
           <th
             scope="col"
             class="col-code"
@@ -107,8 +107,8 @@
           </th>
         </tr>
       </thead>
-      <tbody>
-        <tr *ngFor="let item of items; trackBy: trackByCode">
+      <tbody class="catalog-table__body">
+        <tr *ngFor="let item of items; trackBy: trackByCode" class="catalog-table__row">
           <td class="col-code">{{ item.code }}</td>
           <td class="col-name">{{ item.name }}</td>
           <td class="col-status">

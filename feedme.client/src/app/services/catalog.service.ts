@@ -27,6 +27,20 @@ export interface CatalogItem {
   alcoholCode: string;
   alcoholStrength: number;
   alcoholVolume: number;
+  flags?: ReadonlyArray<{
+    code?: string | null;
+    name?: string | null;
+    full?: string | null;
+    short?: string | null;
+  }>;
+
+  lastDelivery?: string;
+  lastDeliveryAt?: string;
+  lastSupplyDate?: string;
+  lastSupplyAt?: string;
+  lastDeliveryDate?: string;
+  updatedAt?: string;
+  createdAt?: string;
 }
 
 @Injectable({ providedIn: 'root' })

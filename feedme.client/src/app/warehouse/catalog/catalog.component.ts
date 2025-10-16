@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -47,6 +48,10 @@ interface CatalogTab {
   categoryKey: string | null;
 }
 
+type PaginationButton =
+  | { kind: 'page'; value: number; active: boolean }
+  | { kind: 'ellipsis'; id: string };
+
 @Component({
   standalone: true,
   selector: 'app-warehouse-catalog',
@@ -84,6 +89,8 @@ export class CatalogComponent {
   readonly dialogOpen = signal(false);
   readonly submitting = signal(false);
   readonly searchQuery = signal('');
+  readonly pageSize = signal(15);
+  readonly currentPage = signal(1);
 
   readonly activeSort = signal<CatalogSortState>({ key: 'name', direction: 'asc' });
 
@@ -192,6 +199,128 @@ export class CatalogComponent {
   readonly sortedProducts = computed(() => sortProducts(this.filteredProducts(), this.activeSort()));
 
   readonly filteredProductsCount = computed(() => this.filteredProducts().length);
+  readonly totalPages = computed(() => {
+    const size = this.pageSize();
+    const count = this.filteredProductsCount();
+
+    if (size <= 0) {
+      return 1;
+    }
+
+    return Math.max(1, Math.ceil(count / size));
+  });
+
+  readonly paginatedProducts = computed(() => {
+    const page = this.currentPage();
+    const size = this.pageSize();
+    const products = this.sortedProducts();
+
+    if (size <= 0) {
+      return products;
+    }
+
+    const start = (page - 1) * size;
+    return products.slice(start, start + size);
+  });
+
+  readonly visibleRange = computed(() => {
+    const count = this.filteredProductsCount();
+
+    if (count === 0) {
+      return { from: 0, to: 0 };
+    }
+
+    const size = this.pageSize();
+    const page = this.currentPage();
+    const from = (page - 1) * size + 1;
+    const to = Math.min(from + size - 1, count);
+
+    return { from, to };
+  });
+
+  readonly paginationStatusLabel = computed(() => {
+    const count = this.filteredProductsCount();
+
+    if (count === 0) {
+      return '0 ���?����Ő��';
+    }
+
+    const range = this.visibleRange();
+    return `${range.from}-${range.to} ��� ${count} ���?����Ő��`;
+  });
+
+  readonly paginationButtons = computed<PaginationButton[]>(() => {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const maxButtons = 7;
+
+    if (total <= maxButtons) {
+      return Array.from({ length: total }, (_, index) => ({
+        kind: 'page' as const,
+        value: index + 1,
+        active: index + 1 === current,
+      }));
+    }
+
+    const buttons: PaginationButton[] = [];
+
+    const addPage = (value: number) => {
+      if (value < 1 || value > total) {
+        return;
+      }
+
+      if (buttons.some(button => button.kind === 'page' && button.value === value)) {
+        return;
+      }
+
+      buttons.push({ kind: 'page', value, active: value === current });
+    };
+
+    const addEllipsis = (id: string) => {
+      if (buttons.some(button => button.kind === 'ellipsis' && button.id === id)) {
+        return;
+      }
+
+      buttons.push({ kind: 'ellipsis', id });
+    };
+
+    addPage(1);
+
+    let start = Math.max(2, current - 1);
+    let end = Math.min(total - 1, current + 1);
+
+    if (current <= 2) {
+      end = Math.min(total - 1, 3);
+    } else if (current >= total - 1) {
+      start = Math.max(2, total - 2);
+    }
+
+    if (start > 2) {
+      addEllipsis('left');
+    } else {
+      for (let page = 2; page < start; page += 1) {
+        addPage(page);
+      }
+    }
+
+    for (let page = start; page <= end; page += 1) {
+      addPage(page);
+    }
+
+    if (end < total - 1) {
+      addEllipsis('right');
+    } else {
+      for (let page = end + 1; page < total; page += 1) {
+        addPage(page);
+      }
+    }
+
+    addPage(total);
+
+    return buttons;
+  });
+
+  readonly hasPagination = computed(() => this.totalPages() > 1);
   readonly normalizedSearchQuery = computed(() => this.searchQuery().trim());
   readonly productsCountLabel = computed(() => {
     const total = this.totalProductsCount();
@@ -204,6 +333,17 @@ export class CatalogComponent {
 
     return `${filtered} РёР· ${total} РїРѕР·РёС†РёР№`;
   });
+
+  private readonly clampPageEffect = effect(() => {
+    const total = this.totalPages();
+    const current = this.currentPage();
+
+    if (current > total) {
+      this.currentPage.set(total);
+    } else if (current < 1) {
+      this.currentPage.set(1);
+    }
+  }, { allowSignalWrites: true });
 
   changeSort(key: CatalogSortKey): void {
     this.activeSort.update(current => {
@@ -244,6 +384,26 @@ export class CatalogComponent {
     }
 
     return currentSort.direction === 'asc' ? 'в–І' : 'в–ј';
+  }
+
+  goToPage(page: number): void {
+    const total = this.totalPages();
+    const normalized = Math.trunc(page);
+    const clamped = Math.min(Math.max(normalized, 1), total);
+
+    this.currentPage.set(clamped);
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage() + 1);
+  }
+
+  previousPage(): void {
+    this.goToPage(this.currentPage() - 1);
+  }
+
+  trackPaginationButton(_: number, button: PaginationButton): string {
+    return button.kind === 'page' ? `page-${button.value}` : `ellipsis-${button.id}`;
   }
 
   openDialog(): void {
@@ -311,6 +471,7 @@ export class CatalogComponent {
 
   updateSearch(query: string): void {
     this.searchQuery.set(query);
+    this.currentPage.set(1);
   }
 
   trackByTabId(_: number, tab: CatalogTab): string {
@@ -319,6 +480,7 @@ export class CatalogComponent {
 
   setActiveTab(tabId: string): void {
     this.activeTab.set(tabId);
+    this.currentPage.set(1);
   }
 
   private resetForm(): void {

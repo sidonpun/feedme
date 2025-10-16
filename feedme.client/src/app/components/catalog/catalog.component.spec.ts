@@ -13,17 +13,17 @@ describe('CatalogComponent', () => {
   const mockItems: CatalogItem[] = [
     {
       id: '1',
-      name: 'Сыр',
-      type: 'Продукт',
+      name: 'Р РЋРЎвЂ№РЎР‚',
+      type: 'Р СџРЎР‚Р С•Р Т‘РЎС“Р С”РЎвЂљ',
       code: '100',
-      category: 'Молочная продукция',
-      unit: 'кг',
+      category: 'Р СљР С•Р В»Р С•РЎвЂЎР Р…Р В°РЎРЏ Р С—РЎР‚Р С•Р Т‘РЎС“Р С”РЎвЂ Р С‘РЎРЏ',
+      unit: 'Р С”Р С–',
       weight: 1,
       writeoffMethod: 'FIFO',
-      allergens: 'Молоко',
+      allergens: 'Р СљР С•Р В»Р С•Р С”Р С•',
       packagingRequired: true,
       spoilsAfterOpening: false,
-      supplier: 'Поставщик А',
+      supplier: 'Р СџР С•РЎРѓРЎвЂљР В°Р Р†РЎвЂ°Р С‘Р С” Р С’',
       deliveryTime: 2,
       costEstimate: 450,
       taxRate: '10%',
@@ -35,20 +35,24 @@ describe('CatalogComponent', () => {
       alcoholCode: '',
       alcoholStrength: 0,
       alcoholVolume: 0,
+      flags: [
+        { code: 'pack' },
+        { code: 'temp' },
+      ],
     },
     {
       id: '2',
-      name: 'Оливковое масло',
-      type: 'Продукт',
+      name: 'Р С›Р В»Р С‘Р Р†Р С”Р С•Р Р†Р С•Р Вµ Р СР В°РЎРѓР В»Р С•',
+      type: 'Р СџРЎР‚Р С•Р Т‘РЎС“Р С”РЎвЂљ',
       code: '200',
-      category: 'Масла',
-      unit: 'л',
+      category: 'Р СљР В°РЎРѓР В»Р В°',
+      unit: 'Р В»',
       weight: 1,
       writeoffMethod: 'FIFO',
-      allergens: 'Нет',
+      allergens: 'Р СњР ВµРЎвЂљ',
       packagingRequired: false,
       spoilsAfterOpening: true,
-      supplier: 'Поставщик Б',
+      supplier: 'Р СџР С•РЎРѓРЎвЂљР В°Р Р†РЎвЂ°Р С‘Р С” Р вЂ',
       deliveryTime: 5,
       costEstimate: 300,
       taxRate: '10%',
@@ -60,6 +64,12 @@ describe('CatalogComponent', () => {
       alcoholCode: '',
       alcoholStrength: 0,
       alcoholVolume: 0,
+      flags: [
+        { code: 'spoil_open' },
+        { code: 'fragile' },
+        { code: 'pack' },
+        { code: 'temp' },
+      ],
     },
   ];
 
@@ -85,22 +95,28 @@ describe('CatalogComponent', () => {
     fixture.detectChanges();
   });
 
-  it('создаётся', () => {
+  it('РЎРѓР С•Р В·Р Т‘Р В°РЎвЂРЎвЂљРЎРѓРЎРЏ', () => {
     expect(component).toBeTruthy();
   });
 
-  it('отображает форматированные флаги для каждого товара', () => {
+  it('Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р В°Р ВµРЎвЂљ РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р Р…РЎвЂ№Р Вµ РЎвЂћР В»Р В°Р С–Р С‘ Р Т‘Р В»РЎРЏ Р С”Р В°Р В¶Р Т‘Р С•Р С–Р С• РЎвЂљР С•Р Р†Р В°РЎР‚Р В°', () => {
     fixture.detectChanges();
 
     const rows = fixture.debugElement.queryAll(By.css('tbody tr'));
     expect(rows.length).toBe(mockItems.length);
 
-    const firstFlagCellText = rows[0].query(By.css('td:nth-child(8)'))!.nativeElement.textContent;
-    expect(firstFlagCellText).toContain('Требует фасовки: Да');
-    expect(firstFlagCellText).toContain('Портится после вскрытия: Нет');
+    const firstFlagCell = rows[0].query(By.css('td:nth-child(8)'))!;
+    const firstFlagCellText = firstFlagCell.nativeElement.textContent.trim();
+    expect(firstFlagCellText).toContain('Фас.');
+    expect(firstFlagCellText).toContain('Темп.');
 
-    const secondFlagCellText = rows[1].query(By.css('td:nth-child(8)'))!.nativeElement.textContent;
-    expect(secondFlagCellText).toContain('Требует фасовки: Нет');
-    expect(secondFlagCellText).toContain('Портится после вскрытия: Да');
+    const secondFlagCell = rows[1].query(By.css('td:nth-child(8)'))!;
+    const secondFlagCellText = secondFlagCell.nativeElement.textContent;
+    expect(secondFlagCellText).toContain('После вскр.');
+    expect(secondFlagCellText).toContain('Хрупк.');
+    expect(secondFlagCellText).toContain('+1');
+
+    const moreChip = secondFlagCell.query(By.css('.flag.more'))!.nativeElement as HTMLElement;
+    expect(moreChip.getAttribute('title')).toBe('Требует температурный режим');
   });
 });

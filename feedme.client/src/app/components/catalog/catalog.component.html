@@ -1,41 +1,49 @@
-<div class="catalog-header">
-  <div class="tabs" role="tablist" aria-label="Каталог">
-    <button
-      type="button"
-      class="tab"
-      role="tab"
-      (click)="activeTab='info'"
-      [class.active]="activeTab==='info'"
-      [attr.aria-selected]="activeTab === 'info'"
-    >
-      Основная информация
-    </button>
-    <button
-      type="button"
-      class="tab"
-      role="tab"
-      (click)="activeTab='logistics'"
-      [class.active]="activeTab==='logistics'"
-      [attr.aria-selected]="activeTab === 'logistics'"
-    >
-      Закупка и логистика
-    </button>
-  </div>
-  <button type="button" class="catalog-header__action" (click)="openNewProductPopup()">
-    + Новый товар
-  </button>
-</div>
-<div class="error-message" *ngIf="loadErrorMessage() as errorMessage">{{ errorMessage }}</div>
+<div class="catalog-page">
+  <section class="catalog-card" #catalogCard>
+    <header class="catalog-header">
+      <div class="tabs" role="tablist" aria-label="Каталог">
+        <button
+          type="button"
+          class="tab"
+          role="tab"
+          (click)="activeTab='info'"
+          [class.active]="activeTab==='info'"
+          [attr.aria-selected]="activeTab === 'info'"
+        >
+          Основная информация
+        </button>
+        <button
+          type="button"
+          class="tab"
+          role="tab"
+          (click)="activeTab='logistics'"
+          [class.active]="activeTab==='logistics'"
+          [attr.aria-selected]="activeTab === 'logistics'"
+        >
+          Закупка и логистика
+        </button>
+      </div>
+      <button type="button" class="catalog-header__action" (click)="openNewProductPopup()">
+        + Новый товар
+      </button>
+    </header>
 
-<ng-container *ngIf="catalogData as catalogData">
-  <ng-container *ngIf="catalogData.length; else emptyCatalog">
-    <div *ngIf="activeTab==='info'" class="catalog-table__container">
-      <table class="catalog-table">
-        <thead>
+    <div class="catalog-card__body" #catalogCardBody>
+      <div class="error-message" *ngIf="loadErrorMessage() as errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <ng-container *ngIf="catalogData as catalogData">
+        <ng-container *ngIf="catalogData.length; else emptyCatalog">
+          <section *ngIf="activeTab==='info'" class="catalog-tab">
+            <ng-container *ngIf="infoPage() as page">
+              <div class="catalog-table__container" #infoTableContainer>
+                <table class="catalog-table">
+        <thead #infoTableHeader>
           <tr>
             <th
               scope="col"
-              class="sortable"
+              class="sortable name-col"
               [class.sortable--active]="isSorted('info', 0)"
               [attr.data-direction]="getSortDirection('info', 0)"
               [attr.aria-sort]="getAriaSort('info', 0)"
@@ -47,7 +55,7 @@
             </th>
             <th
               scope="col"
-              class="sortable"
+              class="sortable type-col"
               [class.sortable--active]="isSorted('info', 1)"
               [attr.data-direction]="getSortDirection('info', 1)"
               [attr.aria-sort]="getAriaSort('info', 1)"
@@ -59,7 +67,7 @@
             </th>
             <th
               scope="col"
-              class="sortable"
+              class="sortable code-col"
               [class.sortable--active]="isSorted('info', 2)"
               [attr.data-direction]="getSortDirection('info', 2)"
               [attr.aria-sort]="getAriaSort('info', 2)"
@@ -71,7 +79,7 @@
             </th>
             <th
               scope="col"
-              class="sortable"
+              class="sortable category-col"
               [class.sortable--active]="isSorted('info', 3)"
               [attr.data-direction]="getSortDirection('info', 3)"
               [attr.aria-sort]="getAriaSort('info', 3)"
@@ -83,7 +91,7 @@
             </th>
             <th
               scope="col"
-              class="sortable"
+              class="sortable uom-col"
               [class.sortable--active]="isSorted('info', 4)"
               [attr.data-direction]="getSortDirection('info', 4)"
               [attr.aria-sort]="getAriaSort('info', 4)"
@@ -95,7 +103,7 @@
             </th>
             <th
               scope="col"
-              class="sortable"
+              class="sortable writeoff-col"
               [class.sortable--active]="isSorted('info', 5)"
               [attr.data-direction]="getSortDirection('info', 5)"
               [attr.aria-sort]="getAriaSort('info', 5)"
@@ -107,7 +115,7 @@
             </th>
             <th
               scope="col"
-              class="sortable"
+              class="sortable allergens-col"
               [class.sortable--active]="isSorted('info', 6)"
               [attr.data-direction]="getSortDirection('info', 6)"
               [attr.aria-sort]="getAriaSort('info', 6)"
@@ -119,7 +127,7 @@
             </th>
             <th
               scope="col"
-              class="sortable"
+              class="sortable flags-col"
               [class.sortable--active]="isSorted('info', 7)"
               [attr.data-direction]="getSortDirection('info', 7)"
               [attr.aria-sort]="getAriaSort('info', 7)"
@@ -132,46 +140,77 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of sortedInfoItems()">
-            <td>{{ item.name }}</td>
-            <td>{{ item.type }}</td>
-            <td>{{ item.code }}</td>
-            <td>{{ item.category }}</td>
-            <td>{{ item.unit }}</td>
-            <td>{{ item.writeoffMethod }}</td>
-            <td>{{ item.allergens }}</td>
-            <td>
-              <div class="boolean-flag-row">
-                <span class="boolean-flag-row__label">Требует фасовки</span>
+          <tr *ngFor="let item of page.items" #infoRow>
+            <td class="name-col">{{ item.name }}</td>
+            <td class="type-col">{{ item.type }}</td>
+            <td class="code-col">{{ item.code }}</td>
+            <td class="category-col">{{ item.category }}</td>
+            <td class="uom-col">{{ item.unit }}</td>
+            <td class="writeoff-col">{{ item.writeoffMethod }}</td>
+            <td class="allergens-col">{{ item.allergens }}</td>
+            <td class="flags-col flags-cell">
+              <div class="flags-list" *ngIf="item.flags?.length; else emptyFlags">
                 <span
-                  class="boolean-pill"
-                  [class.boolean-pill--positive]="item.packagingRequired === true"
-                  [class.boolean-pill--negative]="item.packagingRequired === false"
-                  [class.boolean-pill--unknown]="item.packagingRequired == null"
+                  *ngFor="let flag of item.flags | slice:0:maxShown"
+                  class="flag"
+                  [ngClass]="'flag--' + (flag.code || 'default')"
+                  [title]="resolveFlagFull(flag)"
                 >
-                  {{ item.packagingRequired | booleanLabel }}
+                  <i class="dot" aria-hidden="true"></i>
+                  {{ resolveFlagShort(flag) }}
+                </span>
+
+                <span
+                  *ngIf="item.flags.length > maxShown"
+                  class="flag more"
+                  [title]="getHiddenFlagsTooltip(item)"
+                >
+                  +{{ item.flags.length - maxShown }}
                 </span>
               </div>
-              <div class="boolean-flag-row">
-                <span class="boolean-flag-row__label">Портится после вскрытия</span>
-                <span
-                  class="boolean-pill"
-                  [class.boolean-pill--positive]="item.spoilsAfterOpening === true"
-                  [class.boolean-pill--negative]="item.spoilsAfterOpening === false"
-                  [class.boolean-pill--unknown]="item.spoilsAfterOpening == null"
-                >
-                  {{ item.spoilsAfterOpening | booleanLabel }}
-                </span>
-              </div>
+
+              <ng-template #emptyFlags><span class="muted">&mdash;</span></ng-template>
             </td>
           </tr>
         </tbody>
-      </table>
-    </div>
+                </table>
+              </div>
+              <footer
+                class="catalog-pagination"
+                aria-label="Пагинация каталога — основная информация"
+                #infoPagination
+              >
+                <div class="catalog-pagination__summary">
+                  Показано {{ page.items.length }} из {{ page.totalItems }} позиций · Страница {{ page.page }} из
+                  {{ page.totalPages }}
+                </div>
+                <div class="catalog-pagination__actions">
+                  <button
+                    type="button"
+                    class="catalog-pagination__button"
+                    (click)="prevPage('info')"
+                    [disabled]="!canPrev('info')"
+                  >
+                    Назад
+                  </button>
+                  <button
+                    type="button"
+                    class="catalog-pagination__button"
+                    (click)="nextPage('info')"
+                    [disabled]="!canNext('info')"
+                  >
+                    Далее
+                  </button>
+                </div>
+              </footer>
+            </ng-container>
+          </section>
 
-    <div *ngIf="activeTab==='logistics'" class="catalog-table__container">
-      <table class="catalog-table">
-        <thead>
+          <section *ngIf="activeTab==='logistics'" class="catalog-tab">
+            <ng-container *ngIf="logisticsPage() as page">
+              <div class="catalog-table__container" #logisticsTableContainer>
+                <table class="catalog-table">
+        <thead #logisticsTableHeader>
           <tr>
             <th
               scope="col"
@@ -260,7 +299,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of sortedLogisticsItems()">
+          <tr *ngFor="let item of page.items" #logisticsRow>
             <td>{{ item.supplier }}</td>
             <td>{{ item.costEstimate }}</td>
             <td>{{ item.taxRate }}</td>
@@ -279,23 +318,56 @@
             </td>
           </tr>
         </tbody>
-      </table>
-    </div>
-  </ng-container>
-</ng-container>
+                </table>
+              </div>
+              <footer
+                class="catalog-pagination"
+                aria-label="Пагинация каталога — закупка и логистика"
+                #logisticsPagination
+              >
+                <div class="catalog-pagination__summary">
+                  Показано {{ page.items.length }} из {{ page.totalItems }} позиций · Страница {{ page.page }} из
+                  {{ page.totalPages }}
+                </div>
+                <div class="catalog-pagination__actions">
+                  <button
+                    type="button"
+                    class="catalog-pagination__button"
+                    (click)="prevPage('logistics')"
+                    [disabled]="!canPrev('logistics')"
+                  >
+                    Назад
+                  </button>
+                  <button
+                    type="button"
+                    class="catalog-pagination__button"
+                    (click)="nextPage('logistics')"
+                    [disabled]="!canNext('logistics')"
+                  >
+                    Далее
+                  </button>
+                </div>
+              </footer>
+            </ng-container>
+          </section>
+        </ng-container>
+      </ng-container>
 
-<ng-template #emptyCatalog>
-  <div class="catalog-empty">
-    <app-empty
-      class="mt-6 block"
-      title="Каталог пока пуст"
-      subtitle="Добавьте первый продукт, чтобы начать работу с каталогом."
-    ></app-empty>
-    <button type="button" class="catalog-empty__action" (click)="openNewProductPopup()">
-      + Новый товар
-    </button>
-  </div>
-</ng-template>
+      <ng-template #emptyCatalog>
+        <div class="catalog-empty">
+          <app-empty
+            class="mt-6 block"
+            title="Каталог пока пуст"
+            subtitle="Добавьте первый продукт, чтобы начать работу с каталогом."
+          ></app-empty>
+          <button type="button" class="catalog-empty__action" (click)="openNewProductPopup()">
+            + Новый товар
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </section>
+</div>
 
 <app-catalog-new-product-popup
   *ngIf="isNewProductPopupVisible()"
