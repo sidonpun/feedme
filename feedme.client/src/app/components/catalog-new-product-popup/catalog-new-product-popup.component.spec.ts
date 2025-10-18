@@ -49,7 +49,8 @@ describe('CatalogNewProductPopupComponent', () => {
       isAlcohol: false,
       alcoholCode: '',
       alcoholStrength: 0,
-      alcoholVolume: 0
+      alcoholVolume: 0,
+      flagCodes: [],
     });
     fixture.debugElement.query(By.css('form')).triggerEventHandler('ngSubmit', {});
     expect(component.save.emit).toHaveBeenCalled();

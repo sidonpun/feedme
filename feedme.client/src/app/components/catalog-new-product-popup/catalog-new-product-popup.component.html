@@ -37,6 +37,61 @@
               <option *ngFor="let u of units" [value]="u">{{ u }}</option>
             </select>
           </div>
+          <div class="flags-field">
+            <label class="fm-label">Флаги товара</label>
+            <div class="fm-flags" #flagsContainer>
+              <button
+                type="button"
+                class="fm-flags__control"
+                [attr.aria-expanded]="flagsOpen"
+                (click)="toggleFlagsDropdown($event)"
+              >
+                <ng-container *ngIf="selectedFlags?.length; else flagsEmpty">
+                  <div class="fm-flags__chips">
+                    <span
+                      *ngFor="let code of selectedFlags | slice:0:3"
+                      class="flag"
+                      [ngClass]="'flag--' + code"
+                      [title]="FLAG_FULL[code]"
+                    >
+                      <i class="dot"></i>{{ FLAG_SHORT[code] }}
+                    </span>
+                    <span *ngIf="selectedFlags.length > 3" class="flag more">
+                      +{{ selectedFlags.length - 3 }}
+                    </span>
+                  </div>
+                </ng-container>
+                <ng-template #flagsEmpty>
+                  <span class="muted">Выберите флаги (0..все)</span>
+                </ng-template>
+                <span class="caret">v</span>
+              </button>
+
+              <div
+                class="fm-flags__menu"
+                *ngIf="flagsOpen"
+                (mousedown)="$event.preventDefault()"
+              >
+                <label
+                  class="fm-flags__item"
+                  *ngFor="let f of ALL_FLAGS"
+                  [title]="FLAG_FULL[f.code]"
+                  (click)="toggleFlag(f.code)"
+                >
+                  <input
+                    type="checkbox"
+                    class="fm-checkbox"
+                    [checked]="selectedFlags?.includes(f.code)"
+                    (click)="$event.stopPropagation()"
+                  />
+                  <span class="flag" [ngClass]="'flag--' + f.code">
+                    <i class="dot"></i>{{ FLAG_SHORT[f.code] }}
+                  </span>
+                  <span class="label">{{ FLAG_FULL[f.code] }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
           <div class="input-container">
             <label for="new-product-writeoff">Метод списания</label>
             <select id="new-product-writeoff" formControlName="writeoffMethod">
@@ -48,18 +103,6 @@
           <div class="input-container">
             <label for="new-product-allergens">Аллергены</label>
             <input id="new-product-allergens" formControlName="allergens" autocomplete="off" placeholder="Например, молоко" />
-          </div>
-          <div class="checkbox-container">
-            <label class="checkbox-label" for="new-product-packaging">
-              <input id="new-product-packaging" type="checkbox" formControlName="packagingRequired" />
-              Требует фасовки
-            </label>
-          </div>
-          <div class="checkbox-container">
-            <label class="checkbox-label" for="new-product-spoils">
-              <input id="new-product-spoils" type="checkbox" formControlName="spoilsAfterOpening" />
-              Портится после вскрытия
-            </label>
           </div>
         </div>
       </section>
@@ -163,3 +206,5 @@
     </form>
   </div>
 </div>
+
+

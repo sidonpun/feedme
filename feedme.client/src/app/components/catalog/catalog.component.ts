@@ -312,8 +312,11 @@ export class CatalogComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** Р”РѕР±Р°РІР»СЏРµС‚ РЅРѕРІС‹Р№ С‚РѕРІР°СЂ РІ РєР°С‚Р°Р»РѕРі */
   addProduct(item: NewProductFormValues): void {
+    const { flagCodes, ...rest } = item;
+    void flagCodes;
+
     const payload: Omit<CatalogItem, 'id'> = {
-      ...item,
+      ...rest,
       weight: 0,
       deliveryTime: 0,
     };

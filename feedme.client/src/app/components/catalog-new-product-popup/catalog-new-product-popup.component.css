@@ -143,6 +143,176 @@ select {
   padding-right: 36px;
 }
 
+.flags-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fm-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.fm-flags {
+  position: relative;
+}
+
+.fm-flags__control {
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #d6dade;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-align: left;
+  cursor: pointer;
+  color: #1b1c1d;
+  box-sizing: border-box;
+}
+
+.fm-flags__control:hover {
+  border-color: #ff8c2a;
+}
+
+.fm-flags__control:focus-visible {
+  border-color: #ff8c2a;
+  box-shadow: 0 0 0 4px var(--ring-shadow, rgba(37, 99, 235, 0.35));
+  outline: none;
+}
+
+.fm-flags__control .muted {
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.fm-flags__control .caret {
+  margin-left: auto;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.fm-flags__chips {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  overflow: hidden;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.fm-flags__menu {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(100% + 6px);
+  width: 100%;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
+  padding: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.fm-flags__item {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.fm-flags__item:hover {
+  background: #f8fafc;
+}
+
+.fm-checkbox {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  accent-color: #ff8c2a;
+  cursor: pointer;
+}
+
+.fm-flags__item .label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #334155;
+  font-size: 13px;
+}
+
+.flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 16px;
+  line-height: 16px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 0 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #f3f5f7;
+  color: #3a4a5a;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.flag .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: 0 0 4px;
+}
+
+.flag.more {
+  background: #eef1f5;
+  color: #475569;
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+.flag--pack {
+  background: #e8faf1;
+  color: #0f7a55;
+}
+
+.flag--spoil_open {
+  background: #fff2e6;
+  color: #9a5a00;
+}
+
+.flag--fragile {
+  background: #fbe9ee;
+  color: #9a114a;
+}
+
+.flag--temp {
+  background: #e8f1ff;
+  color: #1b5fbf;
+}
+
+.flag--default {
+  background: #f3f5f7;
+  color: #3a4a5a;
+}
+
 .checkbox-container {
   display: flex;
   align-items: center;
