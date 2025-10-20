@@ -48,16 +48,20 @@
               >
                 <ng-container *ngIf="selectedFlags?.length; else flagsEmpty">
                   <div class="fm-flags__chips">
-                    <span
-                      *ngFor="let code of selectedFlags | slice:0:3"
-                      class="flag"
-                      [ngClass]="'flag--' + code"
-                      [title]="FLAG_FULL[code]"
-                    >
-                      <i class="dot"></i>{{ FLAG_SHORT[code] }}
-                    </span>
-                    <span *ngIf="selectedFlags.length > 3" class="flag more">
-                      +{{ selectedFlags.length - 3 }}
+                    <ng-container *ngFor="let code of selectedFlags | slice:0:maxVisibleFlags">
+                      <ng-container *ngFor="let flag of flagOptions">
+                        <span
+                          *ngIf="flag.code === code"
+                          class="flag"
+                          [ngClass]="'flag--' + flag.code"
+                          [title]="flag.full"
+                        >
+                          <i class="dot"></i>{{ flag.short }}
+                        </span>
+                      </ng-container>
+                    </ng-container>
+                    <span *ngIf="selectedFlags.length > maxVisibleFlags" class="flag more">
+                      +{{ selectedFlags.length - maxVisibleFlags }}
                     </span>
                   </div>
                 </ng-container>
@@ -74,20 +78,20 @@
               >
                 <label
                   class="fm-flags__item"
-                  *ngFor="let f of ALL_FLAGS"
-                  [title]="FLAG_FULL[f.code]"
-                  (click)="toggleFlag(f.code)"
+                  *ngFor="let flag of flagOptions"
+                  [title]="flag.full"
+                  (click)="toggleFlag(flag.code)"
                 >
                   <input
                     type="checkbox"
                     class="fm-checkbox"
-                    [checked]="selectedFlags?.includes(f.code)"
+                    [checked]="selectedFlags?.includes(flag.code)"
                     (click)="$event.stopPropagation()"
                   />
-                  <span class="flag" [ngClass]="'flag--' + f.code">
-                    <i class="dot"></i>{{ FLAG_SHORT[f.code] }}
+                  <span class="flag" [ngClass]="'flag--' + flag.code">
+                    <i class="dot"></i>{{ flag.short }}
                   </span>
-                  <span class="label">{{ FLAG_FULL[f.code] }}</span>
+                  <span class="label">{{ flag.full }}</span>
                 </label>
               </div>
             </div>
