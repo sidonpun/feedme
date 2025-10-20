@@ -1,31 +1,56 @@
 <div class="catalog-page">
   <section class="catalog-card" #catalogCard>
     <header class="catalog-header">
-      <div class="tabs" role="tablist" aria-label="Каталог">
-        <button
-          type="button"
-          class="tab"
-          role="tab"
-          (click)="activeTab='info'"
-          [class.active]="activeTab==='info'"
-          [attr.aria-selected]="activeTab === 'info'"
-        >
-          Основная информация
-        </button>
-        <button
-          type="button"
-          class="tab"
-          role="tab"
-          (click)="activeTab='logistics'"
-          [class.active]="activeTab==='logistics'"
-          [attr.aria-selected]="activeTab === 'logistics'"
-        >
-          Закупка и логистика
-        </button>
+      <div class="catalog-header__row catalog-header__row--tabs">
+        <div class="tabs" role="tablist" aria-label="Каталог">
+          <button
+            type="button"
+            class="tab"
+            role="tab"
+            (click)="activeTab='info'"
+            [class.active]="activeTab==='info'"
+            [attr.aria-selected]="activeTab === 'info'"
+          >
+            Основная информация
+          </button>
+          <button
+            type="button"
+            class="tab"
+            role="tab"
+            (click)="activeTab='logistics'"
+            [class.active]="activeTab==='logistics'"
+            [attr.aria-selected]="activeTab === 'logistics'"
+          >
+            Закупка и логистика
+          </button>
+        </div>
       </div>
-      <button type="button" class="catalog-header__action" (click)="openNewProductPopup()">
-        + Новый товар
-      </button>
+      <div class="catalog-header__row catalog-header__row--toolbar">
+        <label class="catalog-toolbar__search" aria-label="Поиск по номеру, SKU или названию">
+          <input
+            #searchInput
+            type="search"
+            class="catalog-toolbar__search-input"
+            placeholder="Поиск по номеру, SKU или названию"
+            [value]="searchQuery()"
+            (input)="onSearch(searchInput.value)"
+          />
+        </label>
+        <div class="catalog-toolbar__actions">
+          <button type="button" class="catalog-toolbar__button" (click)="onResetFilters()">
+            Сброс
+          </button>
+          <button type="button" class="catalog-toolbar__button" (click)="onImportClick()">
+            Импорт
+          </button>
+          <button type="button" class="catalog-toolbar__button" (click)="onExportClick()">
+            Экспорт
+          </button>
+          <button type="button" class="catalog-toolbar__button catalog-toolbar__button--primary" (click)="openNewProductPopup()">
+            + Новый товар
+          </button>
+        </div>
+      </div>
     </header>
 
     <div class="catalog-card__body" #catalogCardBody>

@@ -165,28 +165,28 @@ select {
   height: 40px;
   padding: 0 10px;
   border-radius: 12px;
-  background: #ffffff;
-  border: 1px solid #d6dade;
+  background: #fff;
+  border: 1px solid #e5e7eb;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
   display: flex;
   align-items: center;
   gap: 6px;
-  white-space: nowrap;
-  overflow: hidden;
   text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  box-sizing: border-box;
   cursor: pointer;
   color: #1b1c1d;
-  box-sizing: border-box;
 }
 
-.fm-flags__control:hover {
-  border-color: #ff8c2a;
-}
-
-.fm-flags__control:focus-visible {
-  border-color: #ff8c2a;
-  box-shadow: 0 0 0 4px var(--ring-shadow, rgba(37, 99, 235, 0.35));
-  outline: none;
+.fm-flags__chips {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .fm-flags__control .muted {
@@ -197,16 +197,7 @@ select {
 .fm-flags__control .caret {
   margin-left: auto;
   color: #94a3b8;
-  font-size: 11px;
-}
-
-.fm-flags__chips {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 4px;
-  overflow: hidden;
-  flex: 1 1 auto;
-  min-width: 0;
+  font-size: 12px;
 }
 
 .fm-flags__menu {
@@ -215,7 +206,7 @@ select {
   top: calc(100% + 6px);
   width: 100%;
   box-sizing: border-box;
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
@@ -243,7 +234,6 @@ select {
   width: 16px;
   height: 16px;
   flex: 0 0 16px;
-  accent-color: #ff8c2a;
   cursor: pointer;
 }
 
@@ -268,8 +258,6 @@ select {
   padding: 0 6px;
   border-radius: 6px;
   border: 1px solid rgba(0, 0, 0, 0.06);
-  background: #f3f5f7;
-  color: #3a4a5a;
   white-space: nowrap;
   user-select: none;
 }

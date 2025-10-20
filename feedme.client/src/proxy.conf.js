@@ -1,6 +1,8 @@
 const { URL } = require('node:url');
 
-const { baseUrl: remoteBackendBaseUrl } = require('./environments/remote-backend.config.json');
+const {
+  baseUrl: remoteBackendBaseUrl
+} = require('./environments/remote-backend.config.json');
 
 function normalizeTarget(raw) {
   if (typeof raw !== 'string' || !raw.trim()) {

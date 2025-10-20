@@ -35,6 +35,7 @@ import {
   selectCatalogLoadError,
 } from '../../store/catalog/catalog.reducer';
 import { AppState } from '../../store/app.state';
+import { CATALOG_FLAG_FULL_MAP, CATALOG_FLAG_SHORT_MAP } from '../../constants/catalog-flags';
 
 const EMPTY_CATALOG: readonly CatalogItem[] = [];
 
@@ -61,20 +62,6 @@ type CatalogItemFlag = {
   readonly name?: string | null;
   readonly short?: string | null;
 };
-
-export const FLAG_SHORT: Record<string, string> = {
-  pack: 'Фас.',
-  spoil_open: 'После вскр.',
-  fragile: 'Хрупк.',
-  temp: 'Темп.',
-} as const;
-
-export const FLAG_FULL: Record<string, string> = {
-  pack: 'Требует фасовки',
-  spoil_open: 'Портится после вскрытия',
-  fragile: 'Хрупкий товар',
-  temp: 'Требует температурный режим',
-} as const;
 
 
 @Pipe({
@@ -188,6 +175,8 @@ export class CatalogComponent implements OnInit, AfterViewInit, OnDestroy {
       initialValue: EMPTY_CATALOG,
     }
   );
+  readonly searchQuery = signal('');
+  private readonly filteredCatalogItems = computed(() => this.applySearchFilter());
   readonly loadErrorMessage = toSignal(this.store.select(selectCatalogLoadError), {
     initialValue: null,
   });
@@ -310,6 +299,61 @@ export class CatalogComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.dispatch(catalogActions.resetCreationState());
   }
 
+  protected onSearch(value: string): void {
+    const normalized = value?.trim() ?? '';
+    if (this.searchQuery() === normalized) {
+      return;
+    }
+
+    this.searchQuery.set(normalized);
+    this.paginationState.set({ info: 1, logistics: 1 });
+    this.scheduleLayoutMeasure();
+  }
+
+  protected onResetFilters(): void {
+    let shouldMeasure = false;
+
+    if (this.searchQuery()) {
+      this.searchQuery.set('');
+      shouldMeasure = true;
+    }
+
+    const currentSort = this.sortState();
+    const initial = this.initialSortState;
+    const sortChanged =
+      currentSort.info.column !== initial.info.column ||
+      currentSort.info.direction !== initial.info.direction ||
+      currentSort.logistics.column !== initial.logistics.column ||
+      currentSort.logistics.direction !== initial.logistics.direction;
+
+    if (sortChanged) {
+      this.sortState.set({
+        info: { ...initial.info },
+        logistics: { ...initial.logistics },
+      });
+      shouldMeasure = true;
+    }
+
+    const pagination = this.paginationState();
+    if (pagination.info !== 1 || pagination.logistics !== 1) {
+      shouldMeasure = true;
+    }
+
+    this.paginationState.set({ info: 1, logistics: 1 });
+
+    if (shouldMeasure) {
+      this.scheduleLayoutMeasure();
+    }
+  }
+
+  protected onImportClick(): void {
+    console.info('[Catalog] Импорт пока не реализован');
+  }
+
+  protected onExportClick(): void {
+    console.info('[Catalog] Экспорт пока не реализован');
+  }
+
   /** Р”РѕР±Р°РІР»СЏРµС‚ РЅРѕРІС‹Р№ С‚РѕРІР°СЂ РІ РєР°С‚Р°Р»РѕРі */
   addProduct(item: NewProductFormValues): void {
     const { flagCodes, ...rest } = item;
@@ -397,8 +441,8 @@ export class CatalogComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected resolveFlagShort(flag: CatalogItemFlag | null | undefined): string {
     const code = this.normalizeFlagCode(flag);
-    if (code && Object.prototype.hasOwnProperty.call(FLAG_SHORT, code)) {
-      return FLAG_SHORT[code];
+    if (code && Object.prototype.hasOwnProperty.call(CATALOG_FLAG_SHORT_MAP, code)) {
+      return CATALOG_FLAG_SHORT_MAP[code as keyof typeof CATALOG_FLAG_SHORT_MAP];
     }
 
     return (flag?.short ?? flag?.name ?? flag?.full ?? '').trim();
@@ -406,8 +450,8 @@ export class CatalogComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected resolveFlagFull(flag: CatalogItemFlag | null | undefined): string {
     const code = this.normalizeFlagCode(flag);
-    if (code && Object.prototype.hasOwnProperty.call(FLAG_FULL, code)) {
-      return FLAG_FULL[code];
+    if (code && Object.prototype.hasOwnProperty.call(CATALOG_FLAG_FULL_MAP, code)) {
+      return CATALOG_FLAG_FULL_MAP[code as keyof typeof CATALOG_FLAG_FULL_MAP];
     }
 
     return (flag?.full ?? flag?.name ?? flag?.short ?? '').trim();
@@ -440,7 +484,7 @@ export class CatalogComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private sortCatalogItems(tab: CatalogTab): readonly CatalogItem[] {
-    const items = this.catalogItems();
+    const items = this.filteredCatalogItems();
     if (!items.length) {
       return items;
     }
@@ -464,6 +508,35 @@ export class CatalogComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     return indexed.map(({ item }) => item);
+  }
+
+  private applySearchFilter(): readonly CatalogItem[] {
+    const items = this.catalogItems();
+    if (!items.length) {
+      return items;
+    }
+
+    const query = this.searchQuery().trim().toLocaleLowerCase('ru-RU');
+    if (!query.length) {
+      return items;
+    }
+
+    return items.filter((item) => {
+      const candidates: Array<string | number | boolean | null | undefined> = [
+        item.id,
+        item.code,
+        item.name,
+      ];
+
+      return candidates.some((value) => {
+        if (value === null || value === undefined) {
+          return false;
+        }
+
+        const normalized = String(value).toLocaleLowerCase('ru-RU');
+        return normalized.includes(query);
+      });
+    });
   }
 
   private buildPaginationMeta(tab: CatalogTab): CatalogPaginationMeta {

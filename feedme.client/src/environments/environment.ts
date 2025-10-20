@@ -9,7 +9,6 @@
 import type { EnvironmentConfig } from './environment.model';
 import {
   buildEnvironmentConfig,
-  resolveApiPath,
   type RemoteBackendConfig
 } from './api-base-url.builder';
 import remoteBackendConfigJson from './remote-backend.config.json';
@@ -19,7 +18,6 @@ const remoteEnvironment = buildEnvironmentConfig(remoteBackendConfig);
 
 export const environment: EnvironmentConfig = {
   ...remoteEnvironment,
-  apiBaseUrl: resolveApiPath(remoteBackendConfig),
   production: false
 };
 

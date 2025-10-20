@@ -17,8 +17,14 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-
-type ProductFlagCode = 'pack' | 'spoil_open' | 'fragile' | 'temp';
+import {
+  CATALOG_FLAG_DEFINITIONS,
+  CATALOG_FLAG_FULL_MAP,
+  CATALOG_FLAG_ORDER,
+  CATALOG_FLAG_SHORT_MAP,
+  CatalogFlagCode,
+  CatalogFlagDefinition,
+} from '../../constants/catalog-flags';
 
 export interface NewProductFormValues {
   name: string;
@@ -45,7 +51,7 @@ export interface NewProductFormValues {
   alcoholCode: string;
   alcoholStrength: number;
   alcoholVolume: number;
-  flagCodes: ProductFlagCode[];
+  flagCodes: CatalogFlagCode[];
 }
 
 export type NewProductForm = {
@@ -73,27 +79,14 @@ export class CatalogNewProductPopupComponent {
   readonly taxRates = ['Без НДС', '10%', '20%'];
   readonly units = ['кг', 'л', 'шт', 'упаковка'];
 
-  readonly ALL_FLAGS: ReadonlyArray<{ code: ProductFlagCode }> = [
-    { code: 'pack' },
-    { code: 'spoil_open' },
-    { code: 'fragile' },
-    { code: 'temp' },
-  ];
+    readonly flagOptions = CATALOG_FLAG_DEFINITIONS;
+  private readonly flagDefinitionMap = new Map<CatalogFlagCode, CatalogFlagDefinition>(
+    CATALOG_FLAG_DEFINITIONS.map((definition) => [definition.code, definition])
+  );
+  readonly maxVisibleFlags = 3;
 
-  readonly FLAG_SHORT: Record<ProductFlagCode, string> = {
-    pack: 'Фас.',
-    spoil_open: 'После вскр.',
-    fragile: 'Хрупк.',
-    temp: 'Темп.',
-  };
-
-  readonly FLAG_FULL: Record<ProductFlagCode, string> = {
-    pack: 'Требует фасовки',
-    spoil_open: 'Портится после вскрытия',
-    fragile: 'Хрупкий товар',
-    temp: 'Требует температурный режим',
-  };
-
+  
+  
   flagsOpen = false;
 
   form: FormGroup<NewProductForm> = this.fb.nonNullable.group({
@@ -117,7 +110,7 @@ export class CatalogNewProductPopupComponent {
     alcoholCode: this.fb.nonNullable.control(''),
     alcoholStrength: this.fb.nonNullable.control(0),
     alcoholVolume: this.fb.nonNullable.control(0),
-    flagCodes: this.fb.nonNullable.control<ProductFlagCode[]>([]),
+    flagCodes: this.fb.nonNullable.control<CatalogFlagCode[]>([]),
   }) as FormGroup<NewProductForm>;
 
   constructor() {
@@ -134,16 +127,11 @@ export class CatalogNewProductPopupComponent {
     });
   }
 
-  get selectedFlags(): ProductFlagCode[] {
+  get selectedFlags(): CatalogFlagCode[] {
     return this.form.controls.flagCodes.value;
   }
 
-  toggleFlagsDropdown(event: MouseEvent): void {
-    event.stopPropagation();
-    this.flagsOpen = !this.flagsOpen;
-  }
-
-  toggleFlag(code: ProductFlagCode): void {
+  toggleFlag(code: CatalogFlagCode): void {
     const control = this.form.controls.flagCodes;
     const current = control.value ?? [];
     const index = current.indexOf(code);
@@ -189,6 +177,12 @@ export class CatalogNewProductPopupComponent {
     this.closeFlagsDropdown();
   }
 
+  openFlagsDropdown(event: MouseEvent): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.flagsOpen = !this.flagsOpen;
+  }
+
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -222,7 +216,7 @@ export class CatalogNewProductPopupComponent {
     });
   }
 
-  private syncLinkedBooleanControls(flags: readonly ProductFlagCode[]): void {
+  private syncLinkedBooleanControls(flags: readonly CatalogFlagCode[]): void {
     const requiresPackaging = flags.includes('pack');
     const spoilsAfterOpen = flags.includes('spoil_open');
 
@@ -239,7 +233,7 @@ export class CatalogNewProductPopupComponent {
     const control = this.form.controls.flagCodes;
     const current = control.value ?? [];
 
-    const baseFlags = new Set<ProductFlagCode>(current);
+    const baseFlags = new Set<CatalogFlagCode>(current);
 
     baseFlags.delete('pack');
     baseFlags.delete('spoil_open');
@@ -259,7 +253,7 @@ export class CatalogNewProductPopupComponent {
     }
   }
 
-  private areArraysEqual(left: readonly ProductFlagCode[], right: readonly ProductFlagCode[]): boolean {
+  private areArraysEqual(left: readonly CatalogFlagCode[], right: readonly CatalogFlagCode[]): boolean {
     if (left.length !== right.length) {
       return false;
     }
@@ -270,3 +264,4 @@ export class CatalogNewProductPopupComponent {
     return leftSorted.every((value, index) => value === rightSorted[index]);
   }
 }
+

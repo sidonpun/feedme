@@ -44,7 +44,7 @@
                 type="button"
                 class="fm-flags__control"
                 [attr.aria-expanded]="flagsOpen"
-                (click)="toggleFlagsDropdown($event)"
+                (click)="openFlagsDropdown($event)"
               >
                 <ng-container *ngIf="selectedFlags?.length; else flagsEmpty">
                   <div class="fm-flags__chips">
@@ -206,5 +206,3 @@
     </form>
   </div>
 </div>
-
-
