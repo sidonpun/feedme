@@ -10,7 +10,7 @@
   --ring: rgba(255, 107, 53, 0.35);
   display: block;
   min-height: 100vh;
-  padding: 24px;
+  padding: 0;
   background: var(--background);
   color: var(--text);
   font-family: inherit;
@@ -188,7 +188,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 0 24px 24px;
+  padding: 0 0 24px;
 }
 
 .catalog-tab {

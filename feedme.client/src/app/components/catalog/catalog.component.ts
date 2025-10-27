@@ -357,12 +357,25 @@ export class CatalogComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Р”РѕР±Р°РІР»СЏРµС‚ РЅРѕРІС‹Р№ С‚РѕРІР°СЂ РІ РєР°С‚Р°Р»РѕРі */
   addProduct(item: NewProductFormValues): void {
     const { flagCodes, ...rest } = item;
-    void flagCodes;
+
+    const flags =
+      flagCodes?.map(code => {
+        const short = CATALOG_FLAG_SHORT_MAP[code];
+        const full = CATALOG_FLAG_FULL_MAP[code];
+
+        return {
+          code,
+          short,
+          full,
+          name: full,
+        };
+      }) ?? [];
 
     const payload: Omit<CatalogItem, 'id'> = {
       ...rest,
       weight: 0,
       deliveryTime: 0,
+      flags,
     };
 
     this.store.dispatch(catalogActions.createCatalogItem({ item: payload }));

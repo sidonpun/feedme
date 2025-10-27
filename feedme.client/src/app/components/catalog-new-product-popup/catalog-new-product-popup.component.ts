@@ -79,7 +79,9 @@ export class CatalogNewProductPopupComponent {
   readonly taxRates = ['Без НДС', '10%', '20%'];
   readonly units = ['кг', 'л', 'шт', 'упаковка'];
 
-    readonly flagOptions = CATALOG_FLAG_DEFINITIONS;
+  readonly flagOptions = CATALOG_FLAG_DEFINITIONS;
+  readonly FLAG_SHORT = CATALOG_FLAG_SHORT_MAP;
+  readonly FLAG_FULL = CATALOG_FLAG_FULL_MAP;
   private readonly flagDefinitionMap = new Map<CatalogFlagCode, CatalogFlagDefinition>(
     CATALOG_FLAG_DEFINITIONS.map((definition) => [definition.code, definition])
   );
@@ -154,6 +156,11 @@ export class CatalogNewProductPopupComponent {
     }
 
     this.flagsOpen = false;
+  }
+  
+  onFlagCheckboxChange(event: Event, code: CatalogFlagCode): void {
+    event.stopPropagation();
+    this.toggleFlag(code);
   }
 
   @HostListener('document:click', ['$event'])

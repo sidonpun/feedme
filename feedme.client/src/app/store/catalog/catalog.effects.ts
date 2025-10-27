@@ -39,7 +39,10 @@ export class CatalogEffects {
       ofType(catalogActions.createCatalogItem),
       switchMap(({ item }) =>
         this.catalogService.create(item).pipe(
-          map(created => catalogActions.createCatalogItemSuccess({ item: created })),
+          map(created => {
+            const flags = created.flags?.length ? created.flags : item.flags ?? [];
+            return catalogActions.createCatalogItemSuccess({ item: { ...created, flags } });
+          }),
           catchError(() =>
             of(
               catalogActions.createCatalogItemFailure({

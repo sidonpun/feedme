@@ -40,12 +40,7 @@
           <div class="flags-field">
             <label class="fm-label">Флаги товара</label>
             <div class="fm-flags" #flagsContainer>
-              <button
-                type="button"
-                class="fm-flags__control"
-                [attr.aria-expanded]="flagsOpen"
-                (click)="openFlagsDropdown($event)"
-              >
+              <button type="button" class="fm-flags__control" (click)="openFlagsDropdown($event)">
                 <ng-container *ngIf="selectedFlags?.length; else flagsEmpty">
                   <div class="fm-flags__chips">
                     <span
@@ -67,23 +62,20 @@
                 <span class="caret">v</span>
               </button>
 
-              <div
-                class="fm-flags__menu"
-                *ngIf="flagsOpen"
-                (mousedown)="$event.preventDefault()"
-              >
-                <label
-                  class="fm-flags__item"
-                  *ngFor="let f of ALL_FLAGS"
-                  [title]="FLAG_FULL[f.code]"
-                  (click)="toggleFlag(f.code)"
-                >
-                  <input
-                    type="checkbox"
-                    class="fm-checkbox"
-                    [checked]="selectedFlags?.includes(f.code)"
-                    (click)="$event.stopPropagation()"
-                  />
+      <div class="fm-flags__menu" *ngIf="flagsOpen" (mousedown)="$event.preventDefault()">
+        <label
+          class="fm-flags__item"
+          *ngFor="let f of flagOptions"
+          [title]="FLAG_FULL[f.code]"
+          (click)="toggleFlag(f.code)"
+        >
+          <input
+            type="checkbox"
+            class="fm-checkbox"
+            [checked]="selectedFlags?.includes(f.code)"
+            (click)="$event.stopPropagation()"
+            (change)="onFlagCheckboxChange($event, f.code)"
+          />
                   <span class="flag" [ngClass]="'flag--' + f.code">
                     <i class="dot"></i>{{ FLAG_SHORT[f.code] }}
                   </span>
