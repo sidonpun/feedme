@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using feedme.Server.Data;
 using feedme.Server.Models;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +20,7 @@ public partial class PostgresCatalogRepository(AppDbContext context, ILogger<Pos
         try
         {
             var items = await _context.CatalogItems
+                .Include(item => item.Flags)
                 .AsNoTracking()
                 .OrderBy(item => item.Name)
                 .ToListAsync();
@@ -45,6 +49,7 @@ public partial class PostgresCatalogRepository(AppDbContext context, ILogger<Pos
         try
         {
             var item = await _context.CatalogItems
+                .Include(item => item.Flags)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(item => item.Id == id);
 
@@ -68,7 +73,7 @@ public partial class PostgresCatalogRepository(AppDbContext context, ILogger<Pos
 
     public async Task<CatalogItem> AddAsync(CatalogItem item)
     {
-        var normalized = Normalize(item);
+        var normalized = await NormalizeAsync(item).ConfigureAwait(false);
 
         Log.CreatingCatalogItem(_logger, normalized.Id);
 
@@ -125,18 +130,15 @@ public partial class PostgresCatalogRepository(AppDbContext context, ILogger<Pos
         }
     }
 
-    private static CatalogItem Normalize(CatalogItem item)
+    private async Task<CatalogItem> NormalizeAsync(CatalogItem item)
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
+        ArgumentNullException.ThrowIfNull(item);
 
         var id = string.IsNullOrWhiteSpace(item.Id)
             ? Guid.NewGuid().ToString()
             : item.Id.Trim();
 
-        return new CatalogItem
+        var normalized = new CatalogItem
         {
             Id = id,
             Name = Sanitize(item.Name),
@@ -162,6 +164,47 @@ public partial class PostgresCatalogRepository(AppDbContext context, ILogger<Pos
             AlcoholStrength = item.AlcoholStrength,
             AlcoholVolume = item.AlcoholVolume
         };
+
+        var resolvedFlags = await ResolveFlagsAsync(item.Flags).ConfigureAwait(false);
+        foreach (var flag in resolvedFlags)
+        {
+            normalized.Flags.Add(flag);
+        }
+
+        return normalized;
+    }
+
+    private async Task<IReadOnlyCollection<ProductFlag>> ResolveFlagsAsync(IEnumerable<ProductFlag>? flags)
+    {
+        if (flags is null)
+        {
+            return Array.Empty<ProductFlag>();
+        }
+
+        var codes = flags
+            .Select(flag => flag?.Code)
+            .Where(code => !string.IsNullOrWhiteSpace(code))
+            .Select(code => code!.Trim().ToLowerInvariant())
+            .Distinct()
+            .ToArray();
+
+        if (codes.Length == 0)
+        {
+            return Array.Empty<ProductFlag>();
+        }
+
+        var candidates = await _context.ProductFlags
+            .Where(flag => codes.Contains(flag.Code))
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var orderMap = codes
+            .Select((code, index) => new { code, index })
+            .ToDictionary(entry => entry.code, entry => entry.index, StringComparer.Ordinal);
+
+        return candidates
+            .OrderBy(flag => orderMap.TryGetValue(flag.Code, out var index) ? index : int.MaxValue)
+            .ToArray();
     }
 
     private static string Sanitize(string value) => value?.Trim() ?? string.Empty;

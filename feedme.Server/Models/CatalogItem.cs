@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace feedme.Server.Models;
 
 public class CatalogItem
@@ -25,4 +28,5 @@ public class CatalogItem
     public string AlcoholCode { get; set; } = string.Empty;
     public double AlcoholStrength { get; set; }
     public double AlcoholVolume { get; set; }
+    public ICollection<ProductFlag> Flags { get; set; } = new List<ProductFlag>();
 }

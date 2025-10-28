@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace feedme.Server.Models;
 
@@ -13,4 +15,7 @@ public class ProductFlag
     public bool IsActive { get; set; } = true;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    [JsonIgnore]
+    public ICollection<CatalogItem> CatalogItems { get; set; } = new List<CatalogItem>();
 }

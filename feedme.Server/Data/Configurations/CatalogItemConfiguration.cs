@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using feedme.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -102,5 +104,33 @@ public class CatalogItemConfiguration : IEntityTypeConfiguration<CatalogItem>
 
         builder.Property(item => item.AlcoholVolume)
             .HasColumnName("alcohol_volume");
+
+        builder
+            .HasMany(item => item.Flags)
+            .WithMany(flag => flag.CatalogItems)
+            .UsingEntity<Dictionary<string, object>>(
+                "catalog_item_flags",
+                join => join
+                    .HasOne<ProductFlag>()
+                    .WithMany()
+                    .HasForeignKey("flag_id")
+                    .HasPrincipalKey(flag => flag.Id)
+                    .OnDelete(DeleteBehavior.Cascade),
+                join => join
+                    .HasOne<CatalogItem>()
+                    .WithMany()
+                    .HasForeignKey("catalog_item_id")
+                    .HasPrincipalKey(item => item.Id)
+                    .OnDelete(DeleteBehavior.Cascade),
+                join =>
+                {
+                    join.ToTable("catalog_item_flags");
+                    join.Property<string>("catalog_item_id")
+                        .HasColumnName("catalog_item_id")
+                        .HasMaxLength(36);
+                    join.Property<Guid>("flag_id")
+                        .HasColumnName("flag_id");
+                    join.HasKey("catalog_item_id", "flag_id");
+                });
     }
 }

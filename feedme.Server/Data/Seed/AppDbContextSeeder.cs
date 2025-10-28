@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using feedme.Server.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,6 +7,16 @@ namespace feedme.Server.Data.Seed;
 
 internal static class AppDbContextSeeder
 {
+    private static readonly IReadOnlyDictionary<string, string[]> CatalogItemFlagMap = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["MEAT-001"] = new[] { ProductFlagCodes.SpoilOpen, ProductFlagCodes.Temp },
+        ["MEAT-002"] = new[] { ProductFlagCodes.Pack },
+        ["DAIRY-004"] = new[] { ProductFlagCodes.SpoilOpen, ProductFlagCodes.Pack },
+        ["VEG-011"] = new[] { ProductFlagCodes.Fragile },
+        ["BEV-021"] = new[] { ProductFlagCodes.Pack },
+        ["ALC-101"] = new[] { ProductFlagCodes.Temp, ProductFlagCodes.Pack },
+    };
+
     public static async Task SeedAsync(AppDbContext context, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(context);
@@ -53,6 +65,8 @@ internal static class AppDbContextSeeder
         {
             return;
         }
+
+        await AttachSeedFlagsAsync(context, missingItems, cancellationToken).ConfigureAwait(false);
 
         await context.CatalogItems.AddRangeAsync(missingItems, cancellationToken).ConfigureAwait(false);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -165,7 +179,8 @@ internal static class AppDbContextSeeder
             IsAlcohol = item.IsAlcohol,
             AlcoholCode = item.AlcoholCode,
             AlcoholStrength = item.AlcoholStrength,
-            AlcoholVolume = item.AlcoholVolume
+            AlcoholVolume = item.AlcoholVolume,
+            Flags = new List<ProductFlag>()
         };
     }
 
@@ -179,5 +194,49 @@ internal static class AppDbContextSeeder
             IsActive = flag.IsActive,
             CreatedAt = flag.CreatedAt
         };
+    }
+
+    private static async Task AttachSeedFlagsAsync(AppDbContext context, IEnumerable<CatalogItem> items, CancellationToken cancellationToken)
+    {
+        var codesToAssign = items
+            .SelectMany(item => GetFlagCodes(item.Code))
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+        if (codesToAssign.Length == 0)
+        {
+            return;
+        }
+
+        var flagLookup = await context.ProductFlags
+            .Where(flag => codesToAssign.Contains(flag.Code))
+            .ToDictionaryAsync(flag => flag.Code, StringComparer.Ordinal, cancellationToken)
+            .ConfigureAwait(false);
+
+        foreach (var item in items)
+        {
+            if (!CatalogItemFlagMap.TryGetValue(item.Code, out var flagCodes))
+            {
+                continue;
+            }
+
+            foreach (var code in flagCodes)
+            {
+                if (flagLookup.TryGetValue(code, out var flag))
+                {
+                    item.Flags.Add(flag);
+                }
+            }
+        }
+    }
+
+    private static IEnumerable<string> GetFlagCodes(string code)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            return Array.Empty<string>();
+        }
+
+        return CatalogItemFlagMap.TryGetValue(code, out var codes) ? codes : Array.Empty<string>();
     }
 }
