@@ -1,0 +1,32 @@
+<div class="catalog-flags" #container>
+  <ng-container *ngFor="let flag of visibleFlags">
+    <span
+      class="catalog-flag"
+      [ngClass]="'catalog-flag--' + (flag?.code || 'default')"
+      [title]="resolveFlagFull(flag)"
+    >
+      <i class="catalog-flag__dot" aria-hidden="true"></i>
+      {{ resolveFlagShort(flag) }}
+    </span>
+  </ng-container>
+  <span
+    *ngIf="hiddenCount > 0"
+    class="catalog-flag catalog-flag--more"
+    [title]="hiddenTooltip"
+  >
+    +{{ hiddenCount }}
+  </span>
+</div>
+<div class="catalog-flags catalog-flags--measure">
+  <ng-container *ngFor="let flag of flags ?? []">
+    <span
+      #measureFlag
+      class="catalog-flag"
+      [ngClass]="'catalog-flag--' + (flag?.code || 'default')"
+    >
+      <i class="catalog-flag__dot" aria-hidden="true"></i>
+      {{ resolveFlagShort(flag) }}
+    </span>
+  </ng-container>
+  <span #measureMore class="catalog-flag catalog-flag--more">+0</span>
+</div>

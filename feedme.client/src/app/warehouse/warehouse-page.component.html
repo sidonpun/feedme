@@ -1,4 +1,4 @@
-﻿<div class="warehouse-page">
+<div class="warehouse-page">
   <aside class="warehouse-page__sidebar">
     <div class="warehouse-page__brand">Rest.Name</div>
 
@@ -75,15 +75,6 @@
         <span class="indicator" aria-hidden="true"></span>
       </div>
     </div>
-
-    <header class="header-crumbs">
-      <nav class="breadcrumbs" aria-label="Хлебные крошки">
-        <span>Поставки</span>
-        <span class="sep" aria-hidden="true">/</span>
-        <span>{{ selectedWarehouse() || 'Все склады' }}</span>
-      </nav>
-    </header>
-
     <div class="warehouse-page__tab-content">
       <section
         *ngIf="activeTab() === 'supplies'"

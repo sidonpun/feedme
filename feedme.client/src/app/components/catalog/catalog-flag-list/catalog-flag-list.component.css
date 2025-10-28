@@ -1,0 +1,85 @@
+:host {
+  display: block;
+  max-width: 100%;
+  position: relative;
+}
+
+.catalog-flags {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.catalog-flags--measure {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.catalog-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 16px;
+  padding: 0 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(248, 250, 252, 0.8);
+  color: #475569;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.catalog-flag__dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 2px;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+
+.catalog-flag--pack {
+  background: #ecfdf5;
+  border-color: #bbf7d0;
+  color: #047857;
+}
+
+.catalog-flag--spoil_open {
+  background: #fef3c7;
+  border-color: #fde68a;
+  color: #b45309;
+}
+
+.catalog-flag--fragile {
+  background: #ffe4e6;
+  border-color: #fecdd3;
+  color: #be123c;
+}
+
+.catalog-flag--temp {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.catalog-flag--more {
+  background: rgba(226, 232, 240, 0.4);
+  border-color: rgba(148, 163, 184, 0.45);
+  color: #475569;
+}
+
+.catalog-flag--default {
+  background: rgba(248, 250, 252, 0.8);
+  border-color: rgba(148, 163, 184, 0.5);
+  color: #475569;
+}

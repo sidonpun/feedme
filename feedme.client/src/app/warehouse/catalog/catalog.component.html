@@ -1,5 +1,5 @@
 <section class="catalog">
-  <header class="catalog__header">
+  <div class="catalog__header">
     <div>
       <h1 class="catalog__title">Каталог</h1>
       <p class="catalog__subtitle">{{ productsCountLabel() }}</p>
@@ -7,7 +7,7 @@
     <button type="button" class="button button--primary" (click)="openDialog()">
       + Новый товар
     </button>
-  </header>
+  </div>
 
   <ng-container *ngIf="totalProductsCount(); else emptyCatalog">
     <div class="catalog__table-panel">

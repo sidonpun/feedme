@@ -1,213 +1,223 @@
 <div class="catalog-page">
+  <div
+    class="catalog-tabs"
+    role="tablist"
+    aria-label="Каталог"
+  >
+    <button
+      type="button"
+      class="catalog-tabs__button"
+      role="tab"
+      (click)="activeTab = 'info'"
+      [class.catalog-tabs__button--active]="activeTab === 'info'"
+      [attr.aria-selected]="activeTab === 'info'"
+    >
+      Основная информация
+    </button>
+    <button
+      type="button"
+      class="catalog-tabs__button"
+      role="tab"
+      (click)="activeTab = 'logistics'"
+      [class.catalog-tabs__button--active]="activeTab === 'logistics'"
+      [attr.aria-selected]="activeTab === 'logistics'"
+    >
+      Закупка и логистика
+    </button>
+  </div>
+
   <section class="catalog-card" #catalogCard>
-    <header class="catalog-header">
-      <div class="catalog-header__row catalog-header__row--tabs">
-        <div class="tabs" role="tablist" aria-label="Каталог">
-          <button
-            type="button"
-            class="tab"
-            role="tab"
-            (click)="activeTab='info'"
-            [class.active]="activeTab==='info'"
-            [attr.aria-selected]="activeTab === 'info'"
-          >
-            Основная информация
-          </button>
-          <button
-            type="button"
-            class="tab"
-            role="tab"
-            (click)="activeTab='logistics'"
-            [class.active]="activeTab==='logistics'"
-            [attr.aria-selected]="activeTab === 'logistics'"
-          >
-            Закупка и логистика
-          </button>
-        </div>
+    <div class="catalog-card__header">
+      <div class="catalog-search">
+        <input
+          #searchInput
+          type="search"
+          class="catalog-search__input"
+          placeholder="Поиск по номеру, SKU или названию"
+          [value]="searchQuery()"
+          (input)="onSearch(searchInput.value)"
+          aria-label="Поиск по номеру, SKU или названию"
+        />
       </div>
-      <div class="catalog-header__row catalog-header__row--toolbar">
-        <label class="catalog-toolbar__search" aria-label="Поиск по номеру, SKU или названию">
-          <input
-            #searchInput
-            type="search"
-            class="catalog-toolbar__search-input"
-            placeholder="Поиск по номеру, SKU или названию"
-            [value]="searchQuery()"
-            (input)="onSearch(searchInput.value)"
-          />
-        </label>
-        <div class="catalog-toolbar__actions">
-          <button type="button" class="catalog-toolbar__button" (click)="onResetFilters()">
-            Сброс
-          </button>
-          <button type="button" class="catalog-toolbar__button" (click)="onImportClick()">
-            Импорт
-          </button>
-          <button type="button" class="catalog-toolbar__button" (click)="onExportClick()">
-            Экспорт
-          </button>
-          <button type="button" class="catalog-toolbar__button catalog-toolbar__button--primary" (click)="openNewProductPopup()">
-            + Новый товар
-          </button>
-        </div>
+      <div class="catalog-actions">
+        <button type="button" class="catalog-actions__button catalog-actions__button--ghost" (click)="onResetFilters()">
+          Сброс
+        </button>
+        <button type="button" class="catalog-actions__button catalog-actions__button--ghost" (click)="onImportClick()">
+          Импорт
+        </button>
+        <button type="button" class="catalog-actions__button catalog-actions__button--ghost" (click)="onExportClick()">
+          Экспорт
+        </button>
+        <button
+          type="button"
+          class="catalog-actions__button catalog-actions__button--primary"
+          (click)="openNewProductPopup()"
+        >
+          + Новый товар
+        </button>
       </div>
-    </header>
+    </div>
 
     <div class="catalog-card__body" #catalogCardBody>
-      <div class="error-message" *ngIf="loadErrorMessage() as errorMessage">
+      <div class="catalog-error" *ngIf="loadErrorMessage() as errorMessage">
         {{ errorMessage }}
       </div>
 
       <ng-container *ngIf="catalogData as catalogData">
         <ng-container *ngIf="catalogData.length; else emptyCatalog">
-          <section *ngIf="activeTab==='info'" class="catalog-tab">
+          <section *ngIf="activeTab === 'info'" class="catalog-tab">
             <ng-container *ngIf="infoPage() as page">
               <div class="catalog-table__container" #infoTableContainer>
                 <table class="catalog-table">
-        <thead #infoTableHeader>
-          <tr>
-            <th
-              scope="col"
-              class="sortable name-col"
-              [class.sortable--active]="isSorted('info', 0)"
-              [attr.data-direction]="getSortDirection('info', 0)"
-              [attr.aria-sort]="getAriaSort('info', 0)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('info', 0)">
-                <span class="catalog-table__sort-label">Название</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-            <th
-              scope="col"
-              class="sortable type-col"
-              [class.sortable--active]="isSorted('info', 1)"
-              [attr.data-direction]="getSortDirection('info', 1)"
-              [attr.aria-sort]="getAriaSort('info', 1)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('info', 1)">
-                <span class="catalog-table__sort-label">Тип</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-            <th
-              scope="col"
-              class="sortable code-col"
-              [class.sortable--active]="isSorted('info', 2)"
-              [attr.data-direction]="getSortDirection('info', 2)"
-              [attr.aria-sort]="getAriaSort('info', 2)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('info', 2)">
-                <span class="catalog-table__sort-label">Код</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-            <th
-              scope="col"
-              class="sortable category-col"
-              [class.sortable--active]="isSorted('info', 3)"
-              [attr.data-direction]="getSortDirection('info', 3)"
-              [attr.aria-sort]="getAriaSort('info', 3)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('info', 3)">
-                <span class="catalog-table__sort-label">Категория</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-            <th
-              scope="col"
-              class="sortable uom-col"
-              [class.sortable--active]="isSorted('info', 4)"
-              [attr.data-direction]="getSortDirection('info', 4)"
-              [attr.aria-sort]="getAriaSort('info', 4)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('info', 4)">
-                <span class="catalog-table__sort-label">Ед. изм.</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-            <th
-              scope="col"
-              class="sortable writeoff-col"
-              [class.sortable--active]="isSorted('info', 5)"
-              [attr.data-direction]="getSortDirection('info', 5)"
-              [attr.aria-sort]="getAriaSort('info', 5)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('info', 5)">
-                <span class="catalog-table__sort-label">Метод списания</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-            <th
-              scope="col"
-              class="sortable allergens-col"
-              [class.sortable--active]="isSorted('info', 6)"
-              [attr.data-direction]="getSortDirection('info', 6)"
-              [attr.aria-sort]="getAriaSort('info', 6)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('info', 6)">
-                <span class="catalog-table__sort-label">Аллергены</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-            <th
-              scope="col"
-              class="sortable flags-col"
-              [class.sortable--active]="isSorted('info', 7)"
-              [attr.data-direction]="getSortDirection('info', 7)"
-              [attr.aria-sort]="getAriaSort('info', 7)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('info', 7)">
-                <span class="catalog-table__sort-label">Флаги</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of page.items" #infoRow>
-            <td class="name-col">{{ item.name }}</td>
-            <td class="type-col">{{ item.type }}</td>
-            <td class="code-col">{{ item.code }}</td>
-            <td class="category-col">{{ item.category }}</td>
-            <td class="uom-col">{{ item.unit }}</td>
-            <td class="writeoff-col">{{ item.writeoffMethod }}</td>
-            <td class="allergens-col">{{ item.allergens }}</td>
-            <td class="flags-col flags-cell">
-              <div class="flags-list" *ngIf="item.flags?.length; else emptyFlags">
-                <span
-                  *ngFor="let flag of item.flags | slice:0:maxShown"
-                  class="flag"
-                  [ngClass]="'flag--' + (flag.code || 'default')"
-                  [title]="resolveFlagFull(flag)"
-                >
-                  <i class="dot" aria-hidden="true"></i>
-                  {{ resolveFlagShort(flag) }}
-                </span>
-
-                <span
-                  *ngIf="item.flags.length > maxShown"
-                  class="flag more"
-                  [title]="getHiddenFlagsTooltip(item)"
-                >
-                  +{{ item.flags.length - maxShown }}
-                </span>
-              </div>
-
-              <ng-template #emptyFlags><span class="muted">&mdash;</span></ng-template>
-            </td>
-          </tr>
-        </tbody>
+                  <thead #infoTableHeader class="catalog-table__head">
+                    <tr>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable name-col"
+                        [class.sortable--active]="isSorted('info', 0)"
+                        [attr.data-direction]="getSortDirection('info', 0)"
+                        [attr.aria-sort]="getAriaSort('info', 0)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('info', 0)">
+                          <span class="catalog-table__label catalog-table__label--accent">Название</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable type-col"
+                        [class.sortable--active]="isSorted('info', 1)"
+                        [attr.data-direction]="getSortDirection('info', 1)"
+                        [attr.aria-sort]="getAriaSort('info', 1)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('info', 1)">
+                          <span class="catalog-table__label">Тип</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable code-col"
+                        [class.sortable--active]="isSorted('info', 2)"
+                        [attr.data-direction]="getSortDirection('info', 2)"
+                        [attr.aria-sort]="getAriaSort('info', 2)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('info', 2)">
+                          <span class="catalog-table__label">SKU</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable category-col"
+                        [class.sortable--active]="isSorted('info', 3)"
+                        [attr.data-direction]="getSortDirection('info', 3)"
+                        [attr.aria-sort]="getAriaSort('info', 3)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('info', 3)">
+                          <span class="catalog-table__label">Категория</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable uom-col"
+                        [class.sortable--active]="isSorted('info', 4)"
+                        [attr.data-direction]="getSortDirection('info', 4)"
+                        [attr.aria-sort]="getAriaSort('info', 4)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('info', 4)">
+                          <span class="catalog-table__label">Ед. изм.</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable writeoff-col"
+                        [class.sortable--active]="isSorted('info', 5)"
+                        [attr.data-direction]="getSortDirection('info', 5)"
+                        [attr.aria-sort]="getAriaSort('info', 5)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('info', 5)">
+                          <span class="catalog-table__label">Списание</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable allergens-col"
+                        [class.sortable--active]="isSorted('info', 6)"
+                        [attr.data-direction]="getSortDirection('info', 6)"
+                        [attr.aria-sort]="getAriaSort('info', 6)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('info', 6)">
+                          <span class="catalog-table__label">Аллергены</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable flags-col"
+                        [class.sortable--active]="isSorted('info', 7)"
+                        [attr.data-direction]="getSortDirection('info', 7)"
+                        [attr.aria-sort]="getAriaSort('info', 7)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('info', 7)">
+                          <span class="catalog-table__label">Флаги</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of page.items" class="catalog-table__row" #infoRow>
+                      <td class="catalog-table__cell name-col catalog-table__cell--accent">
+                        <span class="catalog-table__value truncate" [title]="item.name">{{ item.name }}</span>
+                      </td>
+                      <td class="catalog-table__cell type-col">
+                        <span class="catalog-table__value truncate" [title]="item.type">{{ item.type }}</span>
+                      </td>
+                      <td class="catalog-table__cell code-col">
+                        <span class="catalog-table__value truncate" [title]="item.code">{{ item.code }}</span>
+                      </td>
+                      <td class="catalog-table__cell category-col">
+                        <span class="catalog-table__value truncate" [title]="item.category">{{ item.category }}</span>
+                      </td>
+                      <td class="catalog-table__cell uom-col">
+                        <span class="catalog-table__value truncate" [title]="item.unit">{{ item.unit }}</span>
+                      </td>
+                      <td class="catalog-table__cell writeoff-col">
+                        <span class="catalog-table__value truncate" [title]="item.writeoffMethod">
+                          {{ item.writeoffMethod }}
+                        </span>
+                      </td>
+                      <td class="catalog-table__cell allergens-col">
+                        <span class="catalog-table__value truncate" [title]="item.allergens">{{ item.allergens }}</span>
+                      </td>
+                      <td class="catalog-table__cell flags-col">
+                        <app-catalog-flag-list
+                          *ngIf="item.flags?.length; else emptyFlags"
+                          [flags]="item.flags"
+                        ></app-catalog-flag-list>
+                        <ng-template #emptyFlags>
+                          <span class="catalog-table__muted">&mdash;</span>
+                        </ng-template>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
               <footer
                 class="catalog-pagination"
-                aria-label="Пагинация каталога — основная информация"
+                aria-label="Навигация по странице основной информации"
                 #infoPagination
               >
                 <div class="catalog-pagination__summary">
-                  Показано {{ page.items.length }} из {{ page.totalItems }} позиций · Страница {{ page.page }} из
-                  {{ page.totalPages }}
+                  <span class="catalog-pagination__summary-text">
+                    Показано {{ page.items.length }} из {{ page.totalItems }} позиций · Страница {{ page.page }} из
+                    {{ page.totalPages }}
+                  </span>
                 </div>
                 <div class="catalog-pagination__actions">
                   <button
@@ -231,128 +241,144 @@
             </ng-container>
           </section>
 
-          <section *ngIf="activeTab==='logistics'" class="catalog-tab">
+          <section *ngIf="activeTab === 'logistics'" class="catalog-tab">
             <ng-container *ngIf="logisticsPage() as page">
               <div class="catalog-table__container" #logisticsTableContainer>
                 <table class="catalog-table">
-        <thead #logisticsTableHeader>
-          <tr>
-            <th
-              scope="col"
-              class="sortable"
-              [class.sortable--active]="isSorted('logistics', 0)"
-              [attr.data-direction]="getSortDirection('logistics', 0)"
-              [attr.aria-sort]="getAriaSort('logistics', 0)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 0)">
-                <span class="catalog-table__sort-label">Поставщик</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-            <th
-              scope="col"
-              class="sortable"
-              [class.sortable--active]="isSorted('logistics', 1)"
-              [attr.data-direction]="getSortDirection('logistics', 1)"
-              [attr.aria-sort]="getAriaSort('logistics', 1)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 1)">
-                <span class="catalog-table__sort-label">Оценочная себестоимость</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-            <th
-              scope="col"
-              class="sortable"
-              [class.sortable--active]="isSorted('logistics', 2)"
-              [attr.data-direction]="getSortDirection('logistics', 2)"
-              [attr.aria-sort]="getAriaSort('logistics', 2)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 2)">
-                <span class="catalog-table__sort-label">Ставка НДС</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-            <th
-              scope="col"
-              class="sortable"
-              [class.sortable--active]="isSorted('logistics', 3)"
-              [attr.data-direction]="getSortDirection('logistics', 3)"
-              [attr.aria-sort]="getAriaSort('logistics', 3)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 3)">
-                <span class="catalog-table__sort-label">Цена за ед.</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-            <th
-              scope="col"
-              class="sortable"
-              [class.sortable--active]="isSorted('logistics', 4)"
-              [attr.data-direction]="getSortDirection('logistics', 4)"
-              [attr.aria-sort]="getAriaSort('logistics', 4)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 4)">
-                <span class="catalog-table__sort-label">Цена продажи</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-            <th
-              scope="col"
-              class="sortable"
-              [class.sortable--active]="isSorted('logistics', 5)"
-              [attr.data-direction]="getSortDirection('logistics', 5)"
-              [attr.aria-sort]="getAriaSort('logistics', 5)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 5)">
-                <span class="catalog-table__sort-label">Код ТН ВЭД</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-            <th
-              scope="col"
-              class="sortable"
-              [class.sortable--active]="isSorted('logistics', 6)"
-              [attr.data-direction]="getSortDirection('logistics', 6)"
-              [attr.aria-sort]="getAriaSort('logistics', 6)"
-            >
-              <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 6)">
-                <span class="catalog-table__sort-label">Маркируемый</span>
-                <span class="catalog-table__sort-icon" aria-hidden="true"></span>
-              </button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of page.items" #logisticsRow>
-            <td>{{ item.supplier }}</td>
-            <td>{{ item.costEstimate }}</td>
-            <td>{{ item.taxRate }}</td>
-            <td>{{ item.unitPrice }}</td>
-            <td>{{ item.salePrice }}</td>
-            <td>{{ item.tnved }}</td>
-            <td>
-              <span
-                class="boolean-pill"
-                [class.boolean-pill--positive]="item.isMarked === true"
-                [class.boolean-pill--negative]="item.isMarked === false"
-                [class.boolean-pill--unknown]="item.isMarked == null"
-              >
-                {{ item.isMarked | booleanLabel }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
+                  <thead #logisticsTableHeader class="catalog-table__head">
+                    <tr>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable"
+                        [class.sortable--active]="isSorted('logistics', 0)"
+                        [attr.data-direction]="getSortDirection('logistics', 0)"
+                        [attr.aria-sort]="getAriaSort('logistics', 0)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 0)">
+                          <span class="catalog-table__label">Поставщик</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable"
+                        [class.sortable--active]="isSorted('logistics', 1)"
+                        [attr.data-direction]="getSortDirection('logistics', 1)"
+                        [attr.aria-sort]="getAriaSort('logistics', 1)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 1)">
+                          <span class="catalog-table__label">Себестоимость</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable"
+                        [class.sortable--active]="isSorted('logistics', 2)"
+                        [attr.data-direction]="getSortDirection('logistics', 2)"
+                        [attr.aria-sort]="getAriaSort('logistics', 2)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 2)">
+                          <span class="catalog-table__label">НДС</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable"
+                        [class.sortable--active]="isSorted('logistics', 3)"
+                        [attr.data-direction]="getSortDirection('logistics', 3)"
+                        [attr.aria-sort]="getAriaSort('logistics', 3)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 3)">
+                          <span class="catalog-table__label">Цена закупки</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable"
+                        [class.sortable--active]="isSorted('logistics', 4)"
+                        [attr.data-direction]="getSortDirection('logistics', 4)"
+                        [attr.aria-sort]="getAriaSort('logistics', 4)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 4)">
+                          <span class="catalog-table__label">Цена продажи</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable"
+                        [class.sortable--active]="isSorted('logistics', 5)"
+                        [attr.data-direction]="getSortDirection('logistics', 5)"
+                        [attr.aria-sort]="getAriaSort('logistics', 5)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 5)">
+                          <span class="catalog-table__label">Код ТН ВЭД</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th
+                        scope="col"
+                        class="catalog-table__heading sortable"
+                        [class.sortable--active]="isSorted('logistics', 6)"
+                        [attr.data-direction]="getSortDirection('logistics', 6)"
+                        [attr.aria-sort]="getAriaSort('logistics', 6)"
+                      >
+                        <button type="button" class="catalog-table__sort" (click)="onSort('logistics', 6)">
+                          <span class="catalog-table__label">Маркировка</span>
+                          <span class="catalog-table__sort-icon" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of page.items" class="catalog-table__row" #logisticsRow>
+                      <td class="catalog-table__cell">
+                        <span class="catalog-table__value truncate" [title]="item.supplier">{{ item.supplier }}</span>
+                      </td>
+                      <td class="catalog-table__cell">
+                        <span class="catalog-table__value truncate" [title]="item.costEstimate">
+                          {{ item.costEstimate }}
+                        </span>
+                      </td>
+                      <td class="catalog-table__cell">
+                        <span class="catalog-table__value truncate" [title]="item.taxRate">{{ item.taxRate }}</span>
+                      </td>
+                      <td class="catalog-table__cell">
+                        <span class="catalog-table__value truncate" [title]="item.unitPrice">{{ item.unitPrice }}</span>
+                      </td>
+                      <td class="catalog-table__cell">
+                        <span class="catalog-table__value truncate" [title]="item.salePrice">{{ item.salePrice }}</span>
+                      </td>
+                      <td class="catalog-table__cell">
+                        <span class="catalog-table__value truncate" [title]="item.tnved">{{ item.tnved }}</span>
+                      </td>
+                      <td class="catalog-table__cell">
+                        <span
+                          class="catalog-status"
+                          [class.catalog-status--positive]="item.isMarked === true"
+                          [class.catalog-status--negative]="item.isMarked === false"
+                          [class.catalog-status--unknown]="item.isMarked == null"
+                        >
+                          {{ item.isMarked | booleanLabel }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
               <footer
                 class="catalog-pagination"
-                aria-label="Пагинация каталога — закупка и логистика"
+                aria-label="Навигация по странице логистики"
                 #logisticsPagination
               >
                 <div class="catalog-pagination__summary">
-                  Показано {{ page.items.length }} из {{ page.totalItems }} позиций · Страница {{ page.page }} из
-                  {{ page.totalPages }}
+                  <span class="catalog-pagination__summary-text">
+                    Показано {{ page.items.length }} из {{ page.totalItems }} позиций · Страница {{ page.page }} из
+                    {{ page.totalPages }}
+                  </span>
                 </div>
                 <div class="catalog-pagination__actions">
                   <button
@@ -381,9 +407,9 @@
       <ng-template #emptyCatalog>
         <div class="catalog-empty">
           <app-empty
-            class="mt-6 block"
+            class="catalog-empty__state"
             title="Каталог пока пуст"
-            subtitle="Добавьте первый продукт, чтобы начать работу с каталогом."
+            subtitle="Используйте поиск или добавьте новый товар, чтобы наполнить каталог."
           ></app-empty>
           <button type="button" class="catalog-empty__action" (click)="openNewProductPopup()">
             + Новый товар

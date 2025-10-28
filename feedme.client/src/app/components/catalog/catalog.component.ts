@@ -27,6 +27,7 @@ import { NewProductFormValues } from '../catalog-new-product-popup/catalog-new-p
 import { CatalogItem } from '../../services/catalog.service';
 import { EmptyStateComponent } from '../../warehouse/ui/empty-state.component';
 import { CatalogNewProductPopupComponent } from '../catalog-new-product-popup/catalog-new-product-popup.component';
+import { CatalogFlagListComponent } from './catalog-flag-list/catalog-flag-list.component';
 import { catalogActions } from '../../store/catalog/catalog.actions';
 import {
   selectCatalogCreationError,
@@ -56,14 +57,6 @@ type CatalogPaginationMeta = {
   readonly totalItems: number;
 };
 
-type CatalogItemFlag = {
-  readonly code?: string | null;
-  readonly full?: string | null;
-  readonly name?: string | null;
-  readonly short?: string | null;
-};
-
-
 @Pipe({
   name: 'booleanLabel',
   standalone: true,
@@ -86,11 +79,12 @@ export class BooleanLabelPipe implements PipeTransform {
     BooleanLabelPipe,
     EmptyStateComponent,
     CatalogNewProductPopupComponent,
+    CatalogFlagListComponent,
   ],
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-}) 
+})
 export class CatalogComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly store = inject<Store<AppState>>(Store);
   private readonly ngZone = inject(NgZone);
@@ -119,8 +113,6 @@ export class CatalogComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly lastMeasuredRowHeight: Partial<Record<CatalogTab, number>> = {};
   private readonly measurementPadding = 32;
   private readonly estimatedRowHeight = 64;
-
-  maxShown = 3;
 
   private viewInitialized = false;
   private measureFrame: number | null = null;
@@ -432,47 +424,6 @@ export class CatalogComponent implements OnInit, AfterViewInit, OnDestroy {
   protected canNext(tab: CatalogTab): boolean {
     const meta = this.getPaginationMeta(tab);
     return meta.page < meta.totalPages;
-  }
-
-  protected getHiddenFlagsTooltip(item: CatalogItem): string {
-    const flags = (item as { flags?: ReadonlyArray<CatalogItemFlag> }).flags;
-    if (!flags || flags.length <= this.maxShown) {
-      return '';
-    }
-
-    const labels = flags
-      .slice(this.maxShown)
-      .map((flag) => this.resolveFlagFull(flag))
-      .filter((label) => label.length > 0);
-
-    if (!labels.length) {
-      return '';
-    }
-
-    return labels.join(', ');
-  }
-
-  protected resolveFlagShort(flag: CatalogItemFlag | null | undefined): string {
-    const code = this.normalizeFlagCode(flag);
-    if (code && Object.prototype.hasOwnProperty.call(CATALOG_FLAG_SHORT_MAP, code)) {
-      return CATALOG_FLAG_SHORT_MAP[code as keyof typeof CATALOG_FLAG_SHORT_MAP];
-    }
-
-    return (flag?.short ?? flag?.name ?? flag?.full ?? '').trim();
-  }
-
-  protected resolveFlagFull(flag: CatalogItemFlag | null | undefined): string {
-    const code = this.normalizeFlagCode(flag);
-    if (code && Object.prototype.hasOwnProperty.call(CATALOG_FLAG_FULL_MAP, code)) {
-      return CATALOG_FLAG_FULL_MAP[code as keyof typeof CATALOG_FLAG_FULL_MAP];
-    }
-
-    return (flag?.full ?? flag?.name ?? flag?.short ?? '').trim();
-  }
-
-  private normalizeFlagCode(flag: CatalogItemFlag | null | undefined): string {
-    const code = flag?.code ?? '';
-    return typeof code === 'string' ? code.trim() : '';
   }
 
   protected isSorted(tab: CatalogTab, column: number): boolean {
