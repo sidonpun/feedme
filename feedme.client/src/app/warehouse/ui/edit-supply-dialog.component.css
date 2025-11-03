@@ -1,6 +1,6 @@
 :host {
   display: block;
-  color: #374151;
+  color: var(--c-text);
 }
 
 .edit-dialog,
@@ -10,7 +10,7 @@
   padding: 24px;
   display: grid;
   place-items: center;
-  background: rgba(17, 24, 39, 0.45);
+  background: color-mix(in srgb, var(--c-text) 45%, transparent);
   z-index: 1000;
   overflow: auto;
   box-sizing: border-box;
@@ -20,9 +20,9 @@
 .emd-card {
   width: min(920px, 100%);
   max-height: 90vh;
-  background: #ffffff;
+  background: var(--c-surface);
   border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--c-text) 15%, transparent);
   display: flex;
   flex-direction: column;
   overflow: auto;
@@ -37,8 +37,8 @@
   justify-content: space-between;
   gap: 12px;
   padding: 16px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #eef0f3;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-surface-subtle);
   z-index: 2;
 }
 
@@ -47,7 +47,7 @@
   margin: 0;
   font-size: 20px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--c-text);
 }
 
 .edit-dialog__close,
@@ -58,12 +58,12 @@
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
   cursor: pointer;
   font-size: 20px;
   line-height: 1;
-  color: #0f172a;
+  color: var(--c-text);
   transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -71,7 +71,7 @@
 .edit-dialog__close:focus-visible,
 .emd-close:hover:not(:disabled),
 .emd-close:focus-visible {
-  background: #f8fafc;
+  background: var(--c-surface-subtle);
   outline: none;
 }
 
@@ -91,8 +91,8 @@
 
 .edit-dialog__meta-row,
 .emd-summary__item {
-  background: #fafbff;
-  border: 1px solid #eef0f6;
+  background: var(--c-surface-subtle);
+  border: 1px solid var(--c-surface-subtle);
   border-radius: 12px;
   padding: 10px 12px;
   min-height: 48px;
@@ -105,14 +105,14 @@
 .edit-dialog__meta-label,
 .emd-summary__label {
   font-size: 11px;
-  color: #6b7280;
+  color: var(--c-text-muted);
 }
 
 .edit-dialog__meta-value,
 .emd-summary__value {
   font-size: 14px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--c-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -125,7 +125,7 @@
   flex-direction: column;
   gap: 24px;
   padding: 8px 20px 88px;
-  background: #ffffff;
+  background: var(--c-surface);
 }
 
 .edit-dialog__grid,
@@ -147,18 +147,18 @@
 .emd-field__label {
   font-size: 12px;
   font-weight: 600;
-  color: #374151;
+  color: var(--c-text);
 }
 
 .edit-dialog__input,
 .emd-field__control {
   height: 44px;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--c-border);
   padding: 0 12px;
   font-size: 14px;
-  color: #0f172a;
-  background: #ffffff;
+  color: var(--c-text);
+  background: var(--c-surface);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   outline: none;
   box-sizing: border-box;
@@ -166,8 +166,8 @@
 
 .edit-dialog__input:focus,
 .emd-field__control:focus {
-  border-color: #7c9cff;
-  box-shadow: 0 0 0 4px rgba(124, 156, 255, 0.18);
+  border-color: var(--c-secondary-500);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-secondary-500) 18%, transparent);
 }
 
 .emd-field__control--right {
@@ -177,12 +177,12 @@
 .edit-dialog__error,
 .emd-field__error {
   font-size: 12px;
-  color: #e11d48;
+  color: var(--c-danger);
 }
 
 .emd-field__hint {
   font-size: 11px;
-  color: #9ca3af;
+  color: var(--c-text-soft);
 }
 
 .edit-dialog__footer,
@@ -193,8 +193,8 @@
   justify-content: flex-end;
   gap: 12px;
   padding: 12px 20px;
-  background: linear-gradient(to top, #ffffff 70%, rgba(255, 255, 255, 0));
-  border-top: 1px solid #eef0f3;
+  background: linear-gradient(to top, var(--c-surface) 70%, transparent);
+  border-top: 1px solid var(--c-surface-subtle);
   margin-top: auto;
 }
 
@@ -218,20 +218,20 @@
 }
 
 .emd-btn--ghost {
-  background: #ffffff;
-  border-color: #e5e7eb;
-  color: #374151;
+  background: var(--c-surface);
+  border-color: var(--c-border);
+  color: var(--c-text);
 }
 
 .emd-btn--ghost:hover:not(:disabled),
 .emd-btn--ghost:focus-visible {
-  background: #f8fafc;
+  background: var(--c-surface-subtle);
   outline: none;
 }
 
 .emd-btn--primary {
-  background: #ff6a3d;
-  color: #ffffff;
+  background: var(--c-primary-500);
+  color: var(--c-surface);
 }
 
 .emd-btn--primary:hover:not(:disabled),
@@ -242,14 +242,14 @@
 
 .edit-dialog__input[disabled],
 .emd-field__control[disabled] {
-  background: #f5f7fb;
+  background: var(--c-surface-subtle);
   cursor: not-allowed;
   opacity: 0.8;
 }
 
 .edit-dialog__input.ng-invalid.ng-touched,
 .emd-field__control.ng-invalid.ng-touched {
-  border-color: #e11d48;
+  border-color: var(--c-danger);
 }
 
 @media (max-width: 720px) {
@@ -273,3 +273,5 @@
     grid-template-columns: 1fr;
   }
 }
+
+

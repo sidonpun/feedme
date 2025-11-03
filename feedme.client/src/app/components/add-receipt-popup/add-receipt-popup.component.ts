@@ -29,7 +29,7 @@ type AddReceiptFormControls = {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-receipt-popup.component.html',
-  styleUrls: ['./add-receipt-popup.component.css']
+  styleUrls: ['./add-receipt-popup.component.scss']
 })
 export class AddReceiptPopupComponent implements OnInit {
   @Output() close = new EventEmitter<void>();

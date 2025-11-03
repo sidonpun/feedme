@@ -1,9 +1,9 @@
-.empty {
-  border: 1px dashed var(--border, #e5e7eb);
+﻿.empty {
+  border: 1px dashed var(--border, var(--c-border));
   border-radius: var(--radius);
   padding: 2rem;
   text-align: center;
-  background: color-mix(in srgb, #f6f7f9 30%, transparent);
+  background: color-mix(in srgb, var(--c-surface-subtle) 30%, transparent);
 }
 
 .empty__title {
@@ -12,7 +12,7 @@
 }
 
 .empty__subtitle {
-  color: #6b7280;
+  color: var(--c-text-muted);
   font-size: .875rem;
   margin-top: .25rem;
 }
@@ -20,3 +20,5 @@
 .btn.btn-outline {
   margin-top: .75rem;
 }
+
+

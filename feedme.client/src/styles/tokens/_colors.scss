@@ -1,0 +1,193 @@
+:root,
+[data-theme='light'] {
+  --fm-color-primary-50: #EFF6FF;
+  --fm-color-primary-100: #DBEAFE;
+  --fm-color-primary-200: #BFDBFE;
+  --fm-color-primary-300: #93C5FD;
+  --fm-color-primary-400: #60A5FA;
+  --fm-color-primary-500: #3B82F6;
+  --fm-color-primary-600: #2563EB;
+  --fm-color-primary-700: #1D4ED8;
+  --fm-color-primary-800: #1E40AF;
+  --fm-color-primary-900: #1E3A8A;
+
+  --fm-color-accent-500: #F97316;
+
+  --fm-color-success-500: #10B981;
+  --fm-color-warning-500: #F59E0B;
+  --fm-color-danger-500: #EF4444;
+
+  --fm-gray-50: #F8FAFC;
+  --fm-gray-100: #F1F5F9;
+  --fm-gray-200: #E2E8F0;
+  --fm-gray-300: #CBD5E1;
+  --fm-gray-400: #94A3B8;
+  --fm-gray-500: #64748B;
+  --fm-gray-600: #475569;
+  --fm-gray-700: #334155;
+  --fm-gray-800: #1F2937;
+  --fm-gray-900: #111827;
+
+  --fm-surface-1: #FFFFFF;
+  --fm-surface-2: #F8FAFC;
+  --fm-surface-3: #F1F5F9;
+
+  --fm-text-primary: #111827;
+  --fm-text-secondary: #334155;
+  --fm-text-muted: #64748B;
+  --fm-border: #E2E8F0;
+
+  /* Derived aliases */
+  --fm-color-secondary-500: var(--fm-color-primary-600);
+  --fm-color-secondary-600: var(--fm-color-primary-700);
+  --fm-color-info-500: var(--fm-color-primary-400);
+
+  --fm-text-soft: color-mix(in srgb, var(--fm-text-secondary) 76%, var(--fm-surface-1) 24%);
+  --fm-text-on-light: var(--fm-text-primary);
+  --fm-text-on-dark: var(--fm-surface-1);
+
+  --fm-border-strong: color-mix(in srgb, var(--fm-border) 75%, var(--fm-gray-500) 25%);
+  --fm-divider: color-mix(in srgb, var(--fm-border) 60%, transparent);
+
+  --fm-overlay-strong: color-mix(in srgb, var(--fm-text-primary) 45%, transparent);
+  --fm-overlay-subtle: color-mix(in srgb, var(--fm-text-primary) 16%, transparent);
+
+  --fm-neutral-soft: color-mix(in srgb, var(--fm-gray-500) 14%, transparent);
+  --fm-neutral-soft-strong: color-mix(in srgb, var(--fm-gray-500) 28%, transparent);
+  --fm-neutral-soft-bold: color-mix(in srgb, var(--fm-gray-500) 38%, transparent);
+  --fm-primary-soft: color-mix(in srgb, var(--fm-color-primary-500) 12%, transparent);
+  --fm-primary-soft-strong: color-mix(in srgb, var(--fm-color-primary-500) 28%, transparent);
+  --fm-secondary-soft: color-mix(in srgb, var(--fm-color-secondary-500) 18%, transparent);
+  --fm-secondary-soft-strong: color-mix(in srgb, var(--fm-color-secondary-500) 30%, transparent);
+  --fm-success-soft: color-mix(in srgb, var(--fm-color-success-500) 18%, transparent);
+  --fm-success-soft-strong: color-mix(in srgb, var(--fm-color-success-500) 32%, transparent);
+  --fm-warning-soft: color-mix(in srgb, var(--fm-color-warning-500) 18%, transparent);
+  --fm-warning-soft-strong: color-mix(in srgb, var(--fm-color-warning-500) 32%, transparent);
+  --fm-danger-soft: color-mix(in srgb, var(--fm-color-danger-500) 20%, transparent);
+  --fm-danger-soft-strong: color-mix(in srgb, var(--fm-color-danger-500) 34%, transparent);
+  --fm-info-soft: color-mix(in srgb, var(--fm-color-info-500) 22%, transparent);
+  --fm-info-soft-strong: color-mix(in srgb, var(--fm-color-info-500) 38%, transparent);
+
+  --fm-shadow-soft: 0 8px 24px color-mix(in srgb, var(--fm-text-primary) 8%, transparent);
+  --fm-shadow-ring: 0 0 0 4px color-mix(in srgb, var(--fm-color-primary-500) 22%, transparent);
+
+  /* Legacy bridge variables */
+  --c-bg: var(--fm-surface-2);
+  --c-bg-muted: var(--fm-surface-3);
+  --c-surface: var(--fm-surface-1);
+  --c-surface-subtle: var(--fm-surface-2);
+  --c-surface-raised: var(--fm-surface-1);
+  --c-border: var(--fm-border);
+  --c-border-strong: var(--fm-border-strong);
+  --c-divider: var(--fm-divider);
+  --c-text: var(--fm-text-primary);
+  --c-text-muted: color-mix(in srgb, var(--fm-text-secondary) 78%, var(--fm-surface-1));
+  --c-text-soft: var(--fm-text-soft);
+  --c-text-on-dark: var(--fm-text-on-dark);
+  --c-text-on-light: var(--fm-text-on-light);
+  --c-primary-400: var(--fm-color-primary-400);
+  --c-primary-500: var(--fm-color-primary-500);
+  --c-primary-600: var(--fm-color-primary-600);
+  --c-secondary-500: var(--fm-color-secondary-500);
+  --c-secondary-600: var(--fm-color-secondary-600);
+  --c-success: var(--fm-color-success-500);
+  --c-warning: var(--fm-color-warning-500);
+  --c-danger: var(--fm-color-danger-500);
+  --c-info: var(--fm-color-info-500);
+  --c-neutral-soft: var(--fm-neutral-soft);
+  --c-neutral-soft-strong: var(--fm-neutral-soft-strong);
+  --c-neutral-soft-bold: var(--fm-neutral-soft-bold);
+  --c-primary-soft: var(--fm-primary-soft);
+  --c-primary-soft-strong: var(--fm-primary-soft-strong);
+  --c-secondary-soft: var(--fm-secondary-soft);
+  --c-secondary-soft-strong: var(--fm-secondary-soft-strong);
+  --c-success-soft: var(--fm-success-soft);
+  --c-success-soft-strong: var(--fm-success-soft-strong);
+  --c-warning-soft: var(--fm-warning-soft);
+  --c-warning-soft-strong: var(--fm-warning-soft-strong);
+  --c-danger-soft: var(--fm-danger-soft);
+  --c-danger-soft-strong: var(--fm-danger-soft-strong);
+  --c-info-soft: var(--fm-info-soft);
+  --c-info-soft-strong: var(--fm-info-soft-strong);
+  --c-overlay: var(--fm-overlay-strong);
+  --c-focus-ring: color-mix(in srgb, var(--fm-color-primary-500) 38%, transparent);
+  --cancel-color: color-mix(in srgb, var(--fm-surface-3) 72%, var(--fm-gray-300));
+  --cancel-hover-color: color-mix(in srgb, var(--fm-surface-3) 48%, var(--fm-gray-400));
+  --ring: var(--fm-color-primary-500);
+  --ring-shadow: color-mix(in srgb, var(--fm-color-primary-500) 35%, transparent);
+  --shadow-soft: var(--fm-shadow-soft);
+  --shadow-medium: 0 10px 30px color-mix(in srgb, var(--fm-text-primary) 12%, transparent);
+}
+
+[data-theme='dark'] {
+  --fm-surface-1: #0B1220;
+  --fm-surface-2: #111827;
+  --fm-surface-3: #1F2937;
+
+  --fm-text-primary: #F8FAFC;
+  --fm-text-secondary: #E5E7EB;
+  --fm-text-muted: #94A3B8;
+  --fm-border: #334155;
+
+  --fm-text-soft: color-mix(in srgb, var(--fm-text-muted) 86%, var(--fm-surface-3));
+  --fm-text-on-light: var(--fm-text-primary);
+  --fm-text-on-dark: var(--fm-surface-1);
+
+  --fm-border-strong: color-mix(in srgb, var(--fm-text-muted) 65%, transparent);
+  --fm-divider: color-mix(in srgb, var(--fm-border) 55%, transparent);
+
+  --fm-overlay-strong: color-mix(in srgb, var(--fm-gray-900) 55%, transparent);
+  --fm-overlay-subtle: color-mix(in srgb, var(--fm-gray-900) 28%, transparent);
+
+  --fm-neutral-soft: color-mix(in srgb, var(--fm-gray-500) 26%, transparent);
+  --fm-neutral-soft-strong: color-mix(in srgb, var(--fm-gray-500) 38%, transparent);
+  --fm-neutral-soft-bold: color-mix(in srgb, var(--fm-gray-500) 48%, transparent);
+  --fm-primary-soft: color-mix(in srgb, var(--fm-color-primary-400) 24%, transparent);
+  --fm-primary-soft-strong: color-mix(in srgb, var(--fm-color-primary-400) 36%, transparent);
+  --fm-secondary-soft: color-mix(in srgb, var(--fm-color-secondary-500) 26%, transparent);
+  --fm-secondary-soft-strong: color-mix(in srgb, var(--fm-color-secondary-500) 40%, transparent);
+  --fm-success-soft: color-mix(in srgb, var(--fm-color-success-500) 30%, transparent);
+  --fm-success-soft-strong: color-mix(in srgb, var(--fm-color-success-500) 45%, transparent);
+  --fm-warning-soft: color-mix(in srgb, var(--fm-color-warning-500) 30%, transparent);
+  --fm-warning-soft-strong: color-mix(in srgb, var(--fm-color-warning-500) 45%, transparent);
+  --fm-danger-soft: color-mix(in srgb, var(--fm-color-danger-500) 32%, transparent);
+  --fm-danger-soft-strong: color-mix(in srgb, var(--fm-color-danger-500) 48%, transparent);
+  --fm-info-soft: color-mix(in srgb, var(--fm-color-info-500) 32%, transparent);
+  --fm-info-soft-strong: color-mix(in srgb, var(--fm-color-info-500) 48%, transparent);
+
+  --fm-shadow-soft: 0 8px 24px color-mix(in srgb, var(--fm-gray-900) 26%, transparent);
+  --fm-shadow-ring: 0 0 0 4px color-mix(in srgb, var(--fm-color-primary-400) 28%, transparent);
+
+  --c-bg: var(--fm-surface-2);
+  --c-bg-muted: var(--fm-surface-3);
+  --c-surface: var(--fm-surface-1);
+  --c-surface-subtle: var(--fm-surface-2);
+  --c-surface-raised: var(--fm-surface-2);
+  --c-border: var(--fm-border);
+  --c-border-strong: var(--fm-border-strong);
+  --c-divider: var(--fm-divider);
+  --c-text: var(--fm-text-primary);
+  --c-text-muted: color-mix(in srgb, var(--fm-text-muted) 82%, var(--fm-surface-2));
+  --c-text-soft: var(--fm-text-soft);
+  --c-text-on-dark: var(--fm-text-on-dark);
+  --c-text-on-light: var(--fm-text-on-dark);
+  --c-success: var(--fm-color-success-500);
+  --c-warning: var(--fm-color-warning-500);
+  --c-danger: var(--fm-color-danger-500);
+  --c-info: var(--fm-color-info-500);
+  --c-neutral-soft: var(--fm-neutral-soft);
+  --c-neutral-soft-strong: var(--fm-neutral-soft-strong);
+  --c-neutral-soft-bold: var(--fm-neutral-soft-bold);
+  --c-primary-soft: var(--fm-primary-soft);
+  --c-primary-soft-strong: var(--fm-primary-soft-strong);
+  --c-secondary-soft: var(--fm-secondary-soft);
+  --c-secondary-soft-strong: var(--fm-secondary-soft-strong);
+  --c-overlay: var(--fm-overlay-strong);
+  --c-focus-ring: color-mix(in srgb, var(--fm-color-primary-400) 45%, transparent);
+  --cancel-color: color-mix(in srgb, var(--fm-surface-3) 65%, var(--fm-gray-700));
+  --cancel-hover-color: color-mix(in srgb, var(--fm-surface-3) 52%, var(--fm-gray-600));
+  --ring: var(--fm-color-primary-400);
+  --ring-shadow: color-mix(in srgb, var(--fm-color-primary-400) 32%, transparent);
+  --shadow-soft: var(--fm-shadow-soft);
+  --shadow-medium: 0 12px 32px color-mix(in srgb, var(--fm-gray-900) 36%, transparent);
+}

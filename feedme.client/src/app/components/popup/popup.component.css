@@ -4,7 +4,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: color-mix(in srgb, var(--c-text) 50%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,10 +14,10 @@
 .popup-content {
   width: 500px;
   min-height: 400px;
-  background-color: #fff;
+  background-color: var(--c-surface);
   border-radius: 10px;
   padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px color-mix(in srgb, var(--c-text) 20%, transparent);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -43,8 +43,8 @@
 
 .suggestions-container {
   position: absolute;
-  background-color: #fff;
-  border: 1px solid #ccc;
+  background-color: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 5px;
   width: 100%;
   max-height: 150px;
@@ -61,7 +61,7 @@
 }
 
 .suggestion-item:hover {
-  background-color: #f0f0f0;
+  background-color: var(--c-surface-subtle);
 }
 
 .popup-buttons {
@@ -80,21 +80,21 @@
 }
 
 .popup-buttons .cancel-btn {
-  background-color: #ccc;
-  color: #000;
+  background-color: var(--c-border);
+  color: var(--c-text);
 }
 
 .popup-buttons .cancel-btn:hover {
-  background-color: #b3b3b3;
+  background-color: var(--c-neutral-soft-strong);
 }
 
 .popup-buttons .save-btn {
-  background-color: #007bff;
-  color: #fff;
+  background-color: var(--c-secondary-500);
+  color: var(--c-surface);
 }
 
 .popup-buttons .save-btn:hover {
-  background-color: #0056b3;
+  background-color: var(--c-secondary-600);
 }
 
 .close-btn {
@@ -105,5 +105,7 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #777;
+  color: var(--c-text-soft);
 }
+
+

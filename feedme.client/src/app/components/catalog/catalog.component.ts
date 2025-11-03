@@ -82,7 +82,7 @@ export class BooleanLabelPipe implements PipeTransform {
     CatalogFlagListComponent,
   ],
   templateUrl: './catalog.component.html',
-  styleUrls: ['./catalog.component.css'],
+  styleUrls: ['./catalog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CatalogComponent implements OnInit, AfterViewInit, OnDestroy {

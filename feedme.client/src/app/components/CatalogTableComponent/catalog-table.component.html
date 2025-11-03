@@ -26,100 +26,132 @@
     <button type="button" class="catalog-table__new-item">+ Новый товар</button>
   </div>
 
-  <div class="catalog-table__container">
-    <table class="catalog-table__table">
+  <div class="catalog-table__container table-wrap">
+    <table class="catalog-table__table fm-table">
       <thead class="catalog-table__head">
-        <tr class="catalog-table__head-row">
+        <tr class="catalog-table__head-row fm-tr">
           <th
             scope="col"
-            class="col-code"
+            class="fm-th col-code"
             (click)="onSort('code')"
+            (keydown.enter)="onHeaderKeySort($event, 'code')"
+            (keydown.space)="onHeaderKeySort($event, 'code')"
             [ngClass]="sortClass('code')"
+            [class.active]="sortKey === 'code'"
+            role="button"
+            tabindex="0"
           >
             <span>Код</span>
-            <span class="sort-icon" aria-hidden="true"></span>
           </th>
           <th
             scope="col"
-            class="col-name"
+            class="fm-th col-name"
             (click)="onSort('name')"
+            (keydown.enter)="onHeaderKeySort($event, 'name')"
+            (keydown.space)="onHeaderKeySort($event, 'name')"
             [ngClass]="sortClass('name')"
+            [class.active]="sortKey === 'name'"
+            role="button"
+            tabindex="0"
           >
             <span>Наименование</span>
-            <span class="sort-icon" aria-hidden="true"></span>
           </th>
           <th
             scope="col"
-            class="col-status"
+            class="fm-th col-status"
             (click)="onSort('status')"
+            (keydown.enter)="onHeaderKeySort($event, 'status')"
+            (keydown.space)="onHeaderKeySort($event, 'status')"
             [ngClass]="sortClass('status')"
+            [class.active]="sortKey === 'status'"
+            role="button"
+            tabindex="0"
           >
             <span>Статус</span>
-            <span class="sort-icon" aria-hidden="true"></span>
           </th>
           <th
             scope="col"
-            class="col-category"
+            class="fm-th col-category"
             (click)="onSort('category')"
+            (keydown.enter)="onHeaderKeySort($event, 'category')"
+            (keydown.space)="onHeaderKeySort($event, 'category')"
             [ngClass]="sortClass('category')"
+            [class.active]="sortKey === 'category'"
+            role="button"
+            tabindex="0"
           >
             <span>Категория</span>
-            <span class="sort-icon" aria-hidden="true"></span>
           </th>
           <th
             scope="col"
-            class="col-unit"
+            class="fm-th col-unit"
             (click)="onSort('unit')"
+            (keydown.enter)="onHeaderKeySort($event, 'unit')"
+            (keydown.space)="onHeaderKeySort($event, 'unit')"
             [ngClass]="sortClass('unit')"
+            [class.active]="sortKey === 'unit'"
+            role="button"
+            tabindex="0"
           >
             <span>Ед. изм.</span>
-            <span class="sort-icon" aria-hidden="true"></span>
           </th>
           <th
             scope="col"
-            class="col-supplier"
+            class="fm-th col-supplier"
             (click)="onSort('supplier')"
+            (keydown.enter)="onHeaderKeySort($event, 'supplier')"
+            (keydown.space)="onHeaderKeySort($event, 'supplier')"
             [ngClass]="sortClass('supplier')"
+            [class.active]="sortKey === 'supplier'"
+            role="button"
+            tabindex="0"
           >
             <span>Поставщик</span>
-            <span class="sort-icon" aria-hidden="true"></span>
           </th>
           <th
             scope="col"
-            class="col-price"
+            class="fm-th col-price"
             (click)="onSort('price')"
+            (keydown.enter)="onHeaderKeySort($event, 'price')"
+            (keydown.space)="onHeaderKeySort($event, 'price')"
             [ngClass]="sortClass('price')"
+            [class.active]="sortKey === 'price'"
+            role="button"
+            tabindex="0"
           >
-            <span>Цена</span>
-            <span class="sort-icon" aria-hidden="true"></span>
+            <span>Ценаааа</span>
           </th>
           <th
             scope="col"
-            class="col-date"
+            class="fm-th col-date"
             (click)="onSort('lastDelivery')"
+            (keydown.enter)="onHeaderKeySort($event, 'lastDelivery')"
+            (keydown.space)="onHeaderKeySort($event, 'lastDelivery')"
             [ngClass]="sortClass('lastDelivery')"
+            [class.active]="sortKey === 'lastDelivery'"
+            role="button"
+            tabindex="0"
           >
             <span>Последняя поставка</span>
-            <span class="sort-icon" aria-hidden="true"></span>
           </th>
-          <th scope="col" class="col-flags">
+          <th scope="col" class="fm-th col-flags">
             Флаги
           </th>
         </tr>
       </thead>
       <tbody class="catalog-table__body">
-        <tr *ngFor="let item of items; trackBy: trackByCode" class="catalog-table__row">
-          <td class="col-code">{{ item.code }}</td>
-          <td class="col-name">{{ item.name }}</td>
-          <td class="col-status">
+        <tr *ngFor="let item of items; trackBy: trackByCode" class="catalog-table__row fm-tr">
+          <td class="fm-td col-code">{{ item.code }}</td>
+          <td class="fm-td col-name">{{ item.name }}</td>
+          <td class="fm-td col-status">
             <span class="pill" [ngClass]="'pill--' + item.statusTone">{{ item.status }}</span>
           </td>
-          <td class="col-category">{{ item.category }}</td>
-          <td class="col-unit">{{ item.unit }}</td>
-          <td class="col-supplier">{{ item.supplier }}</td>
-          <td class="col-price text-right">{{ item.price | number: '1.0-2' }} ₽</td>
-          <td class="col-date">{{ item.lastDelivery | date: 'dd.MM.yyyy' }}</td>
-          <td class="col-flags">
+          <td class="fm-td col-category">{{ item.category }}</td>
+          <td class="fm-td col-unit">{{ item.unit }}</td>
+          <td class="fm-td col-supplier">{{ item.supplier }}</td>
+          <td class="fm-td col-price text-right">{{ item.price | number: '1.0-2' }} ₽</td>
+          <td class="fm-td col-date">{{ item.lastDelivery | date: 'dd.MM.yyyy' }}</td>
+          <td class="fm-td col-flags">
             <ng-container *ngIf="item.flags.length; else noFlags">
               <span *ngFor="let flag of item.flags" class="flag">{{ flag }}</span>
             </ng-container>

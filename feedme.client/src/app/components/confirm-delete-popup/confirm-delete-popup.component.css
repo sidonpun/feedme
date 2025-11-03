@@ -4,7 +4,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: color-mix(in srgb, var(--c-text) 50%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,9 +12,9 @@
 }
 
 .popup-delete-content {
-  background: #fff;
+  background: var(--c-surface);
   border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 15px color-mix(in srgb, var(--c-text) 20%, transparent);
   padding: 30px;
   width: 400px;
   text-align: center;
@@ -29,7 +29,7 @@
 .popup-delete-text {
   font-size: 16px;
   margin-bottom: 25px;
-  color: #555;
+  color: var(--c-text-muted);
 }
 
 .popup-delete-buttons {
@@ -49,20 +49,22 @@
 }
 
 .btn-delete-confirm {
-  background-color: #e74c3c;
-  color: #fff;
+  background-color: var(--c-danger);
+  color: var(--c-surface);
 }
 
 .btn-delete-confirm:hover {
-  background-color: #c0392b;
+  background-color: var(--c-danger);
 }
 
 .btn-delete-cancel {
-  background-color: #fff;
-  color: #333;
-  border: 1px solid #ccc;
+  background-color: var(--c-surface);
+  color: var(--c-text);
+  border: 1px solid var(--c-border);
 }
 
 .btn-delete-cancel:hover {
-  background-color: #f2f2f2;
+  background-color: var(--c-surface-subtle);
 }
+
+

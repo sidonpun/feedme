@@ -1,0 +1,57 @@
+:root,
+[data-theme='light'] {
+  --font-family-base: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-family-heading: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-family-mono: 'Fira Code', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-md: 1.0625rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.35;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.7;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  --space-none: 0;
+  --space-3xs: 0.125rem;
+  --space-xxs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  --shadow-none: none;
+  --shadow-xs: 0 1px 2px color-mix(in srgb, var(--fm-text-primary) 12%, transparent);
+  --shadow-sm: 0 2px 6px color-mix(in srgb, var(--fm-text-primary) 14%, transparent);
+  --shadow-md: 0 10px 30px color-mix(in srgb, var(--fm-text-primary) 18%, transparent);
+  --shadow-lg: 0 24px 60px color-mix(in srgb, var(--fm-text-primary) 22%, transparent);
+
+  --transition-fast: 120ms;
+  --transition-base: 180ms;
+  --transition-slow: 240ms;
+}
+
+[data-theme='dark'] {
+  --shadow-xs: 0 1px 3px color-mix(in srgb, var(--fm-surface-3) 28%, transparent);
+  --shadow-sm: 0 4px 12px color-mix(in srgb, var(--fm-surface-3) 38%, transparent);
+  --shadow-md: 0 12px 32px color-mix(in srgb, var(--fm-surface-3) 46%, transparent);
+  --shadow-lg: 0 36px 72px color-mix(in srgb, var(--fm-surface-3) 54%, transparent);
+}

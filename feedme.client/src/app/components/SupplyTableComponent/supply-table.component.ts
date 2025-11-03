@@ -30,7 +30,7 @@ interface FilterOptions {
     StatusBadgeLabelPipe,
   ],
   templateUrl: './supply-table.component.html',
-  styleUrls: ['./supply-table.component.css']
+  styleUrls: ['./supply-table.component.scss']
 })
 export class SupplyTableComponent implements OnChanges {
   /** Входной массив поставок */

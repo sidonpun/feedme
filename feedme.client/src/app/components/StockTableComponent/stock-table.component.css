@@ -19,9 +19,9 @@
   overflow-x: auto;
   overflow-y: auto;
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  background-color: #ffffff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  border: 1px solid var(--c-border);
+  background-color: var(--c-surface);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--c-text) 4%, transparent);
 }
 
 .stock-table {
@@ -35,8 +35,8 @@
 .stock-table td {
   padding: 12px 16px;
   font-size: 0.9375rem;
-  color: #0f172a;
-  border-bottom: 1px solid #e2e8f0;
+  color: var(--c-text);
+  border-bottom: 1px solid var(--c-border);
   background-color: transparent;
   box-shadow: none;
   filter: none;
@@ -53,8 +53,8 @@
   position: sticky;
   top: 0;
   z-index: 2;
-  background-color: #ffffff;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+  background-color: var(--c-surface);
+  border-bottom: 1px solid color-mix(in srgb, var(--c-text-soft) 35%, transparent);
   box-shadow: none !important;
   filter: none !important;
   backdrop-filter: none !important;
@@ -62,14 +62,14 @@
 }
 
 .stock-table__head th {
-  background-color: #ffffff;
+  background-color: var(--c-surface);
   box-shadow: none !important;
   filter: none !important;
   background-image: none !important;
 }
 
 .stock-table thead th.sorted {
-  color: #6366f1;
+  color: var(--c-secondary-500);
 }
 
 .sort-button {
@@ -88,7 +88,7 @@
 }
 
 .sort-button:focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid var(--c-secondary-500);
   outline-offset: 2px;
   border-radius: 8px;
 }
@@ -131,11 +131,11 @@
 }
 
 .hover\:bg-muted\/40:hover {
-  background-color: rgba(226, 232, 240, 0.6);
+  background-color: color-mix(in srgb, var(--c-surface-subtle) 60%, transparent);
 }
 
 .odd\:bg-muted\/10:nth-child(odd) {
-  background-color: rgba(241, 245, 249, 0.6);
+  background-color: color-mix(in srgb, var(--c-surface-subtle) 60%, transparent);
 }
 
 .h-11 {
@@ -172,22 +172,31 @@
 
 .stock-table__action-button:hover,
 .stock-table__action-button:focus-visible {
-  background-color: rgba(226, 232, 240, 0.7);
-  color: #111827;
+  background-color: color-mix(in srgb, var(--c-surface-subtle) 70%, transparent);
+  color: var(--c-text);
   outline: none;
 }
 
 .stock-table__row {
-  transition: background-color 0.2s ease;
+  transition: background 0.2s ease, background-color 0.2s ease;
+}
+
+.expiry-gradient {
+  --expiry-color: rgba(255, 255, 255, 0);
+  background: linear-gradient(to right, #fff, var(--expiry-color));
+}
+
+.expiry-gradient:hover {
+  background: linear-gradient(to right, #fff, var(--expiry-color));
 }
 
 .stock-table__row--expired,
 .stock-table__row--expired:nth-child(odd) {
-  background-color: #fff7f7;
+  background-color: transparent;
 }
 
 .stock-table__row--expired:hover {
-  background-color: #ffe8e8;
+  background: linear-gradient(to right, #fff, var(--expiry-color));
 }
 
 .stock-table__expiry {
@@ -200,7 +209,7 @@
 
 .stock-table__expiry-date {
   font-variant-numeric: tabular-nums;
-  color: #0f172a;
+  color: var(--c-text);
 }
 
 .badge-square {
@@ -217,7 +226,7 @@
   padding: 24px;
   text-align: center;
   font-size: 0.9375rem;
-  color: #64748b;
+  color: var(--c-text-soft);
 }
 
 .pagination-controls {
@@ -232,8 +241,8 @@
   border: none;
   border-radius: 8px;
   padding: 8px 16px;
-  background-color: #6366f1;
-  color: #ffffff;
+  background-color: var(--c-secondary-500);
+  color: var(--c-surface);
   font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
@@ -241,7 +250,7 @@
 }
 
 .pagination-controls button:hover:not(:disabled) {
-  background-color: #4f46e5;
+  background-color: var(--c-secondary-500);
 }
 
 .pagination-controls button:disabled {
@@ -251,5 +260,7 @@
 
 .pagination-controls span {
   font-size: 0.9375rem;
-  color: #475569;
+  color: var(--c-text-muted);
 }
+
+

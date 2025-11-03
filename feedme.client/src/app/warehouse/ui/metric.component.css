@@ -4,26 +4,26 @@
   gap: 8px;
   padding: 20px;
   border-radius: 16px;
-  background: linear-gradient(180deg, rgba(14, 116, 144, 0.08), rgba(14, 116, 144, 0.02));
-  border: 1px solid rgba(14, 116, 144, 0.18);
-  color: #0f172a;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c-info) 8%, transparent), color-mix(in srgb, var(--c-info) 2%, transparent));
+  border: 1px solid color-mix(in srgb, var(--c-info) 18%, transparent);
+  color: var(--c-text);
 }
 
 .metric--warn {
-  background: linear-gradient(180deg, rgba(234, 179, 8, 0.12), rgba(234, 179, 8, 0.04));
-  border-color: rgba(234, 179, 8, 0.3);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c-warning) 12%, transparent), color-mix(in srgb, var(--c-warning) 4%, transparent));
+  border-color: color-mix(in srgb, var(--c-warning) 30%, transparent);
 }
 
 .metric--danger {
-  background: linear-gradient(180deg, rgba(239, 68, 68, 0.12), rgba(239, 68, 68, 0.04));
-  border-color: rgba(239, 68, 68, 0.35);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c-danger) 12%, transparent), color-mix(in srgb, var(--c-danger) 4%, transparent));
+  border-color: color-mix(in srgb, var(--c-danger) 35%, transparent);
 }
 
 .metric__title {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #0f172a;
+  color: var(--c-text);
   opacity: 0.7;
 }
 
@@ -35,5 +35,7 @@
 .metric__hint {
   margin: 0;
   font-size: 0.875rem;
-  color: #475569;
+  color: var(--c-text-muted);
 }
+
+

@@ -1,0 +1,25 @@
+:host {
+  --supply-accent: var(--c-primary-500);
+  --supply-accent-strong: var(--c-primary-600);
+  --supply-accent-hover: color-mix(in srgb, var(--fm-color-primary-500) 8%, transparent);
+  --supply-outline-border: var(--c-border-strong, var(--fm-border-strong));
+  --supply-outline-hover: color-mix(in srgb, var(--c-surface) 80%, var(--c-surface-subtle));
+  --supply-border: var(--c-border, var(--fm-border));
+  --supply-border-soft: color-mix(in srgb, var(--supply-border) 65%, transparent);
+  --supply-shadow-soft: color-mix(in srgb, var(--fm-gray-900) 6%, transparent);
+  --supply-shadow-strong: color-mix(in srgb, var(--fm-gray-900) 12%, transparent);
+  --supply-focus-ring: var(--c-focus-ring, color-mix(in srgb, var(--fm-color-info-500) 35%, transparent));
+  --supply-info-glow: color-mix(in srgb, var(--fm-color-info-500) 20%, transparent);
+  --supply-success-glow: color-mix(in srgb, var(--fm-color-success-500) 20%, transparent);
+  --supply-warning-glow: color-mix(in srgb, var(--fm-color-warning-500) 20%, transparent);
+  --supply-danger-glow: color-mix(in srgb, var(--fm-color-danger-500) 25%, transparent);
+  --supply-disabled-bg: color-mix(in srgb, var(--c-border) 45%, transparent);
+  --supply-table-alt: color-mix(in srgb, var(--c-surface-subtle) 65%, transparent);
+}
+
+@supports (color: color-mix(in srgb, var(--c-text) 0%, var(--c-surface) 100%)) {
+  :host {
+    --supply-accent-strong: color-mix(in srgb, var(--supply-accent) 88%, var(--c-text) 12%);
+    --supply-accent-hover: color-mix(in srgb, var(--supply-accent) 8%, var(--c-surface));
+  }
+}

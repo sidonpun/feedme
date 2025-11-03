@@ -16,7 +16,7 @@
       <td class="custom-table__cell">{{ item.supplyDate }}</td>
       <td class="custom-table__cell">
         <div class="name-cell">
-          <img [src]="getCategoryIcon(item.category)" [alt]="item.category" class="name-icon" />
+          <img [src]="getCategoryIcon(item.category)" alt="{{ getCategoryAlt(item.category) }}" class="name-icon" />
           <span>{{ item.name }}</span>
         </div>
       </td>
@@ -28,7 +28,7 @@
       <td class="custom-table__cell">
         <div class="icons-container">
           <button type="button" class="action-button" aria-label="Добавить товар">
-            <img src="assets/plus.svg" alt="" class="action-icon" />
+            <img src="assets/plus.svg" alt="Increase stock" class="action-icon" />
           </button>
           <button
             type="button"
@@ -36,7 +36,7 @@
             aria-label="Редактировать остаток"
             (click)="handleEditStockClick(i, item.stock)"
           >
-            <img src="assets/minus.svg" alt="" class="action-icon" />
+            <img src="assets/minus.svg" alt="Decrease stock" class="action-icon" />
           </button>
           <button
             type="button"
@@ -44,7 +44,7 @@
             aria-label="Открыть настройки"
             (click)="handleSettingsClick(item, $event)"
           >
-            <img src="assets/settings.svg" alt="" class="action-icon" />
+            <img src="assets/settings.svg" alt="Open settings" class="action-icon" />
           </button>
         </div>
       </td>

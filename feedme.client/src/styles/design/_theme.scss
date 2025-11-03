@@ -1,0 +1,145 @@
+@use 'sass:color';
+@use 'sass:map';
+@use './_tokens' as tokens;
+
+$base-vars: (
+  font-family-base: #{tokens.font-family(base)},
+  font-family-heading: #{tokens.font-family(heading)},
+  font-family-mono: #{tokens.font-family(mono)},
+  font-size-xs: #{tokens.font-size(xs)},
+  font-size-sm: #{tokens.font-size(sm)},
+  font-size-base: #{tokens.font-size(base)},
+  font-size-lg: #{tokens.font-size(lg)},
+  line-height-tight: #{tokens.line-height(tight)},
+  line-height-normal: #{tokens.line-height(normal)},
+  font-weight-regular: #{tokens.font-weight(regular)},
+  font-weight-medium: #{tokens.font-weight(medium)},
+  font-weight-semibold: #{tokens.font-weight(semibold)},
+  radius-xs: #{tokens.radius(xs)},
+  radius-sm: #{tokens.radius(sm)},
+  radius-md: #{tokens.radius(md)},
+  radius-lg: #{tokens.radius(lg)},
+  radius-xl: #{tokens.radius(xl)},
+  radius-pill: #{tokens.radius(pill)},
+  radius: #{tokens.radius(md)},
+  shadow-none: #{tokens.shadow(none)},
+  shadow-xs: #{tokens.shadow(xs)},
+  shadow-sm: #{tokens.shadow(sm)},
+  shadow-md: #{tokens.shadow(md)},
+  shadow-lg: #{tokens.shadow(lg)},
+  space-none: #{tokens.space(none)},
+  space-3xs: #{tokens.space(3xs)},
+  space-xxs: #{tokens.space(xxs)},
+  space-xs: #{tokens.space(xs)},
+  space-sm: #{tokens.space(sm)},
+  space-md: #{tokens.space(md)},
+  space-lg: #{tokens.space(lg)},
+  space-xl: #{tokens.space(xl)},
+  space-2xl: #{tokens.space(2xl)},
+  transition-fast: #{tokens.transition(fast)},
+  transition-base: #{tokens.transition(base)},
+  transition-slow: #{tokens.transition(slow)},
+  c-neutral-soft: #{color.change(tokens.color(neutral, 500), $alpha: 0.16)},
+  c-neutral-soft-strong: #{color.change(tokens.color(neutral, 500), $alpha: 0.3)},
+  c-neutral-soft-bold: #{color.change(tokens.color(neutral, 500), $alpha: 0.4)},
+  c-primary-soft: #{color.change(tokens.color(primary, 500), $alpha: 0.12)},
+  c-primary-soft-strong: #{color.change(tokens.color(primary, 500), $alpha: 0.28)},
+  c-secondary-soft: #{color.change(tokens.color(secondary, 500), $alpha: 0.18)},
+  c-secondary-soft-strong: #{color.change(tokens.color(secondary, 500), $alpha: 0.28)},
+  c-success-soft: #{color.change(tokens.color(success), $alpha: 0.18)},
+  c-success-soft-strong: #{color.change(tokens.color(success), $alpha: 0.28)},
+  c-warning-soft: #{color.change(tokens.color(warning), $alpha: 0.18)},
+  c-warning-soft-strong: #{color.change(tokens.color(warning), $alpha: 0.28)},
+  c-danger-soft: #{color.change(tokens.color(danger), $alpha: 0.18)},
+  c-danger-soft-strong: #{color.change(tokens.color(danger), $alpha: 0.28)},
+  c-info-soft: #{color.change(tokens.color(info), $alpha: 0.18)},
+  c-info-soft-strong: #{color.change(tokens.color(info), $alpha: 0.28)},
+  brand-500: #{tokens.color(primary, 500)},
+  brand-600: #{tokens.color(primary, 500)},
+  brand-700: #{tokens.color(primary, 600)},
+  accent-color: #{tokens.color(primary, 500)},
+  accent-hover-color: #{tokens.color(primary, 600)},
+  ring: #{tokens.color(secondary, 500)},
+  ring-shadow: rgba(34, 94, 155, 0.35),
+  shadow-soft: rgba(23, 26, 31, 0.08),
+  shadow-medium: rgba(23, 26, 31, 0.12),
+  cancel-color: #{tokens.color(neutral, 200)},
+  cancel-hover-color: #{tokens.color(neutral, 300)}
+);
+
+$light-theme: map.merge(
+  $base-vars,
+  (
+    c-bg: #{tokens.color(neutral, 25)},
+    c-bg-muted: #{tokens.color(neutral, 50)},
+    c-surface: #{tokens.color(neutral, 0)},
+    c-surface-subtle: #{tokens.color(neutral, 25)},
+    c-surface-raised: #{tokens.color(neutral, 0)},
+    c-border: #{tokens.color(neutral, 100)},
+    c-border-strong: #{tokens.color(neutral, 200)},
+    c-divider: rgba(23, 26, 31, 0.08),
+    c-text: #{tokens.color(neutral, 900)},
+    c-text-muted: #{tokens.color(neutral, 500)},
+    c-text-soft: #{tokens.color(neutral, 700)},
+    c-text-on-dark: #{tokens.color(neutral, 0)},
+    c-text-on-light: #{tokens.color(neutral, 900)},
+    c-primary-400: #{tokens.color(primary, 400)},
+    c-primary-500: #{tokens.color(primary, 500)},
+    c-primary-600: #{tokens.color(primary, 600)},
+    c-secondary-500: #{tokens.color(secondary, 500)},
+    c-secondary-600: #{tokens.color(secondary, 600)},
+    c-info: #{tokens.color(info)},
+    c-success: #{tokens.color(success)},
+    c-warning: #{tokens.color(warning)},
+    c-danger: #{tokens.color(danger)},
+    c-focus-ring: rgba(34, 94, 155, 0.35),
+    c-overlay: rgba(23, 26, 31, 0.45)
+  )
+);
+
+$dark-theme: map.merge(
+  $base-vars,
+  (
+    c-bg: #{tokens.color(neutral, 900)},
+    c-bg-muted: #{tokens.color(neutral, 800)},
+    c-surface: #{tokens.color(neutral, 800)},
+    c-surface-subtle: #{tokens.color(neutral, 700)},
+    c-surface-raised: #{tokens.color(neutral, 700)},
+    c-border: rgba(255, 255, 255, 0.08),
+    c-border-strong: rgba(255, 255, 255, 0.16),
+    c-divider: rgba(255, 255, 255, 0.12),
+    c-text: #{tokens.color(neutral, 25)},
+    c-text-muted: rgba(255, 255, 255, 0.68),
+    c-text-soft: rgba(255, 255, 255, 0.5),
+    c-text-on-dark: #{tokens.color(neutral, 0)},
+    c-text-on-light: #{tokens.color(neutral, 0)},
+    c-primary-400: #{tokens.color(primary, 400)},
+    c-primary-500: #{tokens.color(primary, 500)},
+    c-primary-600: #{tokens.color(primary, 600)},
+    c-secondary-500: #{tokens.color(secondary, 500)},
+    c-secondary-600: #{tokens.color(secondary, 600)},
+    c-info: #{tokens.color(info)},
+    c-success: #{tokens.color(success)},
+    c-warning: #{tokens.color(warning)},
+    c-danger: #{tokens.color(danger)},
+    c-focus-ring: rgba(43, 108, 176, 0.55),
+    c-overlay: rgba(0, 0, 0, 0.55)
+  )
+);
+
+@mixin theme-vars($theme-map) {
+  @each $name, $value in $theme-map {
+    --#{$name}: #{$value};
+  }
+}
+
+:root,
+.app-theme-light {
+  color-scheme: light;
+  @include theme-vars($light-theme);
+}
+
+.app-theme-dark {
+  color-scheme: dark;
+  @include theme-vars($dark-theme);
+}

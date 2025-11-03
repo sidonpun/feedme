@@ -91,6 +91,7 @@ export class CatalogComponent {
   readonly searchQuery = signal('');
   readonly pageSize = signal(15);
   readonly currentPage = signal(1);
+  readonly activeTabId = signal<string>('all');
 
   readonly activeSort = signal<CatalogSortState>({ key: 'name', direction: 'asc' });
 
@@ -174,7 +175,7 @@ export class CatalogComponent {
   });
 
   readonly activeTab = computed(() => {
-    const activeId = this.activeTab();
+    const activeId = this.activeTabId();
     const tabs = this.tabs();
 
     return tabs.find((tab) => tab.id === activeId) ?? tabs[0] ?? null;
@@ -242,11 +243,11 @@ export class CatalogComponent {
     const count = this.filteredProductsCount();
 
     if (count === 0) {
-      return '0 ���?����Ő��';
+      return '0 \u0442\u043E\u0432\u0430\u0440\u043E\u0432';
     }
 
     const range = this.visibleRange();
-    return `${range.from}-${range.to} ��� ${count} ���?����Ő��`;
+    return `${range.from}-${range.to} \u0438\u0437 ${count} \u0442\u043E\u0432\u0430\u0440\u043E\u0432`;
   });
 
   readonly paginationButtons = computed<PaginationButton[]>(() => {
@@ -479,7 +480,7 @@ export class CatalogComponent {
   }
 
   setActiveTab(tabId: string): void {
-    this.activeTab.set(tabId);
+    this.activeTabId.set(tabId);
     this.currentPage.set(1);
   }
 
@@ -513,4 +514,3 @@ export class CatalogComponent {
     return this.normalizeCategoryLabel(category).toLocaleLowerCase('ru-RU');
   }
 }
-

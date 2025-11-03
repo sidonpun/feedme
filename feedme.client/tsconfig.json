@@ -7,10 +7,16 @@
     "moduleResolution": "bundler",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "files": [],
-  "include": [],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts"
+  ],
 
   "exclude": [
     "dist",

@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-hello',
   standalone: true,
   templateUrl: './hello.component.html',
-  styleUrls: ['./hello.component.css'],
+  styleUrls: ['./hello.component.scss'],
 })
 export class HelloComponent {
   count = 0;

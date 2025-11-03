@@ -13,7 +13,7 @@
     <div>
       <h3 class="static-label">Расход</h3>
       <p>{{ data.expense }}р</p>
-      <p style="color: red;">-{{ data.expenseKg }}кг</p>
+      <p class="dynamic-value value-negative">-{{ data.expenseKg }}кг</p>
     </div>
   </div>
 
@@ -22,7 +22,7 @@
     <div>
       <h3 class="static-label">Приход</h3>
       <p>{{ data.income }}р</p>
-      <p style="color: green;">+{{ data.incomeKg }}кг</p>
+      <p class="dynamic-value value-positive">+{{ data.incomeKg }}кг</p>
     </div>
   </div>
 
@@ -40,7 +40,7 @@
     <div>
       <h3 class="static-label">Рек. Заказать</h3>
       <p>{{ data.recommendedOrder }}р</p>
-      <p style="color: blue;">+{{ data.recommendedOrderKg }}кг</p>
+      <p class="dynamic-value value-highlight">+{{ data.recommendedOrderKg }}кг</p>
     </div>
     <button class="close-card-btn" (click)="onClose.emit()">Закрыть</button>
   </div>

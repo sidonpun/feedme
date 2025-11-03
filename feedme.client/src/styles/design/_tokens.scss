@@ -1,0 +1,209 @@
+@use 'sass:map';
+@use 'sass:meta';
+
+$color-palette: (
+  primary: (
+    50: #fff3e4,
+    100: #ffe0bf,
+    200: #ffc08a,
+    300: #ff9f55,
+    400: #ff892b,
+    500: #ff7a00,
+    600: #e56e00,
+    700: #c65f00
+  ),
+  secondary: (
+    50: #e6edf7,
+    100: #d3e2f3,
+    200: #aac3e6,
+    300: #7fa3d9,
+    400: #5686cc,
+    500: #2b6cb0,
+    600: #225e9b,
+    700: #1c4f86
+  ),
+  neutral: (
+    0: #ffffff,
+    25: #f7f7f8,
+    50: #eeeef0,
+    100: #e7e8ea,
+    200: #d9dbdf,
+    300: #c7c9cc,
+    500: #757a80,
+    700: #444950,
+    800: #2b3037,
+    900: #171a1f
+  ),
+  success: #1f9254,
+  warning: #b45309,
+  danger: #b91c1c,
+  info: #2b6cb0
+);
+
+$font-families: (
+  base: ('Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif),
+  heading: ('Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif),
+  mono: ('Fira Code', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace)
+);
+
+$font-sizes: (
+  xs: 0.75rem,
+  sm: 0.875rem,
+  base: 1rem,
+  md: 1.0625rem,
+  lg: 1.25rem,
+  xl: 1.5rem
+);
+
+$font-weights: (
+  regular: 400,
+  medium: 500,
+  semibold: 600,
+  bold: 700
+);
+
+$line-heights: (
+  tight: 1.2,
+  snug: 1.35,
+  normal: 1.5,
+  relaxed: 1.7
+);
+
+$radii: (
+  xs: 4px,
+  sm: 6px,
+  md: 10px,
+  lg: 16px,
+  xl: 24px,
+  pill: 999px
+);
+
+$shadows: (
+  none: none,
+  xs: 0 1px 2px 0 rgba(23, 26, 31, 0.08),
+  sm: 0 2px 6px rgba(23, 26, 31, 0.12),
+  md: 0 10px 30px rgba(23, 26, 31, 0.16),
+  lg: 0 24px 60px rgba(23, 26, 31, 0.18)
+);
+
+$spacing: (
+  none: 0,
+  3xs: 0.125rem,
+  xxs: 0.25rem,
+  xs: 0.5rem,
+  sm: 0.75rem,
+  md: 1rem,
+  lg: 1.5rem,
+  xl: 2rem,
+  2xl: 3rem
+);
+
+$transitions: (
+  fast: 120ms,
+  base: 180ms,
+  slow: 240ms
+);
+
+@function color($group, $shade: null) {
+  $value: map.get($color-palette, $group);
+
+  @if $value == null {
+    @error 'Unknown color group `#{$group}` requested from tokens.';
+  }
+
+  @if $shade == null {
+    @return $value;
+  }
+
+  @if meta.type-of($value) != 'map' {
+    @error 'Color group `#{$group}` has no shades.';
+  }
+
+  $shade-value: map.get($value, $shade);
+
+  @if $shade-value == null {
+    @error 'Unknown shade `#{$shade}` for color group `#{$group}`.';
+  }
+
+  @return $shade-value;
+}
+
+@function font-family($role: base) {
+  $value: map.get($font-families, $role);
+
+  @if $value == null {
+    @error 'Unknown font role `#{$role}`.';
+  }
+
+  @return $value;
+}
+
+@function font-size($token: base) {
+  $value: map.get($font-sizes, $token);
+
+  @if $value == null {
+    @error 'Unknown font-size token `#{$token}`.';
+  }
+
+  @return $value;
+}
+
+@function font-weight($token: regular) {
+  $value: map.get($font-weights, $token);
+
+  @if $value == null {
+    @error 'Unknown font-weight token `#{$token}`.';
+  }
+
+  @return $value;
+}
+
+@function line-height($token: normal) {
+  $value: map.get($line-heights, $token);
+
+  @if $value == null {
+    @error 'Unknown line-height token `#{$token}`.';
+  }
+
+  @return $value;
+}
+
+@function radius($token: md) {
+  $value: map.get($radii, $token);
+
+  @if $value == null {
+    @error 'Unknown radius token `#{$token}`.';
+  }
+
+  @return $value;
+}
+
+@function shadow($token: sm) {
+  $value: map.get($shadows, $token);
+
+  @if $value == null {
+    @error 'Unknown shadow token `#{$token}`.';
+  }
+
+  @return $value;
+}
+
+@function space($token: md) {
+  $value: map.get($spacing, $token);
+
+  @if $value == null {
+    @error 'Unknown spacing token `#{$token}`.';
+  }
+
+  @return $value;
+}
+
+@function transition($token: base) {
+  $value: map.get($transitions, $token);
+
+  @if $value == null {
+    @error 'Unknown transition token `#{$token}`.';
+  }
+
+  @return $value;
+}

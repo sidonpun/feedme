@@ -16,7 +16,7 @@
   align-items: center;
   gap: 16px;
   font-size: 14px;
-  color: var(--text-secondary, #4a5568);
+  color: var(--text-secondary, var(--c-text-muted));
 }
 
 .inventory-tab__summary-item {
@@ -27,15 +27,15 @@
 
 .inventory-tab__summary-value {
   font-weight: 600;
-  color: var(--text-primary, #1a202c);
+  color: var(--text-primary, var(--c-text));
 }
 
 .inventory-tab__summary-value.pos {
-  color: #1a8238;
+  color: var(--c-success);
 }
 
 .inventory-tab__summary-value.neg {
-  color: #c53030;
+  color: var(--c-danger);
 }
 
 .inventory-tab__footer {
@@ -43,14 +43,14 @@
   justify-content: space-between;
   align-items: center;
   font-size: 13px;
-  color: var(--text-secondary, #4a5568);
+  color: var(--text-secondary, var(--c-text-muted));
 }
 
 .inventory-tab__link {
   border: none;
   background: none;
   padding: 0;
-  color: var(--link-color, #1a56db);
+  color: var(--link-color, var(--c-secondary-500));
   cursor: pointer;
 }
 
@@ -69,7 +69,7 @@
   background: none;
   padding: 0;
   font-size: 12px;
-  color: var(--link-color, #1a56db);
+  color: var(--link-color, var(--c-secondary-500));
   cursor: pointer;
 }
 
@@ -79,7 +79,7 @@
 
 .inventory-tab__items {
   margin-top: 24px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid color-mix(in srgb, var(--c-text) 8%, transparent);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -93,15 +93,15 @@
 .inventory-tab__items th,
 .inventory-tab__items td {
   padding: 10px 14px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  border-bottom: 1px solid color-mix(in srgb, var(--fm-gray-900) 6%, transparent);
 }
 
 .inventory-tab__items thead {
-  background-color: rgba(15, 23, 42, 0.04);
+  background-color: color-mix(in srgb, var(--c-text) 4%, transparent);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--text-secondary, #4a5568);
+  color: var(--text-secondary, var(--c-text-muted));
 }
 
 .inventory-tab__items .align-right {
@@ -115,7 +115,7 @@
 .inventory-dialog-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.35);
+  background: color-mix(in srgb, var(--fm-gray-900) 35%, transparent);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -124,13 +124,13 @@
 }
 
 .inventory-dialog {
-  background: #fff;
+  background: var(--c-surface);
   border-radius: 18px;
   width: min(960px, 100%);
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 40px -24px rgba(15, 23, 42, 0.45);
+  box-shadow: 0 20px 40px -24px color-mix(in srgb, var(--fm-gray-900) 45%, transparent);
 }
 
 .inventory-dialog--confirm {
@@ -142,7 +142,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px 16px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid color-mix(in srgb, var(--c-text) 8%, transparent);
   font-weight: 600;
   font-size: 18px;
 }
@@ -199,9 +199,9 @@
   grid-template-columns: repeat(4, minmax(140px, 1fr)) minmax(90px, 1fr) repeat(3, minmax(110px, 1fr)) 80px;
   gap: 12px;
   padding: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid color-mix(in srgb, var(--c-text) 8%, transparent);
   border-radius: 12px;
-  background-color: rgba(243, 246, 255, 0.45);
+  background-color: color-mix(in srgb, var(--c-info) 18%, var(--c-surface));
 }
 
 .inventory-dialog__item-field {
@@ -220,7 +220,7 @@
   margin-top: 22px;
   border: none;
   background: none;
-  color: #c53030;
+  color: var(--c-danger);
   cursor: pointer;
 }
 
@@ -230,7 +230,7 @@
   gap: 16px;
   padding: 16px;
   border-radius: 12px;
-  background-color: rgba(15, 23, 42, 0.04);
+  background-color: color-mix(in srgb, var(--c-text) 4%, transparent);
   font-size: 14px;
 }
 
@@ -244,7 +244,7 @@
 .inventory-dialog__content {
   padding: 24px;
   font-size: 14px;
-  color: var(--text-secondary, #4a5568);
+  color: var(--text-secondary, var(--c-text-muted));
 }
 
 .inventory-tab__summary-value,
@@ -253,9 +253,11 @@
 }
 
 .inventory-tab .neg {
-  color: #c53030;
+  color: var(--c-danger);
 }
 
 .inventory-tab .pos {
-  color: #1a8238;
+  color: var(--c-success);
 }
+
+

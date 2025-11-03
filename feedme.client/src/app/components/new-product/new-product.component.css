@@ -1,5 +1,5 @@
 :root {
-  --brand: #ff6a00;
+  --brand: var(--c-primary-500);
 }
 
 .dialog-backdrop {
@@ -8,15 +8,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(17, 24, 39, 0.45);
+  background-color: color-mix(in srgb, var(--c-text) 45%, transparent);
   z-index: 1000;
 }
 
 .dialog {
   width: min(720px, calc(100% - 32px));
   max-height: calc(100vh - 80px);
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 0;
   box-shadow: none;
   display: flex;
@@ -46,7 +46,7 @@
   margin: 0 0 8px;
   font-size: 18px;
   font-weight: 600;
-  color: #111827;
+  color: var(--c-text);
 }
 
 .npd__close {
@@ -55,14 +55,14 @@
   border: none;
   border-radius: 0;
   background: transparent;
-  color: #6b7280;
+  color: var(--c-text-muted);
   font-size: 24px;
   line-height: 1;
   cursor: pointer;
 }
 
 .npd__close:hover {
-  color: #111827;
+  color: var(--c-text);
 }
 
 .npd__close:focus-visible {
@@ -78,7 +78,7 @@
   font-weight: 600;
   font-size: 14px;
   margin: 16px 0 8px;
-  color: #374151;
+  color: var(--c-text);
   text-transform: none;
 }
 
@@ -106,7 +106,7 @@
 .field__label {
   display: block;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--c-text-muted);
   margin-bottom: 6px;
 }
 
@@ -115,9 +115,9 @@
   width: 100%;
   height: 40px;
   padding: 0 12px;
-  border: 1px solid #d1d5db;
-  background: #ffffff;
-  color: #111827;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-text);
   border-radius: 0;
   outline: none;
   box-shadow: none;
@@ -126,12 +126,12 @@
 }
 
 .field__control::placeholder {
-  color: #9ca3af;
+  color: var(--c-text-soft);
 }
 
 .field__control:focus {
   border-color: var(--brand);
-  box-shadow: 0 0 0 2px var(--ring-shadow, rgba(37, 99, 235, 0.35));
+  box-shadow: 0 0 0 2px var(--ring-shadow, color-mix(in srgb, var(--c-secondary-500) 35%, transparent));
 }
 
 .field__suggestions {
@@ -139,8 +139,8 @@
   top: calc(100% - 1px);
   left: 0;
   width: 100%;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-top: none;
   border-radius: 0;
   box-shadow: none;
@@ -157,18 +157,18 @@
   border: none;
   border-radius: 0;
   font-size: 14px;
-  color: #111827;
+  color: var(--c-text);
   cursor: pointer;
 }
 
 .field__suggestion:hover {
-  background: rgba(15, 23, 42, 0.08);
+  background: color-mix(in srgb, var(--c-text) 8%, transparent);
 }
 
 .field__suggestion:focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: -2px;
-  background: rgba(15, 23, 42, 0.08);
+  background: color-mix(in srgb, var(--c-text) 8%, transparent);
 }
 
 .checkbox {
@@ -176,19 +176,19 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: #111827;
+  color: var(--c-text);
 }
 
 .checkbox input[type="checkbox"] {
   width: 16px;
   height: 16px;
   margin: 0;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--c-border);
   border-radius: 0;
   appearance: none;
   display: grid;
   place-items: center;
-  background: #ffffff;
+  background: var(--c-surface);
 }
 
 .checkbox input[type="checkbox"]:checked::after {
@@ -227,18 +227,18 @@
 }
 
 .btn--outline {
-  background: #ffffff;
+  background: var(--c-surface);
   color: var(--brand);
   border-color: var(--brand);
 }
 
 .btn--outline:hover {
-  background: rgba(15, 23, 42, 0.08);
+  background: color-mix(in srgb, var(--c-text) 8%, transparent);
 }
 
 .btn--primary {
   background: var(--brand);
-  color: #ffffff;
+  color: var(--c-surface);
 }
 
 .btn--primary:hover {
@@ -257,3 +257,5 @@
   box-shadow: none !important;
   border-radius: 0 !important;
 }
+
+

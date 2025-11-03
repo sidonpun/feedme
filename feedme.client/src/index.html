@@ -1,11 +1,44 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8">
   <title>feedme</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script>
+    (function () {
+      var storageKey = 'feedme.theme';
+      var root = document.documentElement;
+
+      function readStored() {
+        try {
+          var value = localStorage.getItem(storageKey);
+          return value === 'dark' || value === 'light' ? value : null;
+        } catch (_) {
+          return null;
+        }
+      }
+
+      function apply(theme) {
+        root.setAttribute('data-theme', theme);
+      }
+
+      var mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+      var stored = readStored();
+      var initial = stored || (mediaQuery && mediaQuery.matches ? 'dark' : 'light');
+      apply(initial);
+
+      if (mediaQuery && mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', function (event) {
+          if (readStored()) {
+            return;
+          }
+          apply(event.matches ? 'dark' : 'light');
+        });
+      }
+    })();
+  </script>
 </head>
 <body>
   <app-root></app-root>

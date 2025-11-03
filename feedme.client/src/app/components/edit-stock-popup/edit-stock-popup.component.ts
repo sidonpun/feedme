@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './edit-stock-popup.component.html',
-  styleUrls: ['./edit-stock-popup.component.css']
+  styleUrls: ['./edit-stock-popup.component.scss']
 })
 export class EditStockPopupComponent {
   @Input() initialStock: number | string = '';

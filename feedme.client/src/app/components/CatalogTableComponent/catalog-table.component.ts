@@ -183,6 +183,11 @@ export class CatalogTableComponent {
     this.sortDirection = 'asc';
   }
 
+  protected onHeaderKeySort(event: KeyboardEvent, column: SortKey): void {
+    event.preventDefault();
+    this.onSort(column);
+  }
+
   protected sortItems(items: CatalogRow[]): CatalogRow[] {
     return items.sort((a, b) => {
       const { sortKey, sortDirection } = this;

@@ -1,8 +1,8 @@
 ﻿:host {
   display: block;
-  background-color: #f8fafc;
+  background-color: var(--c-bg);
   min-height: 100vh;
-  color: #0f172a;
+  color: var(--c-text);
 }
 
 .warehouse-page {
@@ -13,8 +13,8 @@
 
 .warehouse-page__sidebar {
   padding: 32px 24px;
-  border-right: 1px solid #e2e8f0;
-  background-color: #ffffff;
+  border-right: 1px solid var(--c-border);
+  background-color: var(--c-surface);
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -39,31 +39,31 @@
   padding: 8px 12px;
   border-radius: 8px;
   font-size: 0.875rem;
-  color: #475569;
+  color: var(--c-text-muted);
   text-decoration: none;
   transition: background-color 0.2s ease;
 }
 
 .warehouse-page__primary-link--active,
 .warehouse-page__location--active {
-  background-color: #e2e8f0;
-  color: #0f172a;
+  background-color: var(--c-surface-subtle);
+  color: var(--c-text);
   font-weight: 600;
 }
 
 .warehouse-page__divider {
   height: 1px;
-  background-color: #e2e8f0;
+  background-color: var(--c-border);
 }
 
 .warehouse-page__locations-title {
   font-size: 0.75rem;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--c-text-soft);
 }
 
 .warehouse-page__content {
-  background-color: #f8fafc;
+  background-color: var(--c-bg);
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -75,11 +75,11 @@
   margin: 0 32px;
   padding: 12px 16px;
   border-radius: 12px;
-  background-color: #fee2e2;
-  border: 1px solid rgba(220, 38, 38, 0.25);
-  color: #b91c1c;
+  background-color: var(--c-danger-soft);
+  border: 1px solid var(--c-danger-soft-strong);
+  color: var(--c-danger);
   font-size: 0.95rem;
-  box-shadow: 0 6px 16px rgba(248, 113, 113, 0.15);
+  box-shadow: 0 6px 16px var(--c-danger-soft);
 }
 
 .warehouse-page__dialog-backdrop {
@@ -88,7 +88,7 @@
   display: grid;
   place-items: center;
   padding: 24px;
-  background-color: rgba(15, 23, 42, 0.32);
+  background-color: var(--c-overlay);
   backdrop-filter: blur(3px);
   z-index: 1000;
 }
@@ -108,7 +108,7 @@
   gap: 14px;
   align-items: flex-end;
   padding: 8px 0 0;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--c-border);
   position: relative;
 }
 
@@ -116,7 +116,7 @@
   background: none;
   border: 0;
   padding: 12px 0;
-  color: #64748b;
+  color: var(--c-text-soft);
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
@@ -124,7 +124,7 @@
 
 .primary-tab--active,
 .primary-tab[aria-selected='true'] {
-  color: #ff6600;
+  color: var(--c-primary-500);
   position: relative;
 }
 
@@ -137,7 +137,7 @@
   bottom: -1px;
   height: 3px;
   border-radius: 3px 3px 0 0;
-  background: linear-gradient(90deg, #ff6600, #ff3a00);
+  background: linear-gradient(90deg, var(--c-primary-500), var(--c-primary-600));
 }
 
 .header-crumbs {
@@ -148,7 +148,7 @@
   display: inline-flex;
   gap: 8px;
   font-size: 0.875rem;
-  color: #64748b;
+  color: var(--c-text-soft);
 }
 
 .kpis {
@@ -159,17 +159,17 @@
 }
 
 .card {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--c-border);
   border-radius: 16px;
-  background-color: #ffffff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  background-color: var(--c-surface);
+  box-shadow: var(--shadow-sm);
   padding: 18px 20px;
 }
 
 .card__title {
   font-size: 0.75rem;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--c-text-soft);
   margin: 0 0 6px;
 }
 
@@ -210,7 +210,7 @@
     flex-wrap: wrap;
     overflow-y: auto;
     border-right: none;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--c-border);
   }
 
   .warehouse-page__content {
@@ -234,3 +234,6 @@
     padding: 0;
   }
 }
+
+
+

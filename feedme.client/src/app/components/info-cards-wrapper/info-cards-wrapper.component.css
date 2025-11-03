@@ -7,6 +7,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: color-mix(in srgb, var(--c-text) 30%, transparent);
   z-index: 1000;
 }
+
+

@@ -45,6 +45,8 @@ interface StockColumn {
   styleUrls: ['./stock-table.component.css']
 })
 export class StockTableComponent implements OnChanges {
+  private static readonly MS_PER_DAY = 86_400_000;
+
   @Input() data: StockTableItem[] = [];
   @Output() onSettingsClick = new EventEmitter<StockTableItem>();
 
@@ -137,6 +139,42 @@ export class StockTableComponent implements OnChanges {
 
   get visibleData(): StockTableItem[] {
     return this.filteredData;
+  }
+
+  getExpiryColor(info: ExpiryInfo): string {
+    if (!info.date) {
+      return 'rgba(255, 255, 255, 0)';
+    }
+
+    const today = this.startOfDay(new Date());
+    const diff = info.date.getTime() - today.getTime();
+    const daysRemaining = Math.floor(diff / StockTableComponent.MS_PER_DAY);
+
+    if (diff < 0) {
+      return '#B00000';
+    }
+
+    if (daysRemaining >= 7) {
+      return 'rgba(255, 255, 255, 0)';
+    }
+
+    if (daysRemaining >= 6) {
+      return '#FFBABA';
+    }
+
+    if (daysRemaining >= 5) {
+      return '#FF8A8A';
+    }
+
+    if (daysRemaining >= 4) {
+      return '#FF5A5A';
+    }
+
+    if (daysRemaining >= 3) {
+      return '#FF2A2A';
+    }
+
+    return '#E00000';
   }
 
   private applyFilters(): void {

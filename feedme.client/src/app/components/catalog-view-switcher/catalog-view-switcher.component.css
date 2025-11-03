@@ -1,4 +1,4 @@
-.view-switcher {
+﻿.view-switcher {
   display: flex;
   gap: 12px;
 }
@@ -9,11 +9,13 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #555;
+  color: var(--c-text-muted);
 }
 
 .view-switcher button.active {
-  color: #4F6BD1;
+  color: var(--c-secondary-500);
   font-weight: 600;
-  border-bottom: 2px solid #4F6BD1;
+  border-bottom: 2px solid var(--c-secondary-500);
 }
+
+

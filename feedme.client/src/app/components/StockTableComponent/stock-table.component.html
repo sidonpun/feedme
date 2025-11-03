@@ -40,8 +40,9 @@
       <ng-container *ngFor="let item of visibleData">
         <ng-container *ngIf="getExpiryInfo(item) as expiry">
           <tr
-            class="stock-table__row h-11 align-middle hover:bg-muted/40 odd:bg-muted/10"
+            class="stock-table__row h-11 align-middle hover:bg-muted/40 odd:bg-muted/10 expiry-gradient"
             [ngClass]="{ 'stock-table__row--expired': expiry.status?.state === 'danger' }"
+            [ngStyle]="{ '--expiry-color': getExpiryColor(expiry) }"
           >
             <td
               *ngFor="let column of columns"

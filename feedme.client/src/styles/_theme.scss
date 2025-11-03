@@ -1,0 +1,72 @@
+@use 'sass:list';
+@use 'sass:meta';
+@use 'sass:string';
+
+@function fm-token($segments...) {
+  @if list.length($segments) == 0 {
+    @error 'fm-token requires at least one segment.';
+  }
+
+  $name: '--fm';
+
+  @each $segment in $segments {
+    $name: '#{$name}-#{$segment}';
+  }
+
+  @return string.unquote('var(#{$name})');
+}
+
+@function fm-color($group, $shade: null) {
+  @if $shade == null {
+    @return fm-token(color, $group);
+  }
+
+  @return fm-token(color, $group, $shade);
+}
+
+@function fm-surface($level) {
+  @return fm-token(surface, $level);
+}
+
+@function fm-text($role) {
+  @return fm-token(text, $role);
+}
+
+@function fm-border($variant: default) {
+  @if $variant == strong {
+    @return fm-token('border-strong');
+  } @else if $variant == muted {
+    @return fm-token(gray, 200);
+  }
+
+  @return fm-token(border);
+}
+
+@mixin color($group, $shade: null, $property: color) {
+  @if $shade == null {
+    #{$property}: fm-color($group);
+  } @else {
+    #{$property}: fm-color($group, $shade);
+  }
+}
+
+@mixin surface($level, $text-role: null, $property: background-color) {
+  #{$property}: fm-surface($level);
+
+  @if $text-role != null {
+    color: fm-text($text-role);
+  }
+}
+
+@mixin text($role, $property: color) {
+  #{$property}: fm-text($role);
+}
+
+@mixin border($variant: default, $property: border-color) {
+  #{$property}: fm-border($variant);
+}
+
+@mixin outline-ring($color-group: primary, $shade: 500) {
+  outline: 2px solid fm-color($color-group, $shade);
+  outline-offset: 2px;
+}

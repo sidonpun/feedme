@@ -63,6 +63,14 @@ export class WarehouseTableComponent {
     }
   }
 
+  getCategoryAlt(category: string | undefined): string {
+    if (typeof category === 'string' && category.trim().length > 0) {
+      return `Категория: ${category.trim()}`;
+    }
+
+    return 'Категория не указана';
+  }
+
   getSupplyQuantity(row: WarehouseTableRow): string {
     const explicitValue = WarehouseTableComponent.quantityKeys
       .map((key) => row[key])
